@@ -1,4 +1,5 @@
-
+using Infrastracture;
+using Application;
 namespace BookCatalog.Core.Api
 {
     public class Program
@@ -6,6 +7,9 @@ namespace BookCatalog.Core.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddInfrastructureServices(builder.Configuration);
+            builder.Services.AddApplicationServices();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
