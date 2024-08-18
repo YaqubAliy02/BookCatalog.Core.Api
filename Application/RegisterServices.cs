@@ -11,6 +11,7 @@ namespace Application
         {
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());  
 
             return services;
         }

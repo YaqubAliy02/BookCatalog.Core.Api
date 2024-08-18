@@ -52,9 +52,9 @@ namespace Infrastracture.Services
             return false;
         }
 
-        public IQueryable<Book> GetAsync(Expression<Func<Book, bool>> expression)
+        public async Task<IQueryable<Book>> GetAsync(Expression<Func<Book, bool>> expression)
         {
-          return  _bookCatalogDbContext.Books.Where(expression);
+            return await Task.FromResult(_bookCatalogDbContext.Books.Where(expression));
 
 
         }
