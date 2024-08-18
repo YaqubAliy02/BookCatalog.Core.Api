@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
 {
@@ -6,6 +9,9 @@ namespace Application
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
             return services;
         }
     }
