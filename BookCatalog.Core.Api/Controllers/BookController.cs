@@ -17,7 +17,7 @@ namespace BookCatalog.Core.Api.Controllers
         private readonly IValidator<Book> _validator;
         private readonly IMapper _mapper;
         public BookController(IBookRepository bookRepository,
-            IValidator<Book> validator, IMapper mapper, 
+            IValidator<Book> validator, IMapper mapper,
             IAuthorRepository authorRepository)
         {
             _bookRepository = bookRepository;
@@ -29,83 +29,89 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllBooks()
         {
-            return Ok(await _bookRepository.GetAsync(x => true));
+            var books = await _bookRepository.GetAsync(x => true);
+            var resultAuthors = _mapper.Map<IEnumerable<Book>>(books);
+
+            return Ok(resultAuthors);
         }
 
         [HttpGet("[action]/{id}")]
 
         public async Task<IActionResult> GetBookByIdAsync(Guid id)
         {
-            return Ok(await _bookRepository.GetByIdAsync(id));
+            Book book = await _bookRepository.GetByIdAsync(id);
+
+            if (book is null) return NotFound($"Book id: {id} is not found!!!");
+
+            return Ok(_mapper.Map<BookGetDto>(book));
         }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> CreateBookAsync([FromBody] BookCreateDto bookCreate)
         {
-            if (ModelState.IsValid)
-            {
-                Book book = _mapper.Map<Book>(bookCreate);
-                var validationRes = _validator.Validate(book);
-                if (validationRes.IsValid)
-                {
-                    for(int i = 0; i < book.Authors.Count; i++)
-                    {
-                        Author author = book.Authors.ToArray()[i];
-                        author = await _authorRepository.GetByIdAsync(author.Id);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                        if(author is null)
-                        {
-                            return NotFound("Author Id: " + author.Id + "Not found ");
-                        }
-                    }
-                    book = await _bookRepository.AddAsync(book);
+            Book book = _mapper.Map<Book>(bookCreate);
+            var validationRes = _validator.Validate(book);
 
-                    return Ok(book);
-                } 
+            if (!validationRes.IsValid)
                 return BadRequest(validationRes);
-            }
 
-            return BadRequest(ModelState);
+            if (book is null) return NotFound("Book is not found!!!");
+
+            for (int i = 0; i < book.Authors.Count; i++)
+            {
+                Author author = book.Authors.ToArray()[i];
+                author = await _authorRepository.GetByIdAsync(author.Id);
+
+                if (author is null)
+                {
+                    return NotFound("Author Id: " + author.Id + "Not found ");
+                }
+            }
+            book = await _bookRepository.AddAsync(book);
+            return Ok(_mapper.Map<BookGetDto>(book));
+
         }
 
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] BookUpdateDTO bookUpdate)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            Book book = _mapper.Map<Book>(bookUpdate);
+            var validationRes = _validator.Validate(book);
+            if (validationRes.IsValid)
             {
-                Book book = _mapper.Map<Book>(bookUpdate);
-                var validationRes = _validator.Validate(book);
-                if (validationRes.IsValid)
+               /* for (int i = 0; i < book.Authors.Count; i++)
                 {
-                    for (int i = 0; i < book.Authors.Count; i++)
+                    Author author = book.Authors.ToArray()[i];
+                    author = await _authorRepository.GetByIdAsync(author.Id);
+
+                    if (author is null)
                     {
-                        Author author = book.Authors.ToArray()[i];
-                        author = await _authorRepository.GetByIdAsync(author.Id);
-
-                        if (author is null)
-                        {
-                            return NotFound("Author Id: " + author.Id + "Not found ");
-                        }
+                        return NotFound("Author Id: " + author.Id + "Not found ");
                     }
-                    book = await _bookRepository.UpdateAsync(book);
+                }*/
+                book = await _bookRepository.UpdateAsync(book);
 
-                    return Ok(book);
-                }
-                return BadRequest(validationRes);
+                if (book is null) return NotFound("Book is not found!!!");
+
+                return Ok(_mapper.Map<BookGetDto>(book));
             }
-
-            return BadRequest(ModelState);
+            return BadRequest(validationRes);
         }
 
         [HttpDelete("[action]")]
         public async Task<IActionResult> DeleteBook([FromQuery] Guid bookId)
         {
-            Task<bool> maybeDelete = _bookRepository.DeleteAsync(bookId);
+            bool maybeDelete = await _bookRepository.DeleteAsync(bookId);
 
-           if (maybeDelete is not null) 
-                return Ok("Deleted successfully");
-            
-           return BadRequest("Deleting operation has been failed!!!");
+            if (maybeDelete) return Ok("Deleted successfully");
+
+            return BadRequest("Deleting operation has been failed!!!");
         }
     }
 }

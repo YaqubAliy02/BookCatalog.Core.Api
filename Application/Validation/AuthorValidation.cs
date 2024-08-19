@@ -13,7 +13,7 @@ namespace Application.Validation
             RuleFor(author => author.BirthDate)
                 .NotEmpty()
                 .Must(author => author < DateOnly.FromDateTime(DateTime.Now).AddYears(10))
-                .WithMessage("Date cannot be upper today");
+                .WithMessage("Date cannot be young then 10 age");
         }
     }
 }

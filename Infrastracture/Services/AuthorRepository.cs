@@ -2,6 +2,7 @@
 using Application.Abstraction;
 using Application.Repositories;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastracture.Services
 {
@@ -16,7 +17,7 @@ namespace Infrastracture.Services
 
         public async Task<Author> AddAsync(Author author)
         {
-            _bookCatalogDbContext.Authors.Attach(author);
+           await _bookCatalogDbContext.Authors.AddAsync(author);
             int result = await _bookCatalogDbContext.SaveChangesAsync();
 
             if (result > 0) return author;
@@ -29,7 +30,7 @@ namespace Infrastracture.Services
             _bookCatalogDbContext.Authors.AttachRange(entities);
             int result = await _bookCatalogDbContext.SaveChangesAsync();
 
-            if(result > 0) return entities;
+            if (result > 0) return entities;
 
             return null;
         }
@@ -49,14 +50,17 @@ namespace Infrastracture.Services
             return false;
         }
 
-        public IQueryable<Author> GetAsync(Expression<Func<Author, bool>> expression)
+        public Task<IQueryable<Author>> GetAsync(Expression<Func<Author, bool>> expression)
         {
-            return _bookCatalogDbContext.Authors.Where(expression);
+            return Task.FromResult(_bookCatalogDbContext.Authors.Where(expression));
         }
 
         public async Task<Author> GetByIdAsync(Guid id)
         {
-            return await _bookCatalogDbContext.Authors.FindAsync(id);
+            // return await _bookCatalogDbContext.Authors.FindAsync(id); if we use this line of code we can not get booksId
+            return await _bookCatalogDbContext.Authors
+                .Include(a => a.Books)
+                .FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task<Author> UpdateAsync(Author author)
