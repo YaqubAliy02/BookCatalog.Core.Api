@@ -11,6 +11,8 @@ namespace BookCatalog.Core.Api
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.AddApplicationServices();
 
+            builder.Services.AddResponseCaching(); //using Response cache service
+            builder.Services.AddOutputCache();// using output cache service
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -26,7 +28,8 @@ namespace BookCatalog.Core.Api
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseResponseCaching(); // add respone caching middleware
+            app.UseOutputCache();// add output caching middleware
             app.MapControllers();
 
             app.Run();

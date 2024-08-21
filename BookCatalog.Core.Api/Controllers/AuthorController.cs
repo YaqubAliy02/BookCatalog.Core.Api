@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.VisualBasic;
 
 namespace BookCatalog.Core.Api.Controllers
@@ -47,6 +48,8 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
+        [ResponseCache(Duration = 20)] //response cache in controller
+        //[OutputCache(Duration = 20)]// output cach in controller
         public async Task<IActionResult> GetAllAuthors()
         {
             var authors = await _authorRepository.GetAsync(x => true);
