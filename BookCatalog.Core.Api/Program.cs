@@ -1,6 +1,10 @@
 using Infrastracture;
 using Application;
 using Microsoft.Extensions.DependencyInjection;
+using BookCatalog.Core.Api.CustomMiddleWares;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+using System.Timers;
 namespace BookCatalog.Core.Api
 {
     public class Program
@@ -20,11 +24,35 @@ namespace BookCatalog.Core.Api
                 setupAction.Configuration = builder.Configuration.GetConnectionString("RedisConnectionString");
             });
 
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddFixedWindowLimiter("FixedWindow", x =>
+                {
+                    x.PermitLimit = 3;
+                    x.QueueLimit = 0;
+                    x.Window = TimeSpan.FromSeconds(20);
+                    x.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    x.AutoReplenishment = true;
+                });
+            });
+
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer.Elapsed += Timer_Elapsed;
+            timer.Interval = 1000;
+            timer.Start();
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.Use((context, next) =>
+            {
+                Console.WriteLine("****************Request is comming *****************");
+                return next(context);
+            });
 
             if (app.Environment.IsDevelopment())
             {
@@ -37,9 +65,16 @@ namespace BookCatalog.Core.Api
             app.UseAuthorization();
             app.UseResponseCaching(); // add respone caching middleware
             app.UseOutputCache();// add output caching middleware
+            app.UseETagMiddleware(); // CustomMiddleware for using ETag
+            app.UseRateLimiter();//Using Rate Limiters
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            Console.WriteLine(e.SignalTime);
         }
     }
 }

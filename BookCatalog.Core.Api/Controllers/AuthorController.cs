@@ -6,6 +6,7 @@ using Domain.Entities;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualBasic;
 
@@ -56,8 +57,9 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        [ResponseCache(Duration = 20)] //response cache in controller
+       // [ResponseCache(Duration = 20)] //response cache in controller
         //[OutputCache(Duration = 20)]// output cach in controller
+        [EnableRateLimiting("FixedWindow")]
         public async Task<IActionResult> GetAllAuthors()
         {
             /*            bool cacheHit = _memoryCache.TryGetValue(_Cache_Key, out IEnumerable<AuthorGetDTO> cachedAuthor);
@@ -77,15 +79,16 @@ namespace BookCatalog.Core.Api.Controllers
                         }*/
             IEnumerable<AuthorGetDTO> CachedAuthors = _memoryCache.GetOrCreate(_Cache_Key, option =>
             {
-                option.SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
-                option.SetSlidingExpiration(TimeSpan.FromSeconds(30));
+                option.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
+                option.SetSlidingExpiration(TimeSpan.FromSeconds(1  ));
 
                 Task<IQueryable<Author>> authors = _authorRepository.GetAsync(x => true);
                 IEnumerable<AuthorGetDTO> resultAuthors = _mapper.Map<IEnumerable<AuthorGetDTO>>(authors.Result.AsEnumerable());
-
+                
                 return resultAuthors;
             });
 
+            Console.WriteLine("GetAllAuthors return json");
             return Ok(CachedAuthors);
         }
 

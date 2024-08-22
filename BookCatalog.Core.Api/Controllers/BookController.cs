@@ -83,6 +83,7 @@ namespace BookCatalog.Core.Api.Controllers
             if(string.IsNullOrEmpty(CachedBooks))
             {
                 Task<IQueryable<Book>> Books = _bookRepository.GetAsync(x => true);
+
                 IEnumerable<BookGetDto> resultBooks = _mapper
                     .Map<IEnumerable<BookGetDto>>(Books.Result.AsEnumerable());
 
@@ -93,7 +94,7 @@ namespace BookCatalog.Core.Api.Controllers
                 return Ok(resultBooks);
             }
 
-            var result = JsonSerializer.Deserialize<BookGetDto>(CachedBooks);
+            var result = JsonSerializer.Deserialize<IEnumerable<BookGetDto>>(CachedBooks);
 
             return Ok(result);
         }
