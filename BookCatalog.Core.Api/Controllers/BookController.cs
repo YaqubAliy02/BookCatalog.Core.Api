@@ -3,7 +3,9 @@ using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
+using LazyCache;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualBasic;
 
 namespace BookCatalog.Core.Api.Controllers
@@ -16,23 +18,59 @@ namespace BookCatalog.Core.Api.Controllers
         private readonly IAuthorRepository _authorRepository;
         private readonly IValidator<Book> _validator;
         private readonly IMapper _mapper;
-        public BookController(IBookRepository bookRepository,
-            IValidator<Book> validator, IMapper mapper,
-            IAuthorRepository authorRepository)
+        private readonly IAppCache _lazyCache;
+
+        private readonly string _Key = "MyLazyCache";
+        public BookController(
+            IBookRepository bookRepository,
+            IValidator<Book> validator,
+            IMapper mapper,
+            IAuthorRepository authorRepository,
+            IAppCache lazyCache)
         {
             _bookRepository = bookRepository;
             _validator = validator;
             _mapper = mapper;
             _authorRepository = authorRepository;
+            _lazyCache = lazyCache;
         }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllBooks()
         {
-            var books = await _bookRepository.GetAsync(x => true);
-            var resultAuthors = _mapper.Map<IEnumerable<Book>>(books);
+            /* bool isActive = _lazyCache.TryGetValue(_Key, out IEnumerable<BookGetDto> cachedBooks);
 
-            return Ok(resultAuthors);
+             if (!isActive)
+             {
+                 var books = await _bookRepository.GetAsync(x => true);
+                 if (books is not null)
+                 {
+                     IEnumerable<BookGetDto> resultAuthors = _mapper.Map<IEnumerable<BookGetDto>>(books);
+
+                     var entryOptions = new MemoryCacheEntryOptions()
+                         .SetAbsoluteExpiration(TimeSpan.FromSeconds(30))
+                         .SetSlidingExpiration(TimeSpan.FromSeconds(30));
+
+                     _lazyCache.Add(_Key, resultAuthors, entryOptions);
+
+                     return Ok(resultAuthors);
+                 }
+                 return NoContent();
+             }
+             return Ok(cachedBooks);*/
+
+            IEnumerable<BookGetDto> result = await _lazyCache.GetOrAdd(_Key, async options =>
+            {
+                options.SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+                options.SetSlidingExpiration(TimeSpan.FromSeconds(30));
+                var books = await _bookRepository.GetAsync(x => true);
+
+                IEnumerable<BookGetDto> booksResult = _mapper.Map<IEnumerable<BookGetDto>>(books);
+
+                return booksResult;
+            });
+
+            return Ok(result);
         }
 
         [HttpGet("[action]/{id}")]
@@ -85,16 +123,16 @@ namespace BookCatalog.Core.Api.Controllers
             var validationRes = _validator.Validate(book);
             if (validationRes.IsValid)
             {
-               /* for (int i = 0; i < book.Authors.Count; i++)
-                {
-                    Author author = book.Authors.ToArray()[i];
-                    author = await _authorRepository.GetByIdAsync(author.Id);
+                /* for (int i = 0; i < book.Authors.Count; i++)
+                 {
+                     Author author = book.Authors.ToArray()[i];
+                     author = await _authorRepository.GetByIdAsync(author.Id);
 
-                    if (author is null)
-                    {
-                        return NotFound("Author Id: " + author.Id + "Not found ");
-                    }
-                }*/
+                     if (author is null)
+                     {
+                         return NotFound("Author Id: " + author.Id + "Not found ");
+                     }
+                 }*/
                 book = await _bookRepository.UpdateAsync(book);
 
                 if (book is null) return NotFound("Book is not found!!!");
