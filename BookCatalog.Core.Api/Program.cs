@@ -24,7 +24,7 @@ namespace BookCatalog.Core.Api
                 setupAction.Configuration = builder.Configuration.GetConnectionString("RedisConnectionString");
             });
 
-            //AddFixedWindowLimiter/not global
+            //***********************AddFixedWindowLimiter/not global******************************
             /*       builder.Services.AddRateLimiter(options =>
                    {
                        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -38,19 +38,39 @@ namespace BookCatalog.Core.Api
                        });
                    });*/
 
+            //*******************AddFixedWindowLimiter/global**********************
+            /*            builder.Services.AddRateLimiter(options =>
+                        {
+                            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                           RateLimitPartition.GetFixedWindowLimiter(
+                               partitionKey: "ConcurrencyLimiter",
+                               factory: x => new FixedWindowRateLimiterOptions
+                               {
+                                   PermitLimit = 4,
+                                   Window = TimeSpan.FromSeconds(20),
+                                   QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                                   QueueLimit = 0,
+                                   AutoReplenishment = true
+                               }));
+                        });*/
+
+            //***********************SlidingWindowLimiter*****************************
+
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
                 options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-               RateLimitPartition.GetFixedWindowLimiter(
-                   partitionKey: "ConcurrencyLimiter",
-                   factory: x => new FixedWindowRateLimiterOptions
+               RateLimitPartition.GetSlidingWindowLimiter(
+                   partitionKey: "SlidingWindowLimiter",
+                   factory: x => new SlidingWindowRateLimiterOptions
                    {
-                       PermitLimit = 4,
-                       Window = TimeSpan.FromSeconds(20),
+                       PermitLimit = 8,
+                       Window = TimeSpan.FromSeconds(30),
                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                        QueueLimit = 0,
-                       AutoReplenishment = true
+                       AutoReplenishment = true,
+                       SegmentsPerWindow = 3
                    }));
 
             });
