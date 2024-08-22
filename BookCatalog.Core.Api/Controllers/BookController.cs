@@ -1,10 +1,13 @@
-﻿using Application.DTOs.BookDTO;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Application.DTOs.BookDTO;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using LazyCache;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualBasic;
 
@@ -19,6 +22,7 @@ namespace BookCatalog.Core.Api.Controllers
         private readonly IValidator<Book> _validator;
         private readonly IMapper _mapper;
         private readonly IAppCache _lazyCache;
+        private readonly IDistributedCache _distributedCache;
 
         private readonly string _Key = "MyLazyCache";
         public BookController(
@@ -26,13 +30,15 @@ namespace BookCatalog.Core.Api.Controllers
             IValidator<Book> validator,
             IMapper mapper,
             IAuthorRepository authorRepository,
-            IAppCache lazyCache)
+            IAppCache lazyCache,
+            IDistributedCache distributedCache)
         {
             _bookRepository = bookRepository;
             _validator = validator;
             _mapper = mapper;
             _authorRepository = authorRepository;
             _lazyCache = lazyCache;
+            _distributedCache = distributedCache;
         }
 
         [HttpGet("[action]")]
@@ -59,16 +65,35 @@ namespace BookCatalog.Core.Api.Controllers
              }
              return Ok(cachedBooks);*/
 
-            IEnumerable<BookGetDto> result = await _lazyCache.GetOrAdd(_Key, async options =>
+            /*  IEnumerable<BookGetDto> result = await _lazyCache.GetOrAdd(_Key, async options =>
+              {
+                  options.SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+                  options.SetSlidingExpiration(TimeSpan.FromSeconds(30));
+                  var books = await _bookRepository.GetAsync(x => true);
+
+                  IEnumerable<BookGetDto> booksResult = _mapper.Map<IEnumerable<BookGetDto>>(books);
+
+                  return booksResult;
+              });
+
+              return Ok(result);*/ //In-Memory
+
+            string CachedBooks = await _distributedCache.GetStringAsync(_Key); //Destributed Cache
+
+            if(string.IsNullOrEmpty(CachedBooks))
             {
-                options.SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
-                options.SetSlidingExpiration(TimeSpan.FromSeconds(30));
-                var books = await _bookRepository.GetAsync(x => true);
+                Task<IQueryable<Book>> Books = _bookRepository.GetAsync(x => true);
+                IEnumerable<BookGetDto> resultBooks = _mapper
+                    .Map<IEnumerable<BookGetDto>>(Books.Result.AsEnumerable());
 
-                IEnumerable<BookGetDto> booksResult = _mapper.Map<IEnumerable<BookGetDto>>(books);
+                await _distributedCache.SetStringAsync(_Key, JsonSerializer.Serialize(resultBooks), new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                });
+                return Ok(resultBooks);
+            }
 
-                return booksResult;
-            });
+            var result = JsonSerializer.Deserialize<BookGetDto>(CachedBooks);
 
             return Ok(result);
         }
