@@ -13,6 +13,8 @@ namespace BookCatalog.Core.Api
 
             builder.Services.AddResponseCaching(); //using Response cache service
             builder.Services.AddOutputCache();// using output cache service
+            builder.Services.AddMemoryCache(); // using In-Memory cache
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

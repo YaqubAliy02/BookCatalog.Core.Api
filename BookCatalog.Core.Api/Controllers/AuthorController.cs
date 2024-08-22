@@ -6,6 +6,7 @@ using Domain.Entities;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualBasic;
 
 namespace BookCatalog.Core.Api.Controllers
@@ -18,21 +19,30 @@ namespace BookCatalog.Core.Api.Controllers
         private readonly IBookRepository _bookRepository;
         private readonly IValidator<Author> _validator;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _memoryCache;
+
+        private readonly string _Cache_Key = "Key";
 
         public AuthorController(IAuthorRepository authorRepository,
             IBookRepository bookRepository,
             IValidator<Author> validator,
-            IMapper mapper)
+            IMapper mapper,
+            IMemoryCache memoryCache)
         {
             _authorRepository = authorRepository;
             _bookRepository = bookRepository;
             _validator = validator;
             _mapper = mapper;
+            _memoryCache = memoryCache;
         }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAuthorById([FromQuery] Guid id)
         {
+            if(_memoryCache.TryGetValue(id.ToString(), out AuthorGetDTO cachedAuthor))
+            {
+                return Ok(cachedAuthor);
+            }
             Author author = await _authorRepository.GetByIdAsync(id);
 
             if (author is null)
@@ -41,10 +51,8 @@ namespace BookCatalog.Core.Api.Controllers
             }
 
             AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
-                return Ok(authorGetDTO);
 
-
-
+            return Ok(authorGetDTO);
         }
 
         [HttpGet("[action]")]
@@ -52,10 +60,33 @@ namespace BookCatalog.Core.Api.Controllers
         //[OutputCache(Duration = 20)]// output cach in controller
         public async Task<IActionResult> GetAllAuthors()
         {
-            var authors = await _authorRepository.GetAsync(x => true);
-            var resultAuthors = _mapper.Map<IEnumerable<Author>>(authors);
+            /*            bool cacheHit = _memoryCache.TryGetValue(_Cache_Key, out IEnumerable<AuthorGetDTO> cachedAuthor);
+                        if (!cacheHit)
+                        {
 
-            return Ok(resultAuthors);
+                            Console.WriteLine("CacheHit is false");
+                            var options = new MemoryCacheEntryOptions()
+                                .SetAbsoluteExpiration(TimeSpan.FromSeconds(30))
+                                .SetSlidingExpiration(TimeSpan.FromSeconds(30));
+
+                            IQueryable<Author> authors = await _authorRepository.GetAsync(x => true);
+                            var resultAuthors = _mapper.Map<IEnumerable<AuthorGetDTO>>(authors);
+                            _memoryCache.Set(_Cache_Key, resultAuthors, options);
+
+                            return Ok(resultAuthors);
+                        }*/
+            IEnumerable<AuthorGetDTO> CachedAuthors = _memoryCache.GetOrCreate(_Cache_Key, option =>
+            {
+                option.SetAbsoluteExpiration(TimeSpan.FromSeconds(30));
+                option.SetSlidingExpiration(TimeSpan.FromSeconds(30));
+
+                Task<IQueryable<Author>> authors = _authorRepository.GetAsync(x => true);
+                IEnumerable<AuthorGetDTO> resultAuthors = _mapper.Map<IEnumerable<AuthorGetDTO>>(authors.Result.AsEnumerable());
+
+                return resultAuthors;
+            });
+
+            return Ok(CachedAuthors);
         }
 
         [HttpPost("[action]")]
@@ -68,22 +99,23 @@ namespace BookCatalog.Core.Api.Controllers
 
                 if (validResult.IsValid)
                 {
-                  /*  for (int i = 0; i < author.Books.Count; i++)
-                    {
-                        Book book = author.Books.ToArray()[i];
+                    /*  for (int i = 0; i < author.Books.Count; i++)
+                      {
+                          Book book = author.Books.ToArray()[i];
 
-                        book = await _bookRepository.GetByIdAsync(book.Id);
+                          book = await _bookRepository.GetByIdAsync(book.Id);
 
-                        if (book is null)
-                        {
-                            return NotFound($"Book id: {book.Id} is not found");
-                        }
-                    }*/
+                          if (book is null)
+                          {
+                              return NotFound($"Book id: {book.Id} is not found");
+                          }
+                      }*/
                     author = await _authorRepository.AddAsync(author);
 
                     if (author is null) return NotFound();
 
                     AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
+                    _memoryCache.Remove(_Cache_Key);
 
                     return Ok(authorGetDTO);
                 }
@@ -104,21 +136,23 @@ namespace BookCatalog.Core.Api.Controllers
 
                 if (validationRes.IsValid)
                 {
-                   /* for (int i = 0; i < author.Books.Count; i++)
-                    {
-                        Book book = author.Books.ToArray()[i];
-                        author = await _authorRepository.GetByIdAsync(author.Id);
+                    /* for (int i = 0; i < author.Books.Count; i++)
+                     {
+                         Book book = author.Books.ToArray()[i];
+                         author = await _authorRepository.GetByIdAsync(author.Id);
 
-                        if (author is null)
-                        {
-                            return NotFound("Author Id: " + author.Id + "Not found ");
-                        }
-                    }*/
+                         if (author is null)
+                         {
+                             return NotFound("Author Id: " + author.Id + "Not found ");
+                         }
+                     }*/
 
                     if (author is null) return NotFound();
 
                     author = await _authorRepository.UpdateAsync(author);
                     AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
+                    _memoryCache.Remove(author.Id);
+                    _memoryCache.Remove(_Cache_Key);
 
                     return Ok(authorGetDTO);
                 }
@@ -132,6 +166,9 @@ namespace BookCatalog.Core.Api.Controllers
         public async Task<IActionResult> DeleteAuthor([FromQuery] Guid id)
         {
             bool isDelete = await _authorRepository.DeleteAsync(id);
+
+            _memoryCache.Remove(id);
+            _memoryCache.Remove(_Cache_Key);
 
             if (isDelete) return Ok("Author is deleted successfully");
 
