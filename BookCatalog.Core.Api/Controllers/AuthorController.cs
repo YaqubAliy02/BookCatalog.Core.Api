@@ -59,7 +59,9 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpGet("[action]")]
        // [ResponseCache(Duration = 20)] //response cache in controller
         //[OutputCache(Duration = 20)]// output cach in controller
-        [EnableRateLimiting("FixedWindow")]
+        [EnableRateLimiting("FixedWindow")] // When we use Rate Limit for specific
+                                            // action in our Project we should add attribute for action
+                                            // which we want to use Rate Limiters
         public async Task<IActionResult> GetAllAuthors()
         {
             /*            bool cacheHit = _memoryCache.TryGetValue(_Cache_Key, out IEnumerable<AuthorGetDTO> cachedAuthor);
