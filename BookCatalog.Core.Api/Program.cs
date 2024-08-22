@@ -24,17 +24,35 @@ namespace BookCatalog.Core.Api
                 setupAction.Configuration = builder.Configuration.GetConnectionString("RedisConnectionString");
             });
 
+            //AddFixedWindowLimiter/not global
+            /*       builder.Services.AddRateLimiter(options =>
+                   {
+                       options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                       options.AddFixedWindowLimiter("FixedWindow", x =>
+                       {
+                           x.PermitLimit = 3;
+                           x.QueueLimit = 0;
+                           x.Window = TimeSpan.FromSeconds(20);
+                           x.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                           x.AutoReplenishment = true;
+                       });
+                   });*/
+
             builder.Services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.AddFixedWindowLimiter("FixedWindow", x =>
-                {
-                    x.PermitLimit = 3;
-                    x.QueueLimit = 0;
-                    x.Window = TimeSpan.FromSeconds(20);
-                    x.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                    x.AutoReplenishment = true;
-                });
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+               RateLimitPartition.GetFixedWindowLimiter(
+                   partitionKey: "ConcurrencyLimiter",
+                   factory: x => new FixedWindowRateLimiterOptions
+                   {
+                       PermitLimit = 4,
+                       Window = TimeSpan.FromSeconds(20),
+                       QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                       QueueLimit = 0,
+                       AutoReplenishment = true
+                   }));
+
             });
 
             System.Timers.Timer timer = new System.Timers.Timer();
