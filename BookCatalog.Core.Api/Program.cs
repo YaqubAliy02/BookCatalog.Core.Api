@@ -5,6 +5,7 @@ using BookCatalog.Core.Api.CustomMiddleWares;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using System.Timers;
+using Microsoft.OpenApi.Models;
 namespace BookCatalog.Core.Api
 {
     public class Program
@@ -19,6 +20,37 @@ namespace BookCatalog.Core.Api
             builder.Services.AddResponseCaching(); //using Response cache service
             builder.Services.AddOutputCache();// using output cache service
             builder.Services.AddMemoryCache(); // using In-Memory cache
+
+            // This configuration for checking token with Auhtorized or don't in Swagger we did that in Postman in last commit
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Description = "Bearer Authentication wiht JWT Token",
+                    Type = SecuritySchemeType.Http
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+
+                    new OpenApiSecurityScheme()
+                    {
+
+                        Reference = new OpenApiReference()
+                        {
+                            Id = "Bearer",
+                            Type = ReferenceType.SecurityScheme
+                        },
+                    },
+                        new List<string>()
+                    }
+                });
+            });
+
             builder.Services.AddStackExchangeRedisCache(setupAction =>
             {
                 setupAction.Configuration = builder.Configuration.GetConnectionString("RedisConnectionString");
@@ -85,11 +117,11 @@ namespace BookCatalog.Core.Api
 
             var app = builder.Build();
 
-       /*     app.Use((context, next) =>
-            {
-                Console.WriteLine("****************Request is comming *****************");
-                return next(context);
-            });*/
+            /*     app.Use((context, next) =>
+                 {
+                     Console.WriteLine("****************Request is comming *****************");
+                     return next(context);
+                 });*/
 
             if (app.Environment.IsDevelopment())
             {
@@ -109,9 +141,9 @@ namespace BookCatalog.Core.Api
             app.Run();
         }
 
- /*       private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            Console.WriteLine(e.SignalTime);
-        }*/
+        /*       private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
+               {
+                   Console.WriteLine(e.SignalTime);
+               }*/
     }
 }
