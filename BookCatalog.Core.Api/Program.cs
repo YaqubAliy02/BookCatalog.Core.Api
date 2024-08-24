@@ -56,29 +56,28 @@ namespace BookCatalog.Core.Api
                         });*/
 
             //***********************SlidingWindowLimiter*****************************
+            /*  builder.Services.AddRateLimiter(options =>
+              {
+                  options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                  options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                 RateLimitPartition.GetSlidingWindowLimiter(
+                     partitionKey: "SlidingWindowLimiter",
+                     factory: x => new SlidingWindowRateLimiterOptions
+                     {
+                         PermitLimit = 8,
+                         Window = TimeSpan.FromSeconds(30),
+                         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                         QueueLimit = 0,
+                         AutoReplenishment = true,
+                         SegmentsPerWindow = 3
+                     }));
 
-            builder.Services.AddRateLimiter(options =>
-            {
-                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-               RateLimitPartition.GetSlidingWindowLimiter(
-                   partitionKey: "SlidingWindowLimiter",
-                   factory: x => new SlidingWindowRateLimiterOptions
-                   {
-                       PermitLimit = 8,
-                       Window = TimeSpan.FromSeconds(30),
-                       QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                       QueueLimit = 0,
-                       AutoReplenishment = true,
-                       SegmentsPerWindow = 3
-                   }));
+              });*/
 
-            });
-
-            System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Elapsed += Timer_Elapsed;
-            timer.Interval = 1000;
-            timer.Start();
+            /*   System.Timers.Timer timer = new System.Timers.Timer();
+               timer.Elapsed += Timer_Elapsed;
+               timer.Interval = 1000;
+               timer.Start();*/
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -86,11 +85,11 @@ namespace BookCatalog.Core.Api
 
             var app = builder.Build();
 
-            app.Use((context, next) =>
+       /*     app.Use((context, next) =>
             {
                 Console.WriteLine("****************Request is comming *****************");
                 return next(context);
-            });
+            });*/
 
             if (app.Environment.IsDevelopment())
             {
@@ -104,15 +103,15 @@ namespace BookCatalog.Core.Api
             app.UseResponseCaching(); // add respone caching middleware
             app.UseOutputCache();// add output caching middleware
             app.UseETagMiddleware(); // CustomMiddleware for using ETag
-            app.UseRateLimiter();//Using Rate Limiters
+            //app.UseRateLimiter();//Using Rate Limiters
             app.MapControllers();
 
             app.Run();
         }
 
-        private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
+ /*       private static void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Console.WriteLine(e.SignalTime);
-        }
+        }*/
     }
 }

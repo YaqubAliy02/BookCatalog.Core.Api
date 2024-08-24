@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using Application.Abstraction;
+using Application.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +15,7 @@ namespace Application
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddLazyCache();
-
+            services.AddScoped<ITokenService, TokenService>();
             return services;
         }
     }

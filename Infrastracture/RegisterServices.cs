@@ -18,7 +18,7 @@ namespace Infrastracture
 
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IAuthorRepository, AuthorRepository>();
-
+            services.AddScoped<IUserRepository, UserRepository>();
             return services;
         }
     }

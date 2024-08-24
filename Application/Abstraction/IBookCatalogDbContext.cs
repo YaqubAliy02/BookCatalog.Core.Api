@@ -7,7 +7,7 @@ namespace Application.Abstraction
     {
          DbSet<Book> Books { get; set; }
          DbSet<Author> Authors { get; set; }
-
+         DbSet<User> Users { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
