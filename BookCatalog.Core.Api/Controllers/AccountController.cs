@@ -6,6 +6,7 @@ using Application.Models;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Core.Api.Controllers
@@ -35,20 +36,47 @@ namespace BookCatalog.Core.Api.Controllers
 
             if (user is not null)
             {
-                Token token = new()
-                {
-                    AccessToken = _tokenService.CreateToken(user)
-                };
 
                 RegisteredUserDTO userDTO = new()
                 {
                     User = user,
-                    UserTokens = token
+                    UserTokens = await _tokenService.CreateTokensAsync(user)
                 };
 
                 return Ok(userDTO);
             }
             return BadRequest("Email or Password is incorrect!!!");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("Refresh")]
+        public async Task<IActionResult> Refresh([FromBody] Token token)
+        {
+            var principal = _tokenService.GetClaimsFromExpiredToken(token.AccessToken);
+            string email = principal.Identity.Name;
+            
+            if(email is null)
+            {
+                return NotFound("Refresh token is not found");
+            }
+            RefreshToken savedRefreshToken = _tokenService.Get(x =>
+                x.Email == email && x.RefreshTokenValue == token.RefereshToken).FirstOrDefault();
+
+            if (savedRefreshToken is null)
+            {
+                return BadRequest("Refresh token or access token is invalid");
+            }
+            if(savedRefreshToken.ExpiredDate < DateTime.UtcNow)
+            {
+                _tokenService.Delete(savedRefreshToken);
+                return StatusCode(405, "Refresh token already expired please login again");
+            }
+
+            Token newTokens = await _tokenService
+                .CreateTokenFromRefresh(principal,savedRefreshToken);
+
+            return Ok(newTokens);
         }
 
         [HttpPost]
@@ -63,18 +91,12 @@ namespace BookCatalog.Core.Api.Controllers
 
                 if (newUser is not null)
                 {
-                    Token token = new()
-                    {
-                        AccessToken = _tokenService.CreateToken(user)
-                    };
-
                     RegisteredUserDTO userDTO = new()
                     {
                         User = user,
-                        UserTokens = token
-                    };  
+                        UserTokens = await _tokenService.CreateTokensAsync(user)
 
-                    userDTO.UserTokens = token;
+                    };
 
                     return Ok(userDTO);
                 }

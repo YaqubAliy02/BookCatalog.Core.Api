@@ -83,6 +83,33 @@ namespace Infrastracture.Persistence.Migrations
                     b.ToTable("Books");
                 });
 
+            modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("RefreshTokenid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("refresh_token_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RefreshTokenid"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiredDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expired_date");
+
+                    b.Property<string>("RefreshTokenValue")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("refresh_token_value");
+
+                    b.HasKey("RefreshTokenid");
+
+                    b.ToTable("refresh_token");
+                });
+
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -99,6 +126,9 @@ namespace Infrastracture.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
