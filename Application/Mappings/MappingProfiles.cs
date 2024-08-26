@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.AuthorDTO;
 using Application.DTOs.BookDTO;
 using Application.DTOs.PermissionDTO;
+using Application.DTOs.RoleDTO;
 using Application.DTOs.UserDTO;
 using AutoMapper;
 using Domain.Entities;
@@ -15,6 +16,25 @@ namespace Application.Mappings
             AuthorMappingRules();
             UserMappingRules();
             PermissionMappingRules();
+            RoleMappingRules();
+        }
+
+        private void RoleMappingRules()
+        {
+            CreateMap<RoleCreateDTO, Role>()
+                .ForMember(desination => desination.Permissions,
+                    options => options.MapFrom(src => src.PermissionId
+                        .Select(x => new Permission() { PermissionId = x })));
+
+            CreateMap<Role, RoleGetDTO>()
+                .ForMember(destination => destination.PermissionsId,
+                    options => options.MapFrom(src => src.Permissions
+                        .Select(x => x.PermissionId)));
+
+            CreateMap<RoleUpdateDTO, Role>()
+                .ForMember(destination => destination.Permissions,
+                    options => options.MapFrom(src => src.PermissionsId
+                        .Select(x => new Permission() { PermissionId= x })));
         }
 
         private void PermissionMappingRules()
