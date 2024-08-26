@@ -8,7 +8,7 @@ namespace Domain.Entities
     public class RefreshToken
     {
         [Column("refresh_token_id")]
-        public int RefreshTokenid { get; set; }
+        public Guid RefreshTokenid { get; set; }
 
         [Required]
         [EmailAddress]

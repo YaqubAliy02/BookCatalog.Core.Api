@@ -6,7 +6,7 @@ namespace Domain.Entities
     public class Role
     {
         [Column("role_id")]
-        public int RoleId { get; set; }
+        public Guid RoleId { get; set; }
 
         [Column("role_name")]
         public string RoleName { get; set; }

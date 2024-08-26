@@ -23,6 +23,8 @@ namespace Infrastracture
             services.AddScoped<IBookRepository, BookRepository>();
             services.AddScoped<IAuthorRepository, AuthorRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
 
             //*************** This is for checking user's token that is it valid and invalid and reading it.
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

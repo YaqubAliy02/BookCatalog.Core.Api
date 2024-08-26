@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infrastracture.Persistence.Migrations
+namespace Infrastracture.Migrations
 {
     [DbContext(typeof(BookCatalogDbContext))]
     partial class BookCatalogDbContextModelSnapshot : ModelSnapshot
@@ -85,12 +85,10 @@ namespace Infrastracture.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Permission", b =>
                 {
-                    b.Property<int>("PermissionId")
+                    b.Property<Guid>("PermissionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("uuid")
                         .HasColumnName("permission_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PermissionId"));
 
                     b.Property<string>("PermissionName")
                         .HasColumnType("text")
@@ -104,12 +102,10 @@ namespace Infrastracture.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
                 {
-                    b.Property<int>("RefreshTokenid")
+                    b.Property<Guid>("RefreshTokenid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("uuid")
                         .HasColumnName("refresh_token_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RefreshTokenid"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -131,12 +127,10 @@ namespace Infrastracture.Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
                 {
-                    b.Property<int>("RoleId")
+                    b.Property<Guid>("RoleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("uuid")
                         .HasColumnName("role_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoleId"));
 
                     b.Property<string>("RoleName")
                         .HasColumnType("text")
@@ -172,11 +166,11 @@ namespace Infrastracture.Persistence.Migrations
 
             modelBuilder.Entity("PermissionRole", b =>
                 {
-                    b.Property<int>("PermissionsPermissionId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("PermissionsPermissionId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("RolesRoleId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("RolesRoleId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("PermissionsPermissionId", "RolesRoleId");
 
@@ -187,8 +181,8 @@ namespace Infrastracture.Persistence.Migrations
 
             modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.Property<int>("RolesRoleId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("RolesRoleId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("UsersId")
                         .HasColumnType("uuid");

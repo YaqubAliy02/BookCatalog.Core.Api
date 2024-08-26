@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infrastracture.Persistence.Migrations
+namespace Infrastracture.Migrations
 {
     [DbContext(typeof(BookCatalogDbContext))]
-    [Migration("20240825024100_RefreshUser")]
-    partial class RefreshUser
+    [Migration("20240825134006_AddAllMigrations")]
+    partial class AddAllMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -86,14 +86,29 @@ namespace Infrastracture.Persistence.Migrations
                     b.ToTable("Books");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Permission", b =>
+                {
+                    b.Property<Guid>("PermissionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("permission_id");
+
+                    b.Property<string>("PermissionName")
+                        .HasColumnType("text")
+                        .HasColumnName("permission_name")
+                        .HasAnnotation("Relational:JsonPropertyName", "permission_name");
+
+                    b.HasKey("PermissionId");
+
+                    b.ToTable("Permissions");
+                });
+
             modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
                 {
-                    b.Property<int>("RefreshTokenid")
+                    b.Property<Guid>("RefreshTokenid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
+                        .HasColumnType("uuid")
                         .HasColumnName("refresh_token_id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RefreshTokenid"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -111,6 +126,22 @@ namespace Infrastracture.Persistence.Migrations
                     b.HasKey("RefreshTokenid");
 
                     b.ToTable("refresh_token");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Role", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("role_id");
+
+                    b.Property<string>("RoleName")
+                        .HasColumnType("text")
+                        .HasColumnName("role_name");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -136,6 +167,36 @@ namespace Infrastracture.Persistence.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("PermissionRole", b =>
+                {
+                    b.Property<Guid>("PermissionsPermissionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RolesRoleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("PermissionsPermissionId", "RolesRoleId");
+
+                    b.HasIndex("RolesRoleId");
+
+                    b.ToTable("PermissionRole");
+                });
+
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.Property<Guid>("RolesRoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("RolesRoleId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("RoleUser");
+                });
+
             modelBuilder.Entity("AuthorBook", b =>
                 {
                     b.HasOne("Domain.Entities.Author", null)
@@ -147,6 +208,36 @@ namespace Infrastracture.Persistence.Migrations
                     b.HasOne("Domain.Entities.Book", null)
                         .WithMany()
                         .HasForeignKey("BooksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PermissionRole", b =>
+                {
+                    b.HasOne("Domain.Entities.Permission", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionsPermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RoleUser", b =>
+                {
+                    b.HasOne("Domain.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RolesRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

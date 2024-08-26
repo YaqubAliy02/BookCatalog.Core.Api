@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.AuthorDTO;
 using Application.DTOs.BookDTO;
+using Application.DTOs.PermissionDTO;
 using Application.DTOs.UserDTO;
 using AutoMapper;
 using Domain.Entities;
@@ -13,6 +14,12 @@ namespace Application.Mappings
             BookMappingRules();
             AuthorMappingRules();
             UserMappingRules();
+            PermissionMappingRules();
+        }
+
+        private void PermissionMappingRules()
+        {
+            CreateMap<CreatePermissionDTO, Permission>();
         }
 
         private void UserMappingRules()
