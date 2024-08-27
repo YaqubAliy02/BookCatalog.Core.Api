@@ -65,7 +65,7 @@ namespace BookCatalog.Core.Api.Controllers
         //[EnableRateLimiting("FixedWindow")] // When we use Rate Limit for specific
         // action in our Project we should add attribute for action
         // which we want to use Rate Limiters
-
+        [CacheResourceFilter("GetAuthors")]
         [CustomAuthorizationFilter("GetAllAuthors")]
         public async Task<IActionResult> GetAllAuthors()
         {
