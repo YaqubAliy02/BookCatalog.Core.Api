@@ -48,7 +48,7 @@ namespace Application.Services
                     if (!permissions.Contains(permission.PermissionName))
                     {
                         permissions.Add(permission.PermissionName);
-                        claims.Add(new Claim(ClaimTypes.Role, permission.PermissionName));
+                        claims.Add(new Claim("permission", permission.PermissionName));
                     }
                 }
             }

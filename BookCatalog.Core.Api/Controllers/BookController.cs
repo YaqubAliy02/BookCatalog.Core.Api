@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Application.DTOs.BookDTO;
 using Application.Repositories;
 using AutoMapper;
+using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using FluentValidation;
 using LazyCache;
@@ -43,7 +44,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        [Authorize(Roles = "GetAllBooks")]
+        [CustomAuthorizationFilter("GetAllBooks")]
         public async Task<IActionResult> GetAllBooks()
         {
             /* bool isActive = _lazyCache.TryGetValue(_Key, out IEnumerable<BookGetDto> cachedBooks);
@@ -102,7 +103,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        [Authorize(Roles = "GetBookById")]
+        [CustomAuthorizationFilter("GetBookById")]
         public async Task<IActionResult> GetBookByIdAsync(Guid id)
         {
             Book book = await _bookRepository.GetByIdAsync(id);
@@ -113,7 +114,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        [Authorize(Roles = "CreateBook")]
+        [CustomAuthorizationFilter("CreateBook")]
         public async Task<IActionResult> CreateBookAsync([FromBody] BookCreateDto bookCreate)
         {
             if (!ModelState.IsValid)
@@ -143,7 +144,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPut("[action]")]
-        [Authorize(Roles = "UpdateBook")]
+        [CustomAuthorizationFilter("UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] BookUpdateDTO bookUpdate)
         {
             if (!ModelState.IsValid)
@@ -173,7 +174,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpDelete("[action]")]
-        [Authorize(Roles = "DeleteBook")]
+        [CustomAuthorizationFilter("DeleteBook")]
         public async Task<IActionResult> DeleteBook([FromQuery] Guid bookId)
         {
             bool maybeDelete = await _bookRepository.DeleteAsync(bookId);

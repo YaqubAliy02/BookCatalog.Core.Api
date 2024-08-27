@@ -2,7 +2,9 @@
 using Application.Extensions;
 using Application.Repositories;
 using AutoMapper;
+using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 
@@ -10,6 +12,7 @@ namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IRoleRepository _roleRepository;

@@ -2,6 +2,7 @@
 using Application.DTOs.BookDTO;
 using Application.Repositories;
 using AutoMapper;
+using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -39,7 +40,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        [Authorize(Roles = "GetAuthor")]
+        [CustomAuthorizationFilter("GetAuthorById")]
         public async Task<IActionResult> GetAuthorById([FromQuery] Guid id)
         {
             if(_memoryCache.TryGetValue(id.ToString(), out AuthorGetDTO cachedAuthor))
@@ -65,7 +66,7 @@ namespace BookCatalog.Core.Api.Controllers
         // action in our Project we should add attribute for action
         // which we want to use Rate Limiters
 
-        [Authorize(Roles = "GetAllAuthors")]
+        [CustomAuthorizationFilter("GetAllAuthors")]
         public async Task<IActionResult> GetAllAuthors()
         {
             /*            bool cacheHit = _memoryCache.TryGetValue(_Cache_Key, out IEnumerable<AuthorGetDTO> cachedAuthor);
@@ -99,7 +100,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        [Authorize(Roles = "CreateAuthorById")]
+        [CustomAuthorizationFilter("CreateAuthor")]
         public async Task<IActionResult> CreateAuthor([FromBody] AuthorCreateDTO createDTO)
         {
             if (ModelState.IsValid)
@@ -136,7 +137,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPut("[action]")]
-        [Authorize(Roles = "UpdateBook")]
+        [CustomAuthorizationFilter("UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] AuthorUpdateDTO authorUpdateDO)
         {
             if (ModelState.IsValid)
@@ -173,7 +174,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpDelete("[action]")]
-        [Authorize(Roles = "DeleteAuthor")]
+        [CustomAuthorizationFilter("DeleteAuthor")]
         public async Task<IActionResult> DeleteAuthor([FromQuery] Guid id)
         {
             bool isDelete = await _authorRepository.DeleteAsync(id);
