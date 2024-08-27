@@ -39,6 +39,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
+        [Authorize(Roles = "GetAuthor")]
         public async Task<IActionResult> GetAuthorById([FromQuery] Guid id)
         {
             if(_memoryCache.TryGetValue(id.ToString(), out AuthorGetDTO cachedAuthor))
@@ -64,7 +65,7 @@ namespace BookCatalog.Core.Api.Controllers
         // action in our Project we should add attribute for action
         // which we want to use Rate Limiters
 
-        [Authorize]
+        [Authorize(Roles = "GetAllAuthors")]
         public async Task<IActionResult> GetAllAuthors()
         {
             /*            bool cacheHit = _memoryCache.TryGetValue(_Cache_Key, out IEnumerable<AuthorGetDTO> cachedAuthor);
@@ -98,6 +99,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
+        [Authorize(Roles = "CreateAuthorById")]
         public async Task<IActionResult> CreateAuthor([FromBody] AuthorCreateDTO createDTO)
         {
             if (ModelState.IsValid)
@@ -133,8 +135,8 @@ namespace BookCatalog.Core.Api.Controllers
             return BadRequest(ModelState);
         }
 
-
         [HttpPut("[action]")]
+        [Authorize(Roles = "UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] AuthorUpdateDTO authorUpdateDO)
         {
             if (ModelState.IsValid)
@@ -171,6 +173,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpDelete("[action]")]
+        [Authorize(Roles = "DeleteAuthor")]
         public async Task<IActionResult> DeleteAuthor([FromQuery] Guid id)
         {
             bool isDelete = await _authorRepository.DeleteAsync(id);

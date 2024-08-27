@@ -6,6 +6,7 @@ using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using LazyCache;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -42,6 +43,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
+        [Authorize(Roles = "GetAllBooks")]
         public async Task<IActionResult> GetAllBooks()
         {
             /* bool isActive = _lazyCache.TryGetValue(_Key, out IEnumerable<BookGetDto> cachedBooks);
@@ -100,7 +102,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-
+        [Authorize(Roles = "GetBookById")]
         public async Task<IActionResult> GetBookByIdAsync(Guid id)
         {
             Book book = await _bookRepository.GetByIdAsync(id);
@@ -111,6 +113,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
+        [Authorize(Roles = "CreateBook")]
         public async Task<IActionResult> CreateBookAsync([FromBody] BookCreateDto bookCreate)
         {
             if (!ModelState.IsValid)
@@ -140,6 +143,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPut("[action]")]
+        [Authorize(Roles = "UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] BookUpdateDTO bookUpdate)
         {
             if (!ModelState.IsValid)
@@ -169,6 +173,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpDelete("[action]")]
+        [Authorize(Roles = "DeleteBook")]
         public async Task<IActionResult> DeleteBook([FromQuery] Guid bookId)
         {
             bool maybeDelete = await _bookRepository.DeleteAsync(bookId);

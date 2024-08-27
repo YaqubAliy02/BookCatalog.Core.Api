@@ -6,6 +6,7 @@ using Application.Abstraction;
 using Application.Extensions;
 using Application.Models;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -34,6 +35,26 @@ namespace Application.Services
                 new Claim(ClaimTypes.Name, user.Email)
             };
 
+            Role eachRole;
+            List<string> permissions = new();
+            foreach (Role role in user.Roles)
+            {
+                eachRole = _bookCatalogDbContext.Roles
+                    .Where(x => x.RoleId.Equals(role.RoleId))
+                    .Include(x => x.Permissions).SingleOrDefault();
+
+                foreach (Permission permission in eachRole.Permissions)
+                {
+                    if (!permissions.Contains(permission.PermissionName))
+                    {
+                        permissions.Add(permission.PermissionName);
+                        claims.Add(new Claim(ClaimTypes.Role, permission.PermissionName));
+                    }
+                }
+            }
+
+
+            claims = claims.Distinct().ToList();
             Token tokens = CreateToken(claims);
 
             var savedRefreshToken = Get(x => x.Email == user.Email).FirstOrDefault();
@@ -66,7 +87,7 @@ namespace Application.Services
                 expires: DateTime.UtcNow.AddMinutes(Convert.ToInt32(_configuration["JWT:AccessTokenLifeTime"])),
                 signingCredentials: new SigningCredentials(
                     new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(_configuration["JWT:Key"] )),
+                        Encoding.UTF8.GetBytes(_configuration["JWT:Key"])),
                         SecurityAlgorithms.HmacSha256Signature));
 
             Token tokens = new()
