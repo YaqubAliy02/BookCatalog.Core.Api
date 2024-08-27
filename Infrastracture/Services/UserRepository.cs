@@ -1,8 +1,11 @@
 ﻿using System.Linq;
 using System.Linq.Expressions;
 using Application.Abstraction;
+using Application.Extensions;
 using Application.Repositories;
 using Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastracture.Services
 {
@@ -17,7 +20,10 @@ namespace Infrastracture.Services
 
         public async Task<User> AddAsync(User user)
         {
-            await _bookCatalogDbContext.Users.AddAsync(user);
+            user.Password = user.Password.GetHash();
+
+             _bookCatalogDbContext.Users.Add(user);
+
             int result = await _bookCatalogDbContext.SaveChangesAsync();
 
             if (result > 0) return user;
@@ -45,24 +51,44 @@ namespace Infrastracture.Services
             return false;
         }
 
-        public Task<IQueryable<User>> GetAsync(Expression<Func<User, bool>> expression)
+        public async Task<IQueryable<User>> GetAsync(Expression<Func<User, bool>> expression)
         {
-            return Task.FromResult(_bookCatalogDbContext.Users.Where(expression));
+            return _bookCatalogDbContext.Users.Where(expression).Include(x => x.Roles);
         }
 
-        public async Task<User> GetByIdAsync(Guid id)
+        public Task<User> GetByIdAsync(Guid id)
         {
-            return await _bookCatalogDbContext.Users.FindAsync(id);
+            return Task.FromResult(_bookCatalogDbContext.Users
+                .Where(x => x.Id.Equals(id))
+                .Include(x => x.Roles)
+                .SingleOrDefault());
         }
 
         public async Task<User> UpdateAsync(User user)
         {
-            _bookCatalogDbContext.Users.Update(user);
+            var exisingUser = await GetByIdAsync(user.Id);
 
-            int result = await _bookCatalogDbContext.SaveChangesAsync();
+            if (exisingUser is not null)
+            {
+                exisingUser.FullName = user.FullName;
+                exisingUser.Email = user.Email;
 
-            if (result > 0) return user;
+                exisingUser.Roles.Clear();
 
+                foreach (var permission in user.Roles)
+                {
+                    var existingPermission = _bookCatalogDbContext.Roles.Find(permission.RoleId);
+
+                    if (existingPermission is not null)
+                    {
+                        exisingUser.Roles.Add(existingPermission);
+                    }
+                }
+                int result = await _bookCatalogDbContext.SaveChangesAsync();
+
+                if (result > 0) return user;
+            }
+                        
             return null;
         }
     }

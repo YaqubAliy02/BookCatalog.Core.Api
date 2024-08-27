@@ -34,7 +34,7 @@ namespace Application.Mappings
             CreateMap<RoleUpdateDTO, Role>()
                 .ForMember(destination => destination.Permissions,
                     options => options.MapFrom(src => src.PermissionsId
-                        .Select(x => new Permission() { PermissionId= x })));
+                        .Select(x => new Permission() { PermissionId = x })));
         }
 
         private void PermissionMappingRules()
@@ -44,7 +44,20 @@ namespace Application.Mappings
 
         private void UserMappingRules()
         {
-            CreateMap<UserCreateDTO, User>();
+            CreateMap<UserCreateDTO, User>()
+                .ForMember(destination => destination.Roles,
+                    options => options.MapFrom(src => src.RolesId
+                        .Select(x => new Role() { RoleId = x })));
+
+            CreateMap<User, UserGetDTO>()
+            .ForMember(destination => destination.RolesId,
+                options => options.MapFrom(src => src.Roles
+                    .Select(x => x.RoleId)));
+
+            CreateMap<UserUpdateDTO, User>()
+                .ForMember(destination => destination.Roles,
+                    options => options.MapFrom(src => src.RolesId
+                    .Select(x => new Role() { RoleId = x })));
         }
 
         public void BookMappingRules()
