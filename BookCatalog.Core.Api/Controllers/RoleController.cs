@@ -7,19 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    public class RoleController : ControllerBase
+    public class RoleController : ApiControllerBase
     {
         private readonly IRoleRepository _roleRepository;
         private readonly IPermissionRepository _permissionRepository;
-        private readonly IMapper _mapper;
 
         public RoleController(IRoleRepository roleRepository,
-            IMapper mapper,
             IPermissionRepository permissionRepository)
         {
             _roleRepository = roleRepository;
-            _mapper = mapper;
             _permissionRepository = permissionRepository;
         }
 

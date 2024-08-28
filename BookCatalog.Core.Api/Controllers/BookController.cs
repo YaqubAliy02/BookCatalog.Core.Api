@@ -16,13 +16,11 @@ using Microsoft.VisualBasic;
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    public class BookController : ControllerBase
+    public class BookController : ApiControllerBase
     {
         private readonly IBookRepository _bookRepository;
         private readonly IAuthorRepository _authorRepository;
         private readonly IValidator<Book> _validator;
-        private readonly IMapper _mapper;
         private readonly IAppCache _lazyCache;
         private readonly IDistributedCache _distributedCache;
 
@@ -30,14 +28,12 @@ namespace BookCatalog.Core.Api.Controllers
         public BookController(
             IBookRepository bookRepository,
             IValidator<Book> validator,
-            IMapper mapper,
             IAuthorRepository authorRepository,
             IAppCache lazyCache,
             IDistributedCache distributedCache)
         {
             _bookRepository = bookRepository;
             _validator = validator;
-            _mapper = mapper;
             _authorRepository = authorRepository;
             _lazyCache = lazyCache;
             _distributedCache = distributedCache;

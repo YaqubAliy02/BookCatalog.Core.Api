@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace BookCatalog.Core.Api.Filters
 {
-    public class CustormExceptionFilterAttribute : Attribute, IExceptionFilter
+    public class CustomExceptionFilterAttribute : Attribute, IExceptionFilter
     {
         public void OnException(ExceptionContext context)
         {

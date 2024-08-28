@@ -8,16 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    public class PermissionController : ControllerBase
+    public class PermissionController : ApiControllerBase
     {
         private readonly IPermissionRepository _permissionRepository;
-        private readonly IMapper _mapper;
-        public PermissionController(IPermissionRepository permissionRepository, 
-            IMapper mapper)
+        public PermissionController(IPermissionRepository permissionRepository)
         {
             _permissionRepository = permissionRepository;
-            _mapper = mapper;
         }
 
         [HttpGet("[action]")]

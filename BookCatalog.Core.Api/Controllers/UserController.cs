@@ -9,21 +9,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     [Authorize]
-    public class UserController : ControllerBase
+    public class UserController : ApiControllerBase
     {
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
 
         public UserController(IRoleRepository roleRepository,
-            IUserRepository userRepository,
-            IMapper mapper)
+            IUserRepository userRepository)
         {
             _roleRepository = roleRepository;
             _userRepository = userRepository;
-            _mapper = mapper;
         }
 
         [HttpGet("[action]")]

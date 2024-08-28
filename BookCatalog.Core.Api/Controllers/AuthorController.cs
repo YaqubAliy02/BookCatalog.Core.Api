@@ -10,19 +10,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.VisualBasic;
 
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [ValidationActionFilter]
-    public class AuthorController : ControllerBase
+    public class AuthorController : ApiControllerBase
     {
         private readonly IAuthorRepository _authorRepository;
         private readonly IBookRepository _bookRepository;
         private readonly IValidator<Author> _validator;
-        private readonly IMapper _mapper;
         private readonly IMemoryCache _memoryCache;
 
         private readonly string _Cache_Key = "Key";
@@ -30,13 +26,11 @@ namespace BookCatalog.Core.Api.Controllers
         public AuthorController(IAuthorRepository authorRepository,
             IBookRepository bookRepository,
             IValidator<Author> validator,
-            IMapper mapper,
             IMemoryCache memoryCache)
         {
             _authorRepository = authorRepository;
             _bookRepository = bookRepository;
             _validator = validator;
-            _mapper = mapper;
             _memoryCache = memoryCache;
         }
 

@@ -1,12 +1,9 @@
-﻿
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Application.Abstraction;
 using Application.DTOs.UserDTO;
 using Application.Extensions;
 using Application.Models;
 using Application.Repositories;
-using AutoMapper;
-using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,20 +11,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [ValidationActionFilter]
-    public class AccountController : ControllerBase
+    public class AccountController : ApiControllerBase
     {
         private readonly ITokenService _tokenService;
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
         public AccountController(ITokenService tokenService,
-            IUserRepository userRepository,
-            IMapper mapper)
+            IUserRepository userRepository)
         {
             _tokenService = tokenService;
             _userRepository = userRepository;
-            _mapper = mapper;
         }
 
         [HttpPost("[action]")]
