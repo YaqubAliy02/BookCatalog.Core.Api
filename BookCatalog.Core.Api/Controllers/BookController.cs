@@ -173,5 +173,11 @@ namespace BookCatalog.Core.Api.Controllers
 
             return BadRequest("Deleting operation has been failed!!!");
         }
+
+        [HttpGet("[action]")]
+        public IActionResult SearchBook(string searchText)
+        {
+            return Ok(_bookRepository.SearchBook(searchText));
+        }
     }
 }

@@ -74,6 +74,15 @@ namespace Infrastracture.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public IEnumerable<Book> SearchBook(string text)
+        {
+            return _bookCatalogDbContext.Books.ToList()
+                .Where(x => x.ISBN.Contains(text) ||
+                       x.Name.Contains(text) ||
+                       x.PublishedDate.ToString("MM.DD.YYYY").Contains(text) ||
+                       x.Categories.ToString().Contains(text));
+        }
+
         public async Task<Book> UpdateAsync(Book book)
         {
             _bookCatalogDbContext.Books.Update(book);
