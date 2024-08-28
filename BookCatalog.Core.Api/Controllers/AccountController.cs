@@ -1,10 +1,12 @@
 ﻿
+using System.Security.Claims;
 using Application.Abstraction;
 using Application.DTOs.UserDTO;
 using Application.Extensions;
 using Application.Models;
 using Application.Repositories;
 using AutoMapper;
+using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,7 @@ namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ValidationActionFilter]
     public class AccountController : ControllerBase
     {
         private readonly ITokenService _tokenService;
@@ -54,9 +57,9 @@ namespace BookCatalog.Core.Api.Controllers
         public async Task<IActionResult> Refresh([FromBody] Token token)
         {
             var principal = _tokenService.GetClaimsFromExpiredToken(token.AccessToken);
-            string email = principal.Identity.Name;
-            
-            if(email is null)
+            string email = principal.FindFirstValue(ClaimTypes.Email);
+
+            if (email is null)
             {
                 return NotFound("Refresh token is not found");
             }
@@ -67,14 +70,14 @@ namespace BookCatalog.Core.Api.Controllers
             {
                 return BadRequest("Refresh token or access token is invalid");
             }
-            if(savedRefreshToken.ExpiredDate < DateTime.UtcNow)
+            if (savedRefreshToken.ExpiredDate < DateTime.UtcNow)
             {
                 _tokenService.Delete(savedRefreshToken);
                 return StatusCode(405, "Refresh token already expired please login again");
             }
 
             Token newTokens = await _tokenService
-                .CreateTokenFromRefresh(principal,savedRefreshToken);
+                .CreateTokenFromRefresh(principal, savedRefreshToken);
 
             return Ok(newTokens);
         }
@@ -83,25 +86,24 @@ namespace BookCatalog.Core.Api.Controllers
         [Route("Register")]
         public async Task<IActionResult> Create([FromBody] UserCreateDTO newUser)
         {
-            if (ModelState.IsValid)
+
+            User user = _mapper.Map<User>(newUser);
+            user.Password = user.Password.GetHash();
+            user = await _userRepository.AddAsync(user);
+
+            if (newUser is not null)
             {
-                User user = _mapper.Map<User>(newUser);
-                user.Password = user.Password.GetHash();
-                user = await _userRepository.AddAsync(user);
-
-                if (newUser is not null)
+                RegisteredUserDTO userDTO = new()
                 {
-                    RegisteredUserDTO userDTO = new()
-                    {
-                        User = user,
-                        UserTokens = await _tokenService.CreateTokensAsync(user)
+                    User = user,
+                    UserTokens = await _tokenService.CreateTokensAsync(user)
 
-                    };
+                };
 
-                    return Ok(userDTO);
-                }
+                return Ok(userDTO);
             }
-            return BadRequest();
+
+            return BadRequest(ModelState);
         }
 
         [HttpGet("[action]")]
@@ -115,13 +117,11 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdateUser([FromBody] User user)
         {
-            if (ModelState.IsValid)
+            if (await _userRepository.UpdateAsync(user) is not null)
             {
-                if (await _userRepository.UpdateAsync(user) is not null)
-                {
-                    return Ok();
-                }
+                return Ok();
             }
+
             return BadRequest();
         }
     }

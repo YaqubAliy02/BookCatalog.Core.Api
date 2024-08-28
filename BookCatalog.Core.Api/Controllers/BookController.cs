@@ -117,9 +117,6 @@ namespace BookCatalog.Core.Api.Controllers
         [CustomAuthorizationFilter("CreateBook")]
         public async Task<IActionResult> CreateBookAsync([FromBody] BookCreateDto bookCreate)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             Book book = _mapper.Map<Book>(bookCreate);
             var validationRes = _validator.Validate(book);
 
@@ -147,9 +144,6 @@ namespace BookCatalog.Core.Api.Controllers
         [CustomAuthorizationFilter("UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] BookUpdateDTO bookUpdate)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             Book book = _mapper.Map<Book>(bookUpdate);
             var validationRes = _validator.Validate(book);
             if (validationRes.IsValid)

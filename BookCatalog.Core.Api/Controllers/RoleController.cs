@@ -15,7 +15,7 @@ namespace BookCatalog.Core.Api.Controllers
         private readonly IMapper _mapper;
 
         public RoleController(IRoleRepository roleRepository,
-            IMapper mapper, 
+            IMapper mapper,
             IPermissionRepository permissionRepository)
         {
             _roleRepository = roleRepository;
@@ -24,11 +24,11 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        public  async Task<IActionResult> GetRoleById([FromQuery] Guid id)
+        public async Task<IActionResult> GetRoleById([FromQuery] Guid id)
         {
             Role role = await _roleRepository.GetByIdAsync(id);
-            
-            if (role == null) 
+
+            if (role == null)
                 return NotFound($"Role Id: {id} is not found");
 
             return Ok(role);
@@ -44,16 +44,13 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> CreateRole([FromBody] RoleCreateDTO createRoleDTO)
         {
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             Role role = _mapper.Map<Role>(createRoleDTO);
-            List<Permission> permissions  = new();
-            for(int i = 0; i < role.Permissions.Count; i++)
+            List<Permission> permissions = new();
+            for (int i = 0; i < role.Permissions.Count; i++)
             {
                 Permission permission = role.Permissions.ToArray()[i];
                 permission = await _permissionRepository.GetByIdAsync(permission.PermissionId);
-                if(permission is null)
+                if (permission is null)
                 {
                     return NotFound($"Permission id: {permission.PermissionId} is not found");
                 }
@@ -61,7 +58,7 @@ namespace BookCatalog.Core.Api.Controllers
                 permissions.Add(permission);
             }
             role.Permissions = permissions;
-            role  = await _roleRepository.AddAsync(role);
+            role = await _roleRepository.AddAsync(role);
 
             if (role is null)
                 BadRequest(ModelState);
@@ -74,14 +71,11 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdateRole([FromBody] RoleUpdateDTO roleUpdateDTO)
         {
-            if(!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             Role role = _mapper.Map<Role>(roleUpdateDTO);
 
             role = await _roleRepository.UpdateAsync(role);
 
-            if(role is null)
+            if (role is null)
                 return BadRequest(ModelState);
 
             RoleGetDTO roleGetDTO = _mapper.Map<RoleGetDTO>(role);
@@ -93,7 +87,7 @@ namespace BookCatalog.Core.Api.Controllers
         public async Task<IActionResult> DeleteRole([FromQuery] Guid id)
         {
             bool isDelete = await _roleRepository.DeleteAsync(id);
-            return isDelete ? Ok("Role is deleted successfully") 
+            return isDelete ? Ok("Role is deleted successfully")
                 : BadRequest("Deleted operation failed");
         }
     }

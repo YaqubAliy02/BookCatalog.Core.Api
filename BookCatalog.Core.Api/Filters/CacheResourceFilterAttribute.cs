@@ -24,6 +24,7 @@ namespace BookCatalog.Core.Api.Filters
                 context.Result = cachedResult as IActionResult;
             }
         }
+      
 
         public void OnResourceExecuting(ResourceExecutingContext context)
         {

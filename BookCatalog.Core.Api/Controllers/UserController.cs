@@ -2,11 +2,9 @@
 using Application.Extensions;
 using Application.Repositories;
 using AutoMapper;
-using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace BookCatalog.Core.Api.Controllers
 {
@@ -48,9 +46,6 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> CreateUser([FromBody] UserCreateDTO userCreateDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             User user = _mapper.Map<User>(userCreateDTO);
             List<Role> permissions = new();
             if (user.Roles is not null)
@@ -81,9 +76,6 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO userUpdateDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             User user = _mapper.Map<User>(userUpdateDTO);
 
             user = await _userRepository.UpdateAsync(user);
@@ -106,27 +98,24 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPut("[action]")]
         public async Task<IActionResult> ChangeUserPassword(UserChangePasswordDTO userChangePasswordDTO)
         {
-            if (ModelState.IsValid)
+
+            var user = await _userRepository.GetByIdAsync(userChangePasswordDTO.UserId);
+
+            if (user is not null)
             {
-                var user = await _userRepository.GetByIdAsync(userChangePasswordDTO.UserId);
-
-                if (user is not null)
+                string newPassword = userChangePasswordDTO.CurrentPassword.GetHash();
+                if (newPassword == user.Password
+                    && userChangePasswordDTO.NewPassword == userChangePasswordDTO.ConfirmNewPassword)
                 {
-                    string newPassword = userChangePasswordDTO.CurrentPassword.GetHash();
-                    if ( newPassword == user.Password
-                        && userChangePasswordDTO.NewPassword == userChangePasswordDTO.ConfirmNewPassword)
-                    {
-                        user.Password = userChangePasswordDTO.NewPassword.GetHash();
-                        await _userRepository.UpdateAsync(user);
+                    user.Password = userChangePasswordDTO.NewPassword.GetHash();
+                    await _userRepository.UpdateAsync(user);
 
-                        return Ok("Password is changed successfully✅");
-                    }
-                    else return BadRequest("Incorrect password❌");
+                    return Ok("Password is changed successfully✅");
                 }
-                return BadRequest("User is not found");
+                else return BadRequest("Incorrect password❌");
             }
 
-            return BadRequest(ModelState);
+            return BadRequest("User is not found");
         }
 
     }

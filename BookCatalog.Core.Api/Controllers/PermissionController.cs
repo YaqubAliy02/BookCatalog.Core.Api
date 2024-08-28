@@ -43,9 +43,6 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> CreatePermission([FromBody] CreatePermissionDTO createPermissionDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             Permission permission =  _mapper.Map<Permission>(createPermissionDTO);
             permission = await _permissionRepository.AddAsync(permission);
 
@@ -57,8 +54,6 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPut("[action]")]
         public async Task<IActionResult> UpdatePermission([FromBody] Permission UpdatePermissionDTO)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
-
             Permission permission = _mapper.Map<Permission>(UpdatePermissionDTO);
             permission = await _permissionRepository.UpdateAsync(permission);
 

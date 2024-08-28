@@ -16,6 +16,7 @@ namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ValidationActionFilter]
     public class AuthorController : ControllerBase
     {
         private readonly IAuthorRepository _authorRepository;
@@ -43,7 +44,7 @@ namespace BookCatalog.Core.Api.Controllers
         [CustomAuthorizationFilter("GetAuthorById")]
         public async Task<IActionResult> GetAuthorById([FromQuery] Guid id)
         {
-            if(_memoryCache.TryGetValue(id.ToString(), out AuthorGetDTO cachedAuthor))
+            if (_memoryCache.TryGetValue(id.ToString(), out AuthorGetDTO cachedAuthor))
             {
                 return Ok(cachedAuthor);
             }
@@ -60,11 +61,11 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        // [ResponseCache(Duration = 20)] //response cache in controller
+     /*   // [ResponseCache(Duration = 20)] //response cache in controller
         //[OutputCache(Duration = 20)]// output cach in controller
         //[EnableRateLimiting("FixedWindow")] // When we use Rate Limit for specific
         // action in our Project we should add attribute for action
-        // which we want to use Rate Limiters
+        // which we want to use Rate Limiters*/
         [CacheResourceFilter("GetAuthors")]
         [CustomAuthorizationFilter("GetAllAuthors")]
         public async Task<IActionResult> GetAllAuthors()
@@ -87,11 +88,11 @@ namespace BookCatalog.Core.Api.Controllers
             IEnumerable<AuthorGetDTO> CachedAuthors = _memoryCache.GetOrCreate(_Cache_Key, option =>
             {
                 option.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
-                option.SetSlidingExpiration(TimeSpan.FromSeconds(1  ));
+                option.SetSlidingExpiration(TimeSpan.FromSeconds(1));
 
                 Task<IQueryable<Author>> authors = _authorRepository.GetAsync(x => true);
                 IEnumerable<AuthorGetDTO> resultAuthors = _mapper.Map<IEnumerable<AuthorGetDTO>>(authors.Result.AsEnumerable());
-                
+
                 return resultAuthors;
             });
 
@@ -103,74 +104,64 @@ namespace BookCatalog.Core.Api.Controllers
         [CustomAuthorizationFilter("CreateAuthor")]
         public async Task<IActionResult> CreateAuthor([FromBody] AuthorCreateDTO createDTO)
         {
-            if (ModelState.IsValid)
+            Author author = _mapper.Map<Author>(createDTO);
+            var validResult = _validator.Validate(author);
+
+            if (validResult.IsValid)
             {
-                Author author = _mapper.Map<Author>(createDTO);
-                var validResult = _validator.Validate(author);
+                /*  for (int i = 0; i < author.Books.Count; i++)
+                  {
+                      Book book = author.Books.ToArray()[i];
 
-                if (validResult.IsValid)
-                {
-                    /*  for (int i = 0; i < author.Books.Count; i++)
+                      book = await _bookRepository.GetByIdAsync(book.Id);
+
+                      if (book is null)
                       {
-                          Book book = author.Books.ToArray()[i];
+                          return NotFound($"Book id: {book.Id} is not found");
+                      }
+                  }*/
+                author = await _authorRepository.AddAsync(author);
 
-                          book = await _bookRepository.GetByIdAsync(book.Id);
+                if (author is null) return NotFound();
 
-                          if (book is null)
-                          {
-                              return NotFound($"Book id: {book.Id} is not found");
-                          }
-                      }*/
-                    author = await _authorRepository.AddAsync(author);
+                AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
+                _memoryCache.Remove(_Cache_Key);
 
-                    if (author is null) return NotFound();
-
-                    AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
-                    _memoryCache.Remove(_Cache_Key);
-
-                    return Ok(authorGetDTO);
-                }
-                return BadRequest(validResult);
+                return Ok(authorGetDTO);
             }
-
-            return BadRequest(ModelState);
+            return BadRequest(validResult);
         }
 
         [HttpPut("[action]")]
         [CustomAuthorizationFilter("UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] AuthorUpdateDTO authorUpdateDO)
         {
-            if (ModelState.IsValid)
+            Author author = _mapper.Map<Author>(authorUpdateDO);
+            var validationRes = _validator.Validate(author);
+
+            if (validationRes.IsValid)
             {
-                Author author = _mapper.Map<Author>(authorUpdateDO);
-                var validationRes = _validator.Validate(author);
+                /* for (int i = 0; i < author.Books.Count; i++)
+                 {
+                     Book book = author.Books.ToArray()[i];
+                     author = await _authorRepository.GetByIdAsync(author.Id);
 
-                if (validationRes.IsValid)
-                {
-                    /* for (int i = 0; i < author.Books.Count; i++)
+                     if (author is null)
                      {
-                         Book book = author.Books.ToArray()[i];
-                         author = await _authorRepository.GetByIdAsync(author.Id);
+                         return NotFound("Author Id: " + author.Id + "Not found ");
+                     }
+                 }*/
 
-                         if (author is null)
-                         {
-                             return NotFound("Author Id: " + author.Id + "Not found ");
-                         }
-                     }*/
+                if (author is null) return NotFound();
 
-                    if (author is null) return NotFound();
+                author = await _authorRepository.UpdateAsync(author);
+                AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
+                _memoryCache.Remove(author.Id);
+                _memoryCache.Remove(_Cache_Key);
 
-                    author = await _authorRepository.UpdateAsync(author);
-                    AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
-                    _memoryCache.Remove(author.Id);
-                    _memoryCache.Remove(_Cache_Key);
-
-                    return Ok(authorGetDTO);
-                }
-                return BadRequest(validationRes);
+                return Ok(authorGetDTO);
             }
-
-            return BadRequest(ModelState);
+            return BadRequest(validationRes);
         }
 
         [HttpDelete("[action]")]
