@@ -1,8 +1,11 @@
 ﻿using Application.DTOs.PermissionDTO;
 using Application.Repositories;
+using Application.UseCases.Permissions.Commands;
+using Application.UseCases.Permissions.Query;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Core.Api.Controllers
@@ -11,62 +14,41 @@ namespace BookCatalog.Core.Api.Controllers
     public class PermissionController : ApiControllerBase
     {
         private readonly IPermissionRepository _permissionRepository;
-        public PermissionController(IPermissionRepository permissionRepository)
+        private readonly IMediator _mediator;
+        public PermissionController(IPermissionRepository permissionRepository, IMediator mediator)
         {
             _permissionRepository = permissionRepository;
+            _mediator = mediator;
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetPermissionById([FromQuery] Guid id)
+        public async Task<IActionResult> GetPermissionById([FromQuery] GetPermissionByIdQuery query)
         {
-            Permission permission = await _permissionRepository.GetByIdAsync(id);
-            
-            if(permission is null)
-            {
-                return NotFound($"Permission Id:{id} is not found");
-            }
-            return Ok(permission);
+            return await _mediator.Send(query);
         }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllPermission()
         {
-           IQueryable<Permission> permissions = await _permissionRepository.GetAsync(x => true);
-
-            return Ok(permissions);
+            return await _mediator.Send(new GetAllPermissionQuery());
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> CreatePermission([FromBody] CreatePermissionDTO createPermissionDTO)
+        public async Task<IActionResult> CreatePermission([FromBody] CreatePermissionCommand createPermissionCommand)
         {
-            Permission permission =  _mapper.Map<Permission>(createPermissionDTO);
-            permission = await _permissionRepository.AddAsync(permission);
-
-            if (permission is null) return BadRequest(ModelState);
-
-            return Ok(createPermissionDTO);
+            return await _mediator.Send(createPermissionCommand);
         }
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdatePermission([FromBody] Permission UpdatePermissionDTO)
+        public async Task<IActionResult> UpdatePermission([FromBody] UpdatePermissionQuery updatePermissionQuery)
         {
-            Permission permission = _mapper.Map<Permission>(UpdatePermissionDTO);
-            permission = await _permissionRepository.UpdateAsync(permission);
-
-            if (permission is null) 
-                return NotFound();
-
-            return Ok(permission);
+            return await _mediator.Send(updatePermissionQuery);
         }
 
         [HttpDelete("[action]")]
-        public async Task<IActionResult> DeletePermission([FromQuery] Guid id)
+        public async Task<IActionResult> DeletePermission([FromQuery] DeletePermissionQuery deletePermissionQuery)
         {
-            bool isDelete = await _permissionRepository.DeleteAsync(id);
-
-            return isDelete ? Ok("Deleted successfully") : BadRequest("Delete operation failed");
+            return await _mediator.Send(deletePermissionQuery);
         }
-
-
     }
 }

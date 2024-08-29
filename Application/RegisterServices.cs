@@ -3,6 +3,7 @@ using Application.Abstraction;
 using Application.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
@@ -14,6 +15,7 @@ namespace Application
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddLazyCache();
             services.AddScoped<ITokenService, TokenService>();
             return services;
