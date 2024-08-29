@@ -1,10 +1,6 @@
-using Infrastracture;
 using Application;
-using Microsoft.Extensions.DependencyInjection;
 using BookCatalog.Core.Api.CustomMiddleWares;
-using Microsoft.AspNetCore.RateLimiting;
-using System.Threading.RateLimiting;
-using System.Timers;
+using Infrastracture;
 using Microsoft.OpenApi.Models;
 namespace BookCatalog.Core.Api
 {
@@ -132,16 +128,16 @@ namespace BookCatalog.Core.Api
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-           /* app.UseCors(options =>
-            {
-                options.WithOrigins("https://online.pdp.uz");
-            });*/
+            /* app.UseCors(options =>
+             {
+                 options.WithOrigins("https://online.pdp.uz");
+             });*/
             app.UseResponseCaching(); // add respone caching middleware
             app.UseOutputCache();// add output caching middleware
             app.UseETagMiddleware(); // CustomMiddleware for using ETag
             //app.UseRateLimiter();//Using Rate Limiters
             app.MapControllers();
-         
+
 
             app.Run();
         }

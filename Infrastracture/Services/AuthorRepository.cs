@@ -17,7 +17,7 @@ namespace Infrastracture.Services
 
         public async Task<Author> AddAsync(Author author)
         {
-           await _bookCatalogDbContext.Authors.AddAsync(author);
+            await _bookCatalogDbContext.Authors.AddAsync(author);
             int result = await _bookCatalogDbContext.SaveChangesAsync();
 
             if (result > 0) return author;

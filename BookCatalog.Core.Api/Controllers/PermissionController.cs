@@ -1,10 +1,6 @@
-﻿using Application.DTOs.PermissionDTO;
-using Application.Repositories;
+﻿using Application.Repositories;
 using Application.UseCases.Permissions.Commands;
 using Application.UseCases.Permissions.Query;
-using AutoMapper;
-using Domain.Entities;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

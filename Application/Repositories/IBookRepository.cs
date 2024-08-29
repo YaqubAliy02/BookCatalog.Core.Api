@@ -2,7 +2,7 @@
 
 namespace Application.Repositories
 {
-    public interface IBookRepository : IRepository<Book> 
+    public interface IBookRepository : IRepository<Book>
     {
         IEnumerable<Book> SearchBook(string text);
     }

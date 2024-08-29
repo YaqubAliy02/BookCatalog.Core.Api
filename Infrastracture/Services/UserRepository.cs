@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Application.Abstraction;
 using Application.Extensions;
 using Application.Repositories;
 using Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastracture.Services
@@ -22,7 +20,7 @@ namespace Infrastracture.Services
         {
             user.Password = user.Password.GetHash();
 
-             _bookCatalogDbContext.Users.Add(user);
+            _bookCatalogDbContext.Users.Add(user);
 
             int result = await _bookCatalogDbContext.SaveChangesAsync();
 
@@ -88,7 +86,7 @@ namespace Infrastracture.Services
 
                 if (result > 0) return user;
             }
-                        
+
             return null;
         }
     }

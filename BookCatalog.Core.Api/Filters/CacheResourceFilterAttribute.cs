@@ -11,7 +11,7 @@ namespace BookCatalog.Core.Api.Filters
         private readonly IMemoryCache _cache;
         private readonly string _cacheKey;
 
-        public CacheResourceFilterAttribute( string cacheKey)
+        public CacheResourceFilterAttribute(string cacheKey)
         {
             _cache = new MemoryCache(new MemoryCacheOptions());
             _cacheKey = cacheKey;
@@ -19,16 +19,16 @@ namespace BookCatalog.Core.Api.Filters
 
         public void OnResourceExecuted(ResourceExecutedContext context)
         {
-            if(_cache.TryGetValue(_cacheKey, out var cachedResult))
+            if (_cache.TryGetValue(_cacheKey, out var cachedResult))
             {
                 context.Result = cachedResult as IActionResult;
             }
         }
-      
+
 
         public void OnResourceExecuting(ResourceExecutingContext context)
         {
-            if(context.Result is IActionResult result)
+            if (context.Result is IActionResult result)
             {
                 var option = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromSeconds(30))

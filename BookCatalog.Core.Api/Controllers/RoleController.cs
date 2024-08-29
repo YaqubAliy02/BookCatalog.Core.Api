@@ -1,6 +1,5 @@
 ﻿using Application.DTOs.RoleDTO;
 using Application.Repositories;
-using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 

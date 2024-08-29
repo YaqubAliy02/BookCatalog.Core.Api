@@ -1,17 +1,12 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
 using Application.DTOs.BookDTO;
 using Application.Repositories;
-using AutoMapper;
 using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using FluentValidation;
 using LazyCache;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.VisualBasic;
 
 namespace BookCatalog.Core.Api.Controllers
 {
@@ -79,7 +74,7 @@ namespace BookCatalog.Core.Api.Controllers
 
             string CachedBooks = await _distributedCache.GetStringAsync(_Key); //Destributed Cache
 
-            if(string.IsNullOrEmpty(CachedBooks))
+            if (string.IsNullOrEmpty(CachedBooks))
             {
                 Task<IQueryable<Book>> Books = _bookRepository.GetAsync(x => true);
 

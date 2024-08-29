@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Application.DTOs.PermissionDTO;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;

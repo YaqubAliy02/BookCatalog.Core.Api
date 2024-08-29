@@ -11,7 +11,7 @@ namespace Application.DTOs.UserDTO
         public string Email { get; set; }
 
         [PasswordPropertyText]
-        public string Password { get; set; }    
+        public string Password { get; set; }
         public Guid[] RolesId { get; set; }
     }
 }

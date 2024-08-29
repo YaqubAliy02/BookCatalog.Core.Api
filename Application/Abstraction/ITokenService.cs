@@ -6,7 +6,7 @@ using Domain.Entities;
 
 namespace Application.Abstraction
 {
-    public interface ITokenService 
+    public interface ITokenService
     {
         public Task<Token> CreateTokensAsync(User user);
         public Task<Token> CreateTokenFromRefresh(ClaimsPrincipal principal, RefreshToken savedRefreshToken);

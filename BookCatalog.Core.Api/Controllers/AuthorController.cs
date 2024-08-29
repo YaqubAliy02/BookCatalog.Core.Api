@@ -1,14 +1,9 @@
 ﻿using Application.DTOs.AuthorDTO;
-using Application.DTOs.BookDTO;
 using Application.Repositories;
-using AutoMapper;
 using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace BookCatalog.Core.Api.Controllers
@@ -55,11 +50,11 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-     /*   // [ResponseCache(Duration = 20)] //response cache in controller
-        //[OutputCache(Duration = 20)]// output cach in controller
-        //[EnableRateLimiting("FixedWindow")] // When we use Rate Limit for specific
-        // action in our Project we should add attribute for action
-        // which we want to use Rate Limiters*/
+        /*   // [ResponseCache(Duration = 20)] //response cache in controller
+           //[OutputCache(Duration = 20)]// output cach in controller
+           //[EnableRateLimiting("FixedWindow")] // When we use Rate Limit for specific
+           // action in our Project we should add attribute for action
+           // which we want to use Rate Limiters*/
         [CacheResourceFilter("GetAuthors")]
         [CustomAuthorizationFilter("GetAllAuthors")]
         public async Task<IActionResult> GetAllAuthors()

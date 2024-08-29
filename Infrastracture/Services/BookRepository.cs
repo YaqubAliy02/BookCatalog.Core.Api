@@ -42,16 +42,16 @@ namespace Infrastracture.Services
 
             int result = await _bookCatalogDbContext.SaveChangesAsync();
 
-            if(result > 0 ) return entities;
+            if (result > 0) return entities;
 
             return null;
         }
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-           Book book = await _bookCatalogDbContext.Books.FindAsync(id);
+            Book book = await _bookCatalogDbContext.Books.FindAsync(id);
 
-            if(book is not null)
+            if (book is not null)
             {
                 _bookCatalogDbContext.Books.Remove(book);
             }
@@ -88,7 +88,7 @@ namespace Infrastracture.Services
             _bookCatalogDbContext.Books.Update(book);
             int result = await _bookCatalogDbContext.SaveChangesAsync();
 
-            if(result > 0) return book;
+            if (result > 0) return book;
 
             return null;
         }

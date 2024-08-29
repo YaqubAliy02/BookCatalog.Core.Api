@@ -1,7 +1,6 @@
 ﻿using Application.DTOs.UserDTO;
 using Application.Extensions;
 using Application.Repositories;
-using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

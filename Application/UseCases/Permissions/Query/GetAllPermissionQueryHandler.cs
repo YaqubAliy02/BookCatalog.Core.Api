@@ -19,7 +19,7 @@ namespace Application.UseCases.Permissions.Query
         {
             IQueryable<Permission> permissions = await _permissionRepository.GetAsync(x => true);
 
-            return new OkObjectResult(permissions); 
+            return new OkObjectResult(permissions);
         }
     }
 }

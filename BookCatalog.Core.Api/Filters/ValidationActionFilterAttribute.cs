@@ -7,7 +7,7 @@ namespace BookCatalog.Core.Api.Filters
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            if(!context.ModelState.IsValid)
+            if (!context.ModelState.IsValid)
             {
                 context.Result = new BadRequestObjectResult(context.ModelState);
             }
@@ -15,7 +15,7 @@ namespace BookCatalog.Core.Api.Filters
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            
+
         }
 
     }

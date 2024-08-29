@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using System.Text;
 using Application.Abstraction;
 using Application.Repositories;
 using Infrastracture.Persistence;
@@ -46,7 +45,7 @@ namespace Infrastracture
                     {
                         OnAuthenticationFailed = (context) =>
                         {
-                            if(context.Exception.GetType()  == typeof(SecurityTokenExpiredException))
+                            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                             {
                                 context.Response.Headers.Add("IsTokenExpired", "true");
                             }

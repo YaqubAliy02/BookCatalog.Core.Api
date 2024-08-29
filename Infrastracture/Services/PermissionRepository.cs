@@ -20,7 +20,7 @@ namespace Infrastracture.Services
             _bookCatalogDbContext.Permissions.Add(permission);
             int result = await _bookCatalogDbContext.SaveChangesAsync();
 
-            if(result > 0) return permission;
+            if (result > 0) return permission;
 
             return null;
         }
@@ -30,7 +30,7 @@ namespace Infrastracture.Services
             _bookCatalogDbContext.Permissions.AttachRange(permissions);
             int result = await _bookCatalogDbContext.SaveChangesAsync();
 
-            if(result > 0) return permissions;
+            if (result > 0) return permissions;
 
             return null;
         }
@@ -38,12 +38,12 @@ namespace Infrastracture.Services
         public async Task<bool> DeleteAsync(Guid id)
         {
             Permission permission = await _bookCatalogDbContext.Permissions.FindAsync(id);
-            if(permission is not null)
+            if (permission is not null)
             {
                 _bookCatalogDbContext.Permissions.Remove(permission);
                 int result = await _bookCatalogDbContext.SaveChangesAsync();
 
-                if(result > 0) return true;
+                if (result > 0) return true;
             }
             return false;
         }
@@ -62,7 +62,7 @@ namespace Infrastracture.Services
         {
             _bookCatalogDbContext.Permissions.Update(permission);
             int result = await _bookCatalogDbContext.SaveChangesAsync();
-            if(result > 0) return permission;
+            if (result > 0) return permission;
 
             return null;
         }

@@ -16,7 +16,7 @@ namespace BookCatalog.Core.Api.Filters
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            if(!context.HttpContext.User.Identity.IsAuthenticated)
+            if (!context.HttpContext.User.Identity.IsAuthenticated)
             {
                 context.Result = new UnauthorizedResult();
 
@@ -27,7 +27,7 @@ namespace BookCatalog.Core.Api.Filters
                 .FirstOrDefault(c => c.Type.Equals(_key, StringComparison.OrdinalIgnoreCase)
                     && c.Value.Equals(_value, StringComparison.OrdinalIgnoreCase));
 
-            if(permissionClaim is null)
+            if (permissionClaim is null)
             {
                 context.Result = new ForbidResult();
 
