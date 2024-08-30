@@ -1,0 +1,39 @@
+﻿@using Application.DTOs.BookDTO
+@model IEnumerable<BookGetDto>
+
+<h2>Welcome to Book Index View</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">ISBN</th>
+            <th scope="col">Published Date</th>
+            <th scope="col">Category</th> 
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            int index = 1;
+            foreach (var book in Model)
+            {
+                <tr>
+                    <th scope="row">@index</th>
+                    <td>@book.Name</td>
+                    <td>@book.ISBN</td>
+                    <td>@book.PublishedDate.ToShortDateString()</td>
+                    <td>@book.Categories</td>
+                </tr>
+                index++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">No books available.</td>
+            </tr>
+        }
+    </tbody>
+</table>

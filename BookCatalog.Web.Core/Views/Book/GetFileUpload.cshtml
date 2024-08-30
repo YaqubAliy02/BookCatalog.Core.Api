@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "File Upload";
+}
+@model FileUploadModel
+<form enctype="multipart/form-data" method="post">
+    <dl>
+        <dt>
+            <label asp-for="UploadFile">File Upload</label>
+        </dt>
+        <dd>
+            <input asp-for="UploadFile" type="file" />
+            <span asp-validation-for="UploadFile"></span>
+        </dd>
+    </dl>
+    <input asp-page-handler="Upload" class="btn btn-primary" type="submit" value="Upload" />
+</form>

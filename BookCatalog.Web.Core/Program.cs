@@ -1,3 +1,5 @@
+using Infrastracture;
+using Application;
 namespace BookCatalog.Web.Core
 {
     public class Program
@@ -8,7 +10,8 @@ namespace BookCatalog.Web.Core
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddInfrastructureServices(builder.Configuration);
+            builder.Services.AddApplicationServices();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

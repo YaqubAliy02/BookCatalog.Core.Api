@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastracture", "Infrastracture\Infrastracture.csproj", "{AC5B4CDE-A36E-4665-98F7-A82589CCF460}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookCatalog.Web.Core", "BookCatalog.Web.Core\BookCatalog.Web.Core.csproj", "{621842D4-5732-448E-B007-829F9EF37656}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookCatalog.Web.Core", "BookCatalog.Web.Core\BookCatalog.Web.Core.csproj", "{621842D4-5732-448E-B007-829F9EF37656}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
