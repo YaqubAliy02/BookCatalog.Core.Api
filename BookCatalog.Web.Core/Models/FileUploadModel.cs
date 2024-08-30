@@ -5,8 +5,8 @@ namespace BookCatalog.Web.Core.Models
 {
     public class FileUploadModel
     {
-        [Required]
-        [MaxFileSize(1)]
+        [MaxFileSize(10)]
+        [AllowedExtensions(".txt", ".jpg", "png")]
         public IFormFile UploadFile { get; set; }
     }
 }
