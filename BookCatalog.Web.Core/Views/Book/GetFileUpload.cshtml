@@ -2,7 +2,26 @@
     ViewData["Title"] = "File Upload";
 }
 @model FileUploadModel
-<form enctype="multipart/form-data" method="post">
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-sm-8 col-lg-5">
+            <h6 class="text-muted">List Group with Images</h6>
+            <ul class="list-grup">
+                @foreach(FileInfo item in (ViewBag.Files as DirectoryInfo).GetFiles())
+                {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @item.Name
+                   <div class="image-parent">
+                       <img src="~/images/@item.Name" class="img-fluid" alt="@item.Name" />
+                   </div>
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+<form enctype="multipart/form-data" asp-controller="Book" asp-action="PostFileUpload" method="post">
     <dl>
         <dt>
             <label asp-for="UploadFile">File Upload</label>
@@ -12,5 +31,5 @@
             <span asp-validation-for="UploadFile"></span>
         </dd>
     </dl>
-    <input asp-page-handler="Upload" class="btn btn-primary" type="submit" value="Upload" />
+    <input class="btn btn-primary" type="submit" value="Upload" />
 </form>
