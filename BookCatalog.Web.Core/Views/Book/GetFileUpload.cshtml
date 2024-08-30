@@ -11,7 +11,7 @@
                 @foreach(FileInfo item in (ViewBag.Files as DirectoryInfo).GetFiles())
                 {
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    @item.Name
+                     @* @item.Name *@
                    <div class="image-parent">
                        <img src="~/images/@item.Name" class="img-fluid" alt="@item.Name" />
                    </div>
@@ -28,7 +28,7 @@
         </dt>
         <dd>
             <input asp-for="UploadFile" type="file" />
-            <span asp-validation-for="UploadFile"></span>
+            <span asp-validation-for="UploadFile" class="text-danger"></span>
         </dd>
     </dl>
     <input class="btn btn-primary" type="submit" value="Upload" />

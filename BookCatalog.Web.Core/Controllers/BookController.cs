@@ -1,12 +1,15 @@
 ﻿using Application.DTOs.BookDTO;
 using Application.Repositories;
 using AutoMapper;
+using BookCatalog.Web.Core.Filters;
 using BookCatalog.Web.Core.Models;
 using Domain.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Web.Core.Controllers
 {
+    [MaxFileSize(1)]
     public class BookController : Controller
     {
         private readonly IBookRepository _bookRepository;
@@ -34,20 +37,28 @@ namespace BookCatalog.Web.Core.Controllers
             ViewBag.Files = new DirectoryInfo(Path.Combine(_webHostEnvironment.WebRootPath, "images"));
             return View();
         }
+
         public IActionResult PostFileUpload(FileUploadModel model)
         {
-            if (model.UploadFile is not null)
+            if (ModelState.IsValid)
             {
-                string path = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                string fileName = Guid.NewGuid().ToString() + "_" + model.UploadFile.FileName
-                    .Replace(@"\", "_")
-                    .Replace(@"/", "_");
+                if (model.UploadFile is not null)
+                {
+                    string path = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                    string fileName = Guid.NewGuid().ToString() + "_" + model.UploadFile.FileName
+                        .Replace(@"\", "_")
+                        .Replace(@"/", "_");
 
-                string filePath = Path.Combine(path, fileName);
-                model.UploadFile.CopyToAsync(new FileStream(filePath, FileMode.Create));
+                    string filePath = Path.Combine(path, fileName);
+                    model.UploadFile.CopyToAsync(new FileStream(filePath, FileMode.Create));
+                }
+
+                return RedirectToAction("GetFileUpload");
             }
+            ViewBag.Files = new DirectoryInfo(Path.Combine(_webHostEnvironment.WebRootPath, "images"));
 
-            return RedirectToAction("GetFileUpload");
+            return View("GetFileUpload");
         }
+
     }
 }
