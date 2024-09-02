@@ -115,7 +115,7 @@ namespace Application.Services
         }
 
         public ClaimsPrincipal GetClaimsFromExpiredToken(string token)
-        {
+            {
             byte[] key = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
 
             var tokenParams = new TokenValidationParameters()

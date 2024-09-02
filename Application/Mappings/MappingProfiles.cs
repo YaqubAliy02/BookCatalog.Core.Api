@@ -3,6 +3,7 @@ using Application.DTOs.BookDTO;
 using Application.DTOs.PermissionDTO;
 using Application.DTOs.RoleDTO;
 using Application.DTOs.UserDTO;
+using Application.UseCases.Books.Command;
 using AutoMapper;
 using Domain.Entities;
 
@@ -62,13 +63,6 @@ namespace Application.Mappings
 
         public void BookMappingRules()
         {
-            CreateMap<Book, BookGetDto>()
-                .ForMember(destination => destination.AuthorsId, option =>
-                    option.MapFrom(src => src.Authors.Select(x => x.Id)))
-
-                .ForMember(destination => destination.PublishedDate, option =>
-                    option.MapFrom(src => src.PublishedDate.ToDateTime(TimeOnly.MinValue)));
-
             CreateMap<BookCreateDto, Book>()
                 .ForMember(destination => destination.Authors, option =>
                     option.MapFrom(src => src.AuthorsId.Select(x => new Author { Id = x })))
@@ -77,10 +71,35 @@ namespace Application.Mappings
                     option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
 
             CreateMap<BookUpdateDTO, Book>()
-               .ForMember(destination => destination.PublishedDate, option =>
-               option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
-        }
+             .ForMember(destination => destination.PublishedDate, option =>
+             option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
 
+            CreateMap<Book, BookGetDto>()
+                .ForMember(destination => destination.AuthorsId, option =>
+                    option.MapFrom(src => src.Authors.Select(x => x.Id)))
+
+                .ForMember(destination => destination.PublishedDate, option =>
+                    option.MapFrom(src => src.PublishedDate.ToDateTime(TimeOnly.MinValue)));
+
+
+            CreateMap<CreateBookCommand, Book>()
+                .ForMember(destination => destination.Authors, option =>
+                    option.MapFrom(src => src.AuthorsId.Select(x => new Author { Id = x })))
+
+                .ForMember(destination => destination.PublishedDate, option =>
+                    option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
+
+            /*           CreateMap<Book, CreateBookCommandResult>()
+                          .ForMember(destination => destination.AuthorsId, option =>
+                              option.MapFrom(src => src.Authors.Select(x => x.Id)));*/
+
+            CreateMap<Book, CreateBookCommandResult>()
+                .ForMember(destination => destination.AuthorsId, option =>
+                    option.MapFrom(src => src.Authors.Select(x => x.Id)))
+
+                .ForMember(destination => destination.PublishedDate, option =>
+                    option.MapFrom(src => src.PublishedDate.ToDateTime(TimeOnly.MinValue)));
+        }
 
         public void AuthorMappingRules()
         {
