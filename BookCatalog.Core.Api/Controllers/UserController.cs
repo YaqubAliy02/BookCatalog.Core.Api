@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+/*    [Authorize]*/
     public class UserController : ApiControllerBase
     {
         private readonly IRoleRepository _roleRepository;

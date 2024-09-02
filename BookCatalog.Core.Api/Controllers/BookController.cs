@@ -1,10 +1,12 @@
 ﻿using System.Text.Json;
 using Application.DTOs.BookDTO;
 using Application.Repositories;
+using Application.UseCases.Books.Command;
 using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using FluentValidation;
 using LazyCache;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 
@@ -18,6 +20,7 @@ namespace BookCatalog.Core.Api.Controllers
         private readonly IValidator<Book> _validator;
         private readonly IAppCache _lazyCache;
         private readonly IDistributedCache _distributedCache;
+        private readonly IMediator _mediator;
 
         private readonly string _Key = "MyLazyCache";
         public BookController(
@@ -25,17 +28,19 @@ namespace BookCatalog.Core.Api.Controllers
             IValidator<Book> validator,
             IAuthorRepository authorRepository,
             IAppCache lazyCache,
-            IDistributedCache distributedCache)
+            IDistributedCache distributedCache,
+            IMediator mediator)
         {
             _bookRepository = bookRepository;
             _validator = validator;
             _authorRepository = authorRepository;
             _lazyCache = lazyCache;
             _distributedCache = distributedCache;
+            _mediator = mediator;
         }
 
         [HttpGet("[action]")]
-        [CustomAuthorizationFilter("GetAllBooks")]
+/*        [CustomAuthorizationFilter("GetAllBooks")]*/
         public async Task<IActionResult> GetAllBooks()
         {
             /* bool isActive = _lazyCache.TryGetValue(_Key, out IEnumerable<BookGetDto> cachedBooks);
@@ -74,27 +79,27 @@ namespace BookCatalog.Core.Api.Controllers
 
             string CachedBooks = await _distributedCache.GetStringAsync(_Key); //Destributed Cache
 
-            if (string.IsNullOrEmpty(CachedBooks))
-            {
+           // if (string.IsNullOrEmpty(CachedBooks))
+           // {
                 Task<IQueryable<Book>> Books = _bookRepository.GetAsync(x => true);
 
                 IEnumerable<BookGetDto> resultBooks = _mapper
                     .Map<IEnumerable<BookGetDto>>(Books.Result.AsEnumerable());
 
-                await _distributedCache.SetStringAsync(_Key, JsonSerializer.Serialize(resultBooks), new DistributedCacheEntryOptions
+               /* await _distributedCache.SetStringAsync(_Key, JsonSerializer.Serialize(resultBooks), new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-                });
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
+                });*/
                 return Ok(resultBooks);
-            }
+            //}
 
-            var result = JsonSerializer.Deserialize<IEnumerable<BookGetDto>>(CachedBooks);
+           // var result = JsonSerializer.Deserialize<IEnumerable<BookGetDto>>(CachedBooks);
 
-            return Ok(result);
+           // return Ok(result);
         }
 
-        [HttpGet("[action]/{id}")]
-        [CustomAuthorizationFilter("GetBookById")]
+        [HttpGet("[action]f/{id}")]
+  /*      [CustomAuthorizationFilter("GetBookById")]*/
         public async Task<IActionResult> GetBookByIdAsync(Guid id)
         {
             Book book = await _bookRepository.GetByIdAsync(id);
@@ -105,34 +110,45 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        [CustomAuthorizationFilter("CreateBook")]
-        public async Task<IActionResult> CreateBookAsync([FromBody] BookCreateDto bookCreate)
+   /*     [CustomAuthorizationFilter("CreateBook")]*/
+        public async Task<IActionResult> CreateBookAsync([FromBody] CreateBookCommand bookCreate)
         {
-            Book book = _mapper.Map<Book>(bookCreate);
-            var validationRes = _validator.Validate(book);
+            var result = await _mediator.Send(bookCreate);
 
-            if (!validationRes.IsValid)
-                return BadRequest(validationRes);
-
-            if (book is null) return NotFound("Book is not found!!!");
-
-            for (int i = 0; i < book.Authors.Count; i++)
-            {
-                Author author = book.Authors.ToArray()[i];
-                author = await _authorRepository.GetByIdAsync(author.Id);
-
-                if (author is null)
-                {
-                    return NotFound("Author Id: " + author.Id + "Not found ");
-                }
-            }
-            book = await _bookRepository.AddAsync(book);
-            return Ok(_mapper.Map<BookGetDto>(book));
-
+            return result.StatusCode == 200 ? Ok(result) : BadRequest(result);
         }
 
+        #region CreateBookWithoutMediatr
+        /*   [HttpPost("[action]")]
+           [CustomAuthorizationFilter("CreateBook")]
+           public async Task<IActionResult> CreateBookAsync([FromBody] BookCreateDto bookCreate)
+           {
+               Book book = _mapper.Map<Book>(bookCreate);
+               var validationRes = _validator.Validate(book);
+
+               if (!validationRes.IsValid)
+                   return BadRequest(validationRes);
+
+               if (book is null) return NotFound("Book is not found!!!");
+
+               for (int i = 0; i < book.Authors.Count; i++)
+               {
+                   Author author = book.Authors.ToArray()[i];
+                   author = await _authorRepository.GetByIdAsync(author.Id);
+
+                   if (author is null)
+                   {
+                       return NotFound("Author Id: " + author.Id + "Not found ");
+                   }
+               }
+               book = await _bookRepository.AddAsync(book);
+               return Ok(_mapper.Map<BookGetDto>(book));
+
+           }*/
+        #endregion
+
         [HttpPut("[action]")]
-        [CustomAuthorizationFilter("UpdateBook")]
+        //[CustomAuthorizationFilter("UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] BookUpdateDTO bookUpdate)
         {
             Book book = _mapper.Map<Book>(bookUpdate);
@@ -159,7 +175,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpDelete("[action]")]
-        [CustomAuthorizationFilter("DeleteBook")]
+        //[CustomAuthorizationFilter("DeleteBook")]
         public async Task<IActionResult> DeleteBook([FromQuery] Guid bookId)
         {
             bool maybeDelete = await _bookRepository.DeleteAsync(bookId);
