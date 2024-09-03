@@ -102,13 +102,9 @@ namespace BookCatalog.Core.Api.Controllers
 
         [HttpGet("[action]f/{id}")]
   /*      [CustomAuthorizationFilter("GetBookById")]*/
-        public async Task<IActionResult> GetBookByIdAsync(Guid id)
+        public async Task<IActionResult> GetBookByIdAsync(GetBookByIdQuery getBookByIdQuery)
         {
-            Book book = await _bookRepository.GetByIdAsync(id);
-
-            if (book is null) return NotFound($"Book id: {id} is not found!!!");
-
-            return Ok(_mapper.Map<BookGetDto>(book));
+            return await _mediator.Send(getBookByIdQuery);
         }
 
         [HttpPost("[action]")]
