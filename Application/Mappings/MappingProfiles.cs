@@ -4,6 +4,7 @@ using Application.DTOs.PermissionDTO;
 using Application.DTOs.RoleDTO;
 using Application.DTOs.UserDTO;
 using Application.UseCases.Books.Command;
+using Application.UseCases.Permissions.Commands;
 using AutoMapper;
 using Domain.Entities;
 
@@ -41,6 +42,8 @@ namespace Application.Mappings
         private void PermissionMappingRules()
         {
             CreateMap<CreatePermissionDTO, Permission>();
+            CreateMap<CreatePermissionCommand, Permission>();
+            CreateMap<UpdatePermissionQuery, Permission>();
         }
 
         private void UserMappingRules()

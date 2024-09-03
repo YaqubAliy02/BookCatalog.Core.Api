@@ -19,7 +19,6 @@ namespace Infrastracture.Services
         public async Task<User> AddAsync(User user)
         {
             user.Password = user.Password.GetHash();
-
             _bookCatalogDbContext.Users.Add(user);
 
              int result = await _bookCatalogDbContext.SaveChangesAsync();

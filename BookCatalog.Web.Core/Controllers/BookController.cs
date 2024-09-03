@@ -32,6 +32,15 @@ namespace BookCatalog.Web.Core.Controllers
             return View();
         }
 
+       /* [HttpPost("[action]")]
+        public async Task<IActionResult> UpdateBook([FromForm] UpdateBookCommand)
+*/
+        [HttpGet("[action]")]
+        public IActionResult SearchBook(string text)
+        {
+            return Ok(_bookRepository.SearchBook(text));
+        }
+
         public IActionResult GetFileUpload()
         {
             ViewBag.Files = new DirectoryInfo(Path.Combine(_webHostEnvironment.WebRootPath, "images"));

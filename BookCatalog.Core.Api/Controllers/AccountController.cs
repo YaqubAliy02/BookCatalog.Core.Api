@@ -15,11 +15,14 @@ namespace BookCatalog.Core.Api.Controllers
     {
         private readonly ITokenService _tokenService;
         private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
         public AccountController(ITokenService tokenService,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IRoleRepository roleRepository)
         {
             _tokenService = tokenService;
             _userRepository = userRepository;
+            _roleRepository = roleRepository;
         }
 
         [HttpPost("[action]")]
@@ -80,7 +83,25 @@ namespace BookCatalog.Core.Api.Controllers
         {
 
             User user = _mapper.Map<User>(newUser);
-            user.Password = user.Password.GetHash();
+            List<Role> permissions = new();
+
+            if (user.Roles is not null)
+            {
+                for (int i = 0; i < user.Roles.Count; i++)
+                {
+                    Role permission = user.Roles.ToArray()[i];
+
+                    permission = await _roleRepository.GetByIdAsync(permission.RoleId);
+
+                    if (permission is null)
+                    {
+                        return NotFound("Role is not found");
+                    }
+                    permissions.Add(permission);
+                }
+            }
+
+            user.Roles = permissions;
             user = await _userRepository.AddAsync(user);
 
             if (newUser is not null)
@@ -89,6 +110,7 @@ namespace BookCatalog.Core.Api.Controllers
                 {
                     User = user,
                     UserTokens = await _tokenService.CreateTokensAsync(user)
+
 
                 };
 
@@ -104,6 +126,7 @@ namespace BookCatalog.Core.Api.Controllers
             IQueryable<User> result = await _userRepository.GetAsync(x => true);
 
             return Ok(result);
+
         }
 
         [HttpPut("[action]")]

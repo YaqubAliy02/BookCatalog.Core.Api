@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Application.Abstraction;
+using Application.Mappings;
 using Application.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -14,7 +15,7 @@ namespace Application
         {
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(typeof(MappingProfiles));
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddLazyCache();
             services.AddScoped<ITokenService, TokenService>();
