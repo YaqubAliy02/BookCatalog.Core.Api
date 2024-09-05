@@ -166,16 +166,17 @@ namespace BookCatalog.Core.Api.Controllers
 
         [HttpDelete("[action]")]
        // [CustomAuthorizationFilter("DeleteAuthor")]
-        public async Task<IActionResult> DeleteAuthor([FromQuery] Guid id)
+        public async Task<IActionResult> DeleteAuthor([FromQuery] DeleteAuthorCommand deleteAuthorCommand)
         {
-            bool isDelete = await _authorRepository.DeleteAsync(id);
+            return await _mediator.Send(deleteAuthorCommand);
+           /* bool isDelete = await _authorRepository.DeleteAsync(id);
 
             _memoryCache.Remove(id);
             _memoryCache.Remove(_Cache_Key);
 
             if (isDelete) return Ok("Author is deleted successfully");
 
-            return BadRequest("Delete operation has been failed");
+            return BadRequest("Delete operation has been failed");*/
         }
     }
 }
