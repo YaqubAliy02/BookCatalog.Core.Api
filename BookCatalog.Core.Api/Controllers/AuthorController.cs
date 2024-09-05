@@ -96,7 +96,8 @@ namespace BookCatalog.Core.Api.Controllers
 
         [HttpPost("[action]")]
     //    [CustomAuthorizationFilter("CreateAuthor")]
-        public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorCommand createAuthorCommand)
+        public async Task<IActionResult> CreateAuthor([FromBody]
+        CreateAuthorCommand createAuthorCommand)
         {
             var result = await _mediator.Send(createAuthorCommand);
 
@@ -131,14 +132,16 @@ namespace BookCatalog.Core.Api.Controllers
 
         [HttpPut("[action]")]
        // [CustomAuthorizationFilter("UpdateBook")]
-        public async Task<IActionResult> UpdateBookAsync([FromBody] AuthorUpdateDTO authorUpdateDO)
+        public async Task<IActionResult> UpdateBookAsync([FromBody]
+        UpdateAuthorCommand updateAuthorCommand)
         {
-            Author author = _mapper.Map<Author>(authorUpdateDO);
+            return await _mediator.Send(updateAuthorCommand);
+          /*  Author author = _mapper.Map<Author>(authorUpdateDO);
             var validationRes = _validator.Validate(author);
 
             if (validationRes.IsValid)
             {
-                /* for (int i = 0; i < author.Books.Count; i++)
+                for (int i = 0; i < author.Books.Count; i++)
                  {
                      Book book = author.Books.ToArray()[i];
                      author = await _authorRepository.GetByIdAsync(author.Id);
@@ -147,7 +150,7 @@ namespace BookCatalog.Core.Api.Controllers
                      {
                          return NotFound("Author Id: " + author.Id + "Not found ");
                      }
-                 }*/
+                 }
 
                 if (author is null) return NotFound();
 
@@ -158,7 +161,7 @@ namespace BookCatalog.Core.Api.Controllers
 
                 return Ok(authorGetDTO);
             }
-            return BadRequest(validationRes);
+            return BadRequest(validationRes);*/
         }
 
         [HttpDelete("[action]")]

@@ -151,6 +151,10 @@ namespace Application.Mappings
             CreateMap<AuthorUpdateDTO, Author>()
                 .ForMember(destination => destination.BirthDate, option =>
                 option.MapFrom(src => DateOnly.FromDateTime(src.BirthDate)));
+            
+            CreateMap<UpdateAuthorCommand, Author>()
+                .ForMember(destination => destination.BirthDate, option =>
+                option.MapFrom(src => DateOnly.FromDateTime(src.BirthDate)));
         }
     }
 }
