@@ -1,8 +1,10 @@
 ﻿using Application.DTOs.AuthorDTO;
 using Application.Repositories;
+using Application.UseCases.Authors.Command;
 using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -15,18 +17,21 @@ namespace BookCatalog.Core.Api.Controllers
         private readonly IBookRepository _bookRepository;
         private readonly IValidator<Author> _validator;
         private readonly IMemoryCache _memoryCache;
+        private readonly IMediator _mediator;
 
         private readonly string _Cache_Key = "Key";
 
         public AuthorController(IAuthorRepository authorRepository,
             IBookRepository bookRepository,
             IValidator<Author> validator,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IMediator mediator)
         {
             _authorRepository = authorRepository;
             _bookRepository = bookRepository;
             _validator = validator;
             _memoryCache = memoryCache;
+            _mediator = mediator;
         }
 
         [HttpGet("[action]")]
@@ -91,9 +96,12 @@ namespace BookCatalog.Core.Api.Controllers
 
         [HttpPost("[action]")]
     //    [CustomAuthorizationFilter("CreateAuthor")]
-        public async Task<IActionResult> CreateAuthor([FromBody] AuthorCreateDTO createDTO)
+        public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorCommand createAuthorCommand)
         {
-            Author author = _mapper.Map<Author>(createDTO);
+            var result = await _mediator.Send(createAuthorCommand);
+
+            return result.StatusCode == 200 ? Ok(result) : NotFound(result);
+            /*Author author = _mapper.Map<Author>(createDTO);
             var validResult = _validator.Validate(author);
 
             if (validResult.IsValid)
@@ -108,7 +116,7 @@ namespace BookCatalog.Core.Api.Controllers
                       {
                           return NotFound($"Book id: {book.Id} is not found");
                       }
-                  }*/
+                  }
                 author = await _authorRepository.AddAsync(author);
 
                 if (author is null) return NotFound();
@@ -118,7 +126,7 @@ namespace BookCatalog.Core.Api.Controllers
 
                 return Ok(authorGetDTO);
             }
-            return BadRequest(validResult);
+            return BadRequest(validResult);*/
         }
 
         [HttpPut("[action]")]

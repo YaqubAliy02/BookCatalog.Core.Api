@@ -3,6 +3,7 @@ using Application.DTOs.BookDTO;
 using Application.DTOs.PermissionDTO;
 using Application.DTOs.RoleDTO;
 using Application.DTOs.UserDTO;
+using Application.UseCases.Authors.Command;
 using Application.UseCases.Books.Command;
 using Application.UseCases.Permissions.Commands;
 using Application.UseCases.Roles.Command;
@@ -138,6 +139,14 @@ namespace Application.Mappings
             CreateMap<AuthorCreateDTO, Author>()
                 .ForMember(destination => destination.BirthDate, option =>
                 option.MapFrom(src => DateOnly.FromDateTime(src.BirthDate)));
+            
+            CreateMap<CreateAuthorCommand, Author>()
+                .ForMember(destination => destination.BirthDate, option =>
+                option.MapFrom(src => DateOnly.FromDateTime(src.BirthDate)));
+            
+            CreateMap<Author, CreateAuthorCommandHandlerResult>()
+                .ForMember(destination => destination.BirthDate, option =>
+                option.MapFrom(src => src.BirthDate.ToDateTime(TimeOnly.MinValue)));
 
             CreateMap<AuthorUpdateDTO, Author>()
                 .ForMember(destination => destination.BirthDate, option =>

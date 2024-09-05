@@ -62,7 +62,6 @@ namespace Application.UseCases.Books.Command
 
                 return result;
             }
-            book = await _bookRepository.AddAsync(book);
             List<Author> authors = new();
 
             for (int i = 0; i < book.Authors.Count; i++)
@@ -81,6 +80,7 @@ namespace Application.UseCases.Books.Command
             }
 
             book.Authors = authors;
+            book = await _bookRepository.AddAsync(book);
             result.Result = _mapper.Map<CreateBookCommandResult>(book);
             result.StatusCode = 200;
 

@@ -50,9 +50,9 @@ namespace Application.UseCases.Books.Command
                          return NotFound("Author Id: " + author.Id + "Not found ");
                      }
                  }*/
-                book = await _bookRepository.UpdateAsync(book);
-
                 if (book is null) return new NotFoundObjectResult("Book is not found!!!");
+
+                book = await _bookRepository.UpdateAsync(book);
 
                 return new OkObjectResult(_mapper.Map<BookGetDto>(book));
             }
