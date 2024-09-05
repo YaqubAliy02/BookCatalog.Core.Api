@@ -100,10 +100,11 @@ namespace BookCatalog.Core.Api.Controllers
            // return Ok(result);*/
         }
 
-        [HttpGet("[action]f/{id}")]
+        [HttpGet("[action]/{id}")]
   /*      [CustomAuthorizationFilter("GetBookById")]*/
-        public async Task<IActionResult> GetBookByIdAsync(GetBookByIdQuery getBookByIdQuery)
+        public async Task<IActionResult> GetBookByIdAsync(Guid id)
         {
+            var getBookByIdQuery = new GetBookByIdQuery { Id = id };
             return await _mediator.Send(getBookByIdQuery);
         }
 

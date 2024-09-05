@@ -1,6 +1,9 @@
 ﻿using Application.DTOs.RoleDTO;
 using Application.Repositories;
+using Application.UseCases.Roles.Command;
+using Application.UseCases.Roles.Query;
 using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Core.Api.Controllers
@@ -10,80 +13,46 @@ namespace BookCatalog.Core.Api.Controllers
     {
         private readonly IRoleRepository _roleRepository;
         private readonly IPermissionRepository _permissionRepository;
+        private IMediator _mediator;
 
         public RoleController(IRoleRepository roleRepository,
-            IPermissionRepository permissionRepository)
+            IPermissionRepository permissionRepository,
+            IMediator mediator)
         {
             _roleRepository = roleRepository;
             _permissionRepository = permissionRepository;
+            _mediator = mediator;
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetRoleById([FromQuery] Guid id)
+        public async Task<IActionResult> GetRoleById([FromQuery] GetRoleByIdQuery getRoleByIdQuery)
         {
-            Role role = await _roleRepository.GetByIdAsync(id);
-
-            if (role == null)
-                return NotFound($"Role Id: {id} is not found");
-
-            return Ok(role);
+            return await _mediator.Send(getRoleByIdQuery);
         }
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllRoles()
         {
-            IQueryable<Role> roles = await _roleRepository.GetAsync(x => true);
-
-            return Ok(roles);
+           return await _mediator.Send(new GetAllRolesQuery());
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> CreateRole([FromBody] RoleCreateDTO createRoleDTO)
+        public async Task<IActionResult> CreateRole([FromBody] CreateRoleCommand createRoleCommand)
         {
-            Role role = _mapper.Map<Role>(createRoleDTO);
-            List<Permission> permissions = new();
-            for (int i = 0; i < role.Permissions.Count; i++)
-            {
-                Permission permission = role.Permissions.ToArray()[i];
-                permission = await _permissionRepository.GetByIdAsync(permission.PermissionId);
-                if (permission is null)
-                {
-                    return NotFound($"Permission id: {permission.PermissionId} is not found");
-                }
-
-                permissions.Add(permission);
-            }
-            role.Permissions = permissions;
-            role = await _roleRepository.AddAsync(role);
-
-            if (role is null)
-                BadRequest(ModelState);
-
-            RoleGetDTO roleGetDTO = _mapper.Map<RoleGetDTO>(role);
-
-            return Ok(roleGetDTO);
+            var result = await _mediator.Send(createRoleCommand);
+           
+            return result.StatusCode == 200 ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateRole([FromBody] RoleUpdateDTO roleUpdateDTO)
+        public async Task<IActionResult> UpdateRole([FromBody] UpdateRoleCommand updateRoleCommand )
         {
-            Role role = _mapper.Map<Role>(roleUpdateDTO);
-
-            role = await _roleRepository.UpdateAsync(role);
-
-            if (role is null)
-                return BadRequest(ModelState);
-
-            RoleGetDTO roleGetDTO = _mapper.Map<RoleGetDTO>(role);
-
-            return Ok(roleGetDTO);
+            return await _mediator.Send(updateRoleCommand);
         }
 
         [HttpDelete("[action]")]
-        public async Task<IActionResult> DeleteRole([FromQuery] Guid id)
+        public async Task<IActionResult> DeleteRole([FromQuery] DeleteRoleCommand deleteRoleCommand)
         {
-            bool isDelete = await _roleRepository.DeleteAsync(id);
-            return isDelete ? Ok("Role is deleted successfully")
-                : BadRequest("Deleted operation failed");
+            return await _mediator.Send(deleteRoleCommand);
         }
     }
 }

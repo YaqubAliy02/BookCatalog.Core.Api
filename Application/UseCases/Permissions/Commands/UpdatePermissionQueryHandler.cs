@@ -31,7 +31,7 @@ namespace Application.UseCases.Permissions.Commands
             permission = await _permissionRepository.UpdateAsync(permission);
 
             if (permission is null)
-                return new NotFoundObjectResult("Permission is not found to complete Delete operation!!!");
+                return new NotFoundObjectResult("Permission is not found to complete Update operation!!!");
 
             return new OkObjectResult(permission);
         }

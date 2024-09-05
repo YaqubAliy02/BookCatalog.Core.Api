@@ -5,6 +5,7 @@ using Application.DTOs.RoleDTO;
 using Application.DTOs.UserDTO;
 using Application.UseCases.Books.Command;
 using Application.UseCases.Permissions.Commands;
+using Application.UseCases.Roles.Command;
 using AutoMapper;
 using Domain.Entities;
 
@@ -27,16 +28,33 @@ namespace Application.Mappings
                 .ForMember(desination => desination.Permissions,
                     options => options.MapFrom(src => src.PermissionId
                         .Select(x => new Permission() { PermissionId = x })));
+            
+            CreateMap<CreateRoleCommand, Role>()
+                .ForMember(desination => desination.Permissions,
+                    options => options.MapFrom(src => src.PermissionId
+                        .Select(x => new Permission() { PermissionId = x })));
 
             CreateMap<Role, RoleGetDTO>()
                 .ForMember(destination => destination.PermissionsId,
                     options => options.MapFrom(src => src.Permissions
                         .Select(x => x.PermissionId)));
 
+            CreateMap<Role, CreateRoleCommandResult>()
+              .ForMember(destination => destination.PermissionId,
+                  options => options.MapFrom(src => src.Permissions
+                      .Select(x => x.PermissionId)));
+
             CreateMap<RoleUpdateDTO, Role>()
                 .ForMember(destination => destination.Permissions,
                     options => options.MapFrom(src => src.PermissionsId
                         .Select(x => new Permission() { PermissionId = x })));
+            
+            CreateMap<UpdateRoleCommand, Role>()
+                .ForMember(destination => destination.Permissions,
+                    options => options.MapFrom(src => src.PermissionsId
+                        .Select(x => new Permission() { PermissionId = x })));
+
+            
         }
 
         private void PermissionMappingRules()
@@ -74,6 +92,10 @@ namespace Application.Mappings
                     option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
 
             CreateMap<BookUpdateDTO, Book>()
+             .ForMember(destination => destination.PublishedDate, option =>
+             option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
+            
+            CreateMap<UpdateBookCommand, Book>()
              .ForMember(destination => destination.PublishedDate, option =>
              option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
 
