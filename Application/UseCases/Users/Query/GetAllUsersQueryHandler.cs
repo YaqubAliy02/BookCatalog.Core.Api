@@ -25,6 +25,7 @@ namespace Application.UseCases.Users.Query
 
             IEnumerable<UserGetDTO> resultBooks = _mapper
                .Map<IEnumerable<UserGetDTO>>(Users.Result.AsEnumerable());
+
             return new OkObjectResult(Users);
         }
     }

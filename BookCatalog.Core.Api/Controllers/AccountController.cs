@@ -5,6 +5,7 @@ using Application.Extensions;
 using Application.Models;
 using Application.Repositories;
 using Application.UseCases.Accounts.Command;
+using Application.UseCases.Accounts.Query;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -126,10 +127,10 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllUsers()
         {
-            IQueryable<User> result = await _userRepository.GetAsync(x => true);
+            return await _mediator.Send(new GetAllUserQuery());
+           /* IQueryable<User> result = await _userRepository.GetAsync(x => true);
 
-            return Ok(result);
-
+            return Ok(result);*/
         }
 
         [HttpPut("[action]")]
