@@ -92,11 +92,12 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpDelete("[action]")]
-        public async Task<IActionResult> DeleteUser([FromQuery] Guid id)
+        public async Task<IActionResult> DeleteUser([FromQuery] DeleteUserCommand deleteUserCommand)
         {
-            bool isDelete = await _userRepository.DeleteAsync(id);
+            return await _mediator.Send(deleteUserCommand);
+            /*bool isDelete = await _userRepository.DeleteAsync(id);
             return isDelete ? Ok("User deleted successfully!")
-                : BadRequest("Delete operation is failed");
+                : BadRequest("Delete operation is failed");*/
         }
 
         [HttpPut("[action]")]
