@@ -50,7 +50,7 @@ namespace Infrastracture.Services
 
         public async Task<IQueryable<User>> GetAsync(Expression<Func<User, bool>> expression)
         {
-            return _bookCatalogDbContext.Users.Where(expression).Include(x => x.Roles);
+            return _bookCatalogDbContext.Users.Where(expression).Include(x => x.Roles).ThenInclude(role => role.Permissions);
         }
 
         public Task<User> GetByIdAsync(Guid id)
@@ -58,6 +58,7 @@ namespace Infrastracture.Services
             return Task.FromResult(_bookCatalogDbContext.Users
                 .Where(x => x.Id.Equals(id))
                 .Include(x => x.Roles)
+                .ThenInclude(role => role.Permissions)
                 .SingleOrDefault());
         }
 

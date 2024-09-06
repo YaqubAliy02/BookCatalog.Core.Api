@@ -7,6 +7,7 @@ using Application.UseCases.Authors.Command;
 using Application.UseCases.Books.Command;
 using Application.UseCases.Permissions.Commands;
 using Application.UseCases.Roles.Command;
+using Application.UseCases.Users.Command;
 using AutoMapper;
 using Domain.Entities;
 
@@ -70,7 +71,18 @@ namespace Application.Mappings
             CreateMap<UserCreateDTO, User>()
                 .ForMember(destination => destination.Roles,
                     options => options.MapFrom(src => src.RolesId
+                        .Select(x => new Role() { RoleId = x }))); 
+            
+            CreateMap<CreateUserCommand, User>()
+                .ForMember(destination => destination.Roles,
+                    options => options.MapFrom(src => src.RolesId
                         .Select(x => new Role() { RoleId = x })));
+
+
+            CreateMap<User, CreateUserCommandHandlerResult>()
+                .ForMember(destination => destination.RolesId,
+                    options => options.MapFrom(src => src.Roles
+                        .Select(x => x.RoleId)));
 
             CreateMap<User, UserGetDTO>()
             .ForMember(destination => destination.RolesId,

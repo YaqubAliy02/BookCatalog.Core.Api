@@ -2,6 +2,7 @@
 using Application.Extensions;
 using Application.Repositories;
 using Application.UseCases.Authors.Command;
+using Application.UseCases.Users.Command;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -45,7 +46,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateAuthorCommand createAuthorCommand)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand createAuthorCommand)
         {
             var result =  await _mediator.Send(createAuthorCommand);
             return result.StatusCode == 200 ? Ok(result) : BadRequest(result);
