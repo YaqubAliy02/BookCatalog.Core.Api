@@ -1,7 +1,9 @@
 ﻿using Application.DTOs.UserDTO;
 using Application.Extensions;
 using Application.Repositories;
+using Application.UseCases.Authors.Command;
 using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,12 +15,16 @@ namespace BookCatalog.Core.Api.Controllers
     {
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IMediator _mediator;
 
-        public UserController(IRoleRepository roleRepository,
-            IUserRepository userRepository)
+        public UserController(
+            IRoleRepository roleRepository,
+            IUserRepository userRepository,
+            IMediator mediator)
         {
             _roleRepository = roleRepository;
             _userRepository = userRepository;
+            _mediator = mediator;
         }
 
         [HttpGet("[action]")]
@@ -39,9 +45,11 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> CreateUser([FromBody] UserCreateDTO userCreateDTO)
+        public async Task<IActionResult> CreateUser([FromBody] CreateAuthorCommand createAuthorCommand)
         {
-            User user = _mapper.Map<User>(userCreateDTO);
+            var result =  await _mediator.Send(createAuthorCommand);
+            return result.StatusCode == 200 ? Ok(result) : BadRequest(result);
+           /* User user = _mapper.Map<User>(userCreateDTO);
             List<Role> permissions = new();
             if (user.Roles is not null)
             {
@@ -65,7 +73,7 @@ namespace BookCatalog.Core.Api.Controllers
 
             UserGetDTO userGetDTO = _mapper.Map<UserGetDTO>(user);
 
-            return Ok(userGetDTO);
+            return Ok(userGetDTO);*/
         }
 
         [HttpPut("[action]")]
