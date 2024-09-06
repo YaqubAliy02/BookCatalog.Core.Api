@@ -115,8 +115,6 @@ namespace BookCatalog.Core.Api.Controllers
                 {
                     User = user,
                     UserTokens = await _tokenService.CreateTokensAsync(user)
-
-
                 };
 
                 return Ok(userDTO);
@@ -135,14 +133,9 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateUser([FromBody] User user)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUsersCommand updateUserCommand)
         {
-            if (await _userRepository.UpdateAsync(user) is not null)
-            {
-                return Ok();
-            }
-
-            return BadRequest();
+            return await _mediator.Send(updateUserCommand);
         }
     }
 }

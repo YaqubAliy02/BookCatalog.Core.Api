@@ -3,6 +3,7 @@ using Application.DTOs.BookDTO;
 using Application.DTOs.PermissionDTO;
 using Application.DTOs.RoleDTO;
 using Application.DTOs.UserDTO;
+using Application.UseCases.Accounts.Command;
 using Application.UseCases.Authors.Command;
 using Application.UseCases.Books.Command;
 using Application.UseCases.Permissions.Commands;
@@ -90,6 +91,11 @@ namespace Application.Mappings
                     .Select(x => x.RoleId)));
 
             CreateMap<UserUpdateDTO, User>()
+                .ForMember(destination => destination.Roles,
+                    options => options.MapFrom(src => src.RolesId
+                    .Select(x => new Role() { RoleId = x })));
+            
+            CreateMap<UpdateUsersCommand, User>()
                 .ForMember(destination => destination.Roles,
                     options => options.MapFrom(src => src.RolesId
                     .Select(x => new Role() { RoleId = x })));
