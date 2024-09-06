@@ -79,8 +79,18 @@ namespace Application.Mappings
                     options => options.MapFrom(src => src.RolesId
                         .Select(x => new Role() { RoleId = x })));
 
+            CreateMap<RegisterUserCommand, User>()
+                .ForMember(destination => destination.Roles,
+                    options => options.MapFrom(src => src.RolesId
+                        .Select(x => new Role() { RoleId = x })));
+
 
             CreateMap<User, CreateUserCommandHandlerResult>()
+                .ForMember(destination => destination.RolesId,
+                    options => options.MapFrom(src => src.Roles
+                        .Select(x => x.RoleId))); 
+            
+            CreateMap<User, RegisterUserCommandResult>()
                 .ForMember(destination => destination.RolesId,
                     options => options.MapFrom(src => src.Roles
                         .Select(x => x.RoleId)));

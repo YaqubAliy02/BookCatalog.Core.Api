@@ -85,10 +85,12 @@ namespace BookCatalog.Core.Api.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Create([FromBody] UserCreateDTO newUser)
+        public async Task<IActionResult> Create([FromBody] RegisterUserCommand newUser)
         {
+            var result = await _mediator.Send(newUser);
 
-            User user = _mapper.Map<User>(newUser);
+            return result.StatusCode == 200 ? Ok(newUser) : BadRequest(result);
+          /*  User user = _mapper.Map<User>(newUser);
             List<Role> permissions = new();
 
             if (user.Roles is not null)
@@ -121,7 +123,7 @@ namespace BookCatalog.Core.Api.Controllers
                 return Ok(userDTO);
             }
 
-            return BadRequest(ModelState);
+            return BadRequest(ModelState);*/
         }
 
         [HttpGet("[action]")]
