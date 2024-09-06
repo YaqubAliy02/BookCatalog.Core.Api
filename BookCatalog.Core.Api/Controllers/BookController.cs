@@ -17,16 +17,17 @@ namespace BookCatalog.Core.Api.Controllers
     public class BookController : ApiControllerBase
     {
         private readonly IMediator _mediator;
-
+        private readonly IBookRepository _bookRepository;
         public BookController(
             IMediator mediator
-        )
+, IBookRepository bookRepository)
         {
             _mediator = mediator;
+            _bookRepository = bookRepository;
         }
 
         [HttpGet("[action]")]
-/*        [CustomAuthorizationFilter("GetAllBooks")]*/
+        /*        [CustomAuthorizationFilter("GetAllBooks")]*/
         public async Task<IActionResult> GetAllBooks()
         {
             return await _mediator.Send(new GetAllBookQuery());
@@ -86,7 +87,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-  /*      [CustomAuthorizationFilter("GetBookById")]*/
+        /*      [CustomAuthorizationFilter("GetBookById")]*/
         public async Task<IActionResult> GetBookByIdAsync(Guid id)
         {
             var getBookByIdQuery = new GetBookByIdQuery { Id = id };
@@ -94,7 +95,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-   /*     [CustomAuthorizationFilter("CreateBook")]*/
+        /*     [CustomAuthorizationFilter("CreateBook")]*/
         public async Task<IActionResult> CreateBookAsync([FromBody] CreateBookCommand bookCreate)
         {
             var result = await _mediator.Send(bookCreate);
@@ -135,7 +136,7 @@ namespace BookCatalog.Core.Api.Controllers
         //[CustomAuthorizationFilter("UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] UpdateBookCommand updateBookCommand)
         {
-            return await _mediator.Send(updateBookCommand); 
+            return await _mediator.Send(updateBookCommand);
         }
 
         [HttpDelete("[action]")]
@@ -146,9 +147,9 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        public IActionResult SearchBook(string searchText)
+        public async Task<IActionResult> SearchBook([FromQuery] SearchBookCommand searchBookCommand)
         {
-            return Ok(_bookRepository.SearchBook(searchText));
+            return await _mediator.Send(searchBookCommand);     
         }
     }
 }

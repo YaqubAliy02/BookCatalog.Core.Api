@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.AuthorDTO;
 using Application.Repositories;
 using Application.UseCases.Authors.Command;
+using Application.UseCases.Authors.Query;
 using BookCatalog.Core.Api.Filters;
 using Domain.Entities;
 using FluentValidation;
@@ -13,32 +14,22 @@ namespace BookCatalog.Core.Api.Controllers
     [Route("api/[controller]")]
     public class AuthorController : ApiControllerBase
     {
-        private readonly IAuthorRepository _authorRepository;
-        private readonly IBookRepository _bookRepository;
-        private readonly IValidator<Author> _validator;
-        private readonly IMemoryCache _memoryCache;
         private readonly IMediator _mediator;
 
         private readonly string _Cache_Key = "Key";
 
-        public AuthorController(IAuthorRepository authorRepository,
-            IBookRepository bookRepository,
-            IValidator<Author> validator,
-            IMemoryCache memoryCache,
+        public AuthorController(
             IMediator mediator)
         {
-            _authorRepository = authorRepository;
-            _bookRepository = bookRepository;
-            _validator = validator;
-            _memoryCache = memoryCache;
             _mediator = mediator;
         }
 
         [HttpGet("[action]")]
         //[CustomAuthorizationFilter("GetAuthorById")]
-        public async Task<IActionResult> GetAuthorById([FromQuery] Guid id)
+        public async Task<IActionResult> GetAuthorById([FromQuery] GetAuthorByIdQuery getAuthorByIdQuery)
         {
-            if (_memoryCache.TryGetValue(id.ToString(), out AuthorGetDTO cachedAuthor))
+            return await _mediator.Send(getAuthorByIdQuery);
+           /* if (_memoryCache.TryGetValue(id.ToString(), out AuthorGetDTO cachedAuthor))
             {
                 return Ok(cachedAuthor);
             }
@@ -51,7 +42,7 @@ namespace BookCatalog.Core.Api.Controllers
 
             AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
 
-            return Ok(authorGetDTO);
+            return Ok(authorGetDTO);*/
         }
 
         [HttpGet("[action]")]
@@ -79,19 +70,20 @@ namespace BookCatalog.Core.Api.Controllers
 
                             return Ok(resultAuthors);
                         }*/
-            IEnumerable<AuthorGetDTO> CachedAuthors = _memoryCache.GetOrCreate(_Cache_Key, option =>
-            {
-                option.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
-                option.SetSlidingExpiration(TimeSpan.FromSeconds(1));
+            /* IEnumerable<AuthorGetDTO> CachedAuthors = _memoryCache.GetOrCreate(_Cache_Key, option =>
+             {
+                 option.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
+                 option.SetSlidingExpiration(TimeSpan.FromSeconds(1));
 
-                Task<IQueryable<Author>> authors = _authorRepository.GetAsync(x => true);
-                IEnumerable<AuthorGetDTO> resultAuthors = _mapper.Map<IEnumerable<AuthorGetDTO>>(authors.Result.AsEnumerable());
+                 Task<IQueryable<Author>> authors = _authorRepository.GetAsync(x => true);
+                 IEnumerable<AuthorGetDTO> resultAuthors = _mapper.Map<IEnumerable<AuthorGetDTO>>(authors.Result.AsEnumerable());
 
-                return resultAuthors;
-            });
+                 return resultAuthors;
+             });
 
-            Console.WriteLine("GetAllAuthors return json");
-            return Ok(CachedAuthors);
+             Console.WriteLine("GetAllAuthors return json");
+             return Ok(CachedAuthors);*/
+            return await _mediator.Send(new GetAllAuthorQuery());
         }
 
         [HttpPost("[action]")]

@@ -50,9 +50,9 @@ namespace Infrastracture.Services
             return false;
         }
 
-        public Task<IQueryable<Author>> GetAsync(Expression<Func<Author, bool>> expression)
+        public async Task<IQueryable<Author>> GetAsync(Expression<Func<Author, bool>> expression)
         {
-            return Task.FromResult(_bookCatalogDbContext.Authors.Where(expression));
+            return  _bookCatalogDbContext.Authors.Where(expression).Include(author => author.Books);
         }
 
         public async Task<Author> GetByIdAsync(Guid id)
