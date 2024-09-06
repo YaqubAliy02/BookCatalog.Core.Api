@@ -10,8 +10,8 @@ namespace BookCatalog.Core.Api.Controllers
     public class PermissionController : ApiControllerBase
     {
         private readonly IMediator _mediator;
-        public PermissionController(
-            IMediator mediator)
+
+        public PermissionController(IMediator mediator)
         {
             _mediator = mediator;
         }

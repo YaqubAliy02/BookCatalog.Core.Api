@@ -13,8 +13,7 @@ namespace BookCatalog.Core.Api.Controllers
     {
         private IMediator _mediator;
 
-        public RoleController(
-            IMediator mediator)
+        public RoleController(IMediator mediator)
         {
             _mediator = mediator;
         }

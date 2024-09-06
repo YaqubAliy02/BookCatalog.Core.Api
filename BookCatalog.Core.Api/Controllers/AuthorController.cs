@@ -18,8 +18,7 @@ namespace BookCatalog.Core.Api.Controllers
 
         private readonly string _Cache_Key = "Key";
 
-        public AuthorController(
-            IMediator mediator)
+        public AuthorController(IMediator mediator)
         {
             _mediator = mediator;
         }

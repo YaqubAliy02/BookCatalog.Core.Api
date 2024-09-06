@@ -17,13 +17,10 @@ namespace BookCatalog.Core.Api.Controllers
     public class BookController : ApiControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IBookRepository _bookRepository;
-        public BookController(
-            IMediator mediator
-, IBookRepository bookRepository)
+
+        public BookController(IMediator mediator)
         {
             _mediator = mediator;
-            _bookRepository = bookRepository;
         }
 
         [HttpGet("[action]")]
@@ -149,7 +146,7 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> SearchBook([FromQuery] SearchBookCommand searchBookCommand)
         {
-            return await _mediator.Send(searchBookCommand);     
+            return await _mediator.Send(searchBookCommand);
         }
     }
 }

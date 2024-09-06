@@ -12,8 +12,7 @@ namespace BookCatalog.Core.Api.Controllers
     {
         private readonly IMediator _mediator;
 
-        public UserController(
-            IMediator mediator)
+        public UserController(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -93,7 +92,6 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPut("[action]")]
         public async Task<IActionResult> ChangeUserPassword(ChangeUserPasswordCommand changePassword)
         {
-
             return await _mediator.Send(changePassword);
           /*  var user = await _userRepository.GetByIdAsync(userChangePasswordDTO.UserId);
 
