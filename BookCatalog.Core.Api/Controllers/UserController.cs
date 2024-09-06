@@ -30,12 +30,13 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetUserById([FromQuery] Guid id)
+        public async Task<IActionResult> GetUserById([FromQuery] GetUserByIdQuery getUserByIdQuery)
         {
-            User user = await _userRepository.GetByIdAsync(id);
+            return await _mediator.Send(getUserByIdQuery);
+            /*User user = await _userRepository.GetByIdAsync(id);
             if (user == null) return NotFound($"User Id: {id} not found");
 
-            return Ok(user);
+            return Ok(user);*/
         }
 
         [HttpGet("[action]")]
