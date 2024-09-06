@@ -4,7 +4,9 @@ using Application.DTOs.UserDTO;
 using Application.Extensions;
 using Application.Models;
 using Application.Repositories;
+using Application.UseCases.Accounts.Command;
 using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,19 +18,23 @@ namespace BookCatalog.Core.Api.Controllers
         private readonly ITokenService _tokenService;
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly IMediator _mediator;
         public AccountController(ITokenService tokenService,
             IUserRepository userRepository,
-            IRoleRepository roleRepository)
+            IRoleRepository roleRepository,
+            IMediator mediator)
         {
             _tokenService = tokenService;
             _userRepository = userRepository;
             _roleRepository = roleRepository;
+            _mediator = mediator;
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Login([FromForm] UserCredentials userCredentials)
+        public async Task<IActionResult> Login([FromForm] LoginUserCommand loginUserCommand)
         {
-            var user = (await _userRepository.GetAsync(x =>
+            return await _mediator.Send(loginUserCommand);
+           /* var user = (await _userRepository.GetAsync(x =>
                 x.Password == userCredentials.Password.GetHash() &&
                 x.Email == userCredentials.Email)).FirstOrDefault();
 
@@ -43,7 +49,7 @@ namespace BookCatalog.Core.Api.Controllers
 
                 return Ok(userDTO);
             }
-            return BadRequest("Email or Password is incorrect!!!");
+            return BadRequest("Email or Password is incorrect!!!");*/
         }
 
         [HttpPost]
@@ -70,7 +76,6 @@ namespace BookCatalog.Core.Api.Controllers
                 _tokenService.Delete(savedRefreshToken);
                 return StatusCode(405, "Refresh token already expired please login again");
             }
-
             Token newTokens = await _tokenService
                 .CreateTokenFromRefresh(principal, savedRefreshToken);
 
