@@ -93,6 +93,11 @@ namespace Application.Mappings
                 .ForMember(destination => destination.Roles,
                     options => options.MapFrom(src => src.RolesId
                     .Select(x => new Role() { RoleId = x })));
+
+            CreateMap<UpdateUserCommand, User>()
+                .ForMember(destination => destination.Roles,
+                    options => options.MapFrom(src => src.RolesId
+                    .Select(x => new Role() { RoleId = x })));
         }
 
         public void BookMappingRules()

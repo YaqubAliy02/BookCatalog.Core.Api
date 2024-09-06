@@ -1,7 +1,6 @@
 ﻿using Application.DTOs.UserDTO;
 using Application.Extensions;
 using Application.Repositories;
-using Application.UseCases.Authors.Command;
 using Application.UseCases.Users.Command;
 using Domain.Entities;
 using MediatR;
@@ -78,9 +77,10 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO userUpdateDTO)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserCommand updateUserCommand)
         {
-            User user = _mapper.Map<User>(userUpdateDTO);
+            return await _mediator.Send(updateUserCommand);
+           /* User user = _mapper.Map<User>(userUpdateDTO);
 
             user = await _userRepository.UpdateAsync(user);
 
@@ -88,7 +88,7 @@ namespace BookCatalog.Core.Api.Controllers
 
             UserGetDTO userGetDTO = _mapper.Map<UserGetDTO>(user);
 
-            return Ok(userGetDTO);
+            return Ok(userGetDTO);*/
         }
 
         [HttpDelete("[action]")]
