@@ -1,7 +1,9 @@
 ﻿using Application.DTOs.UserDTO;
 using Application.Extensions;
 using Application.Repositories;
+using Application.UseCases.Authors.Query;
 using Application.UseCases.Users.Command;
+using Application.UseCases.Users.Query;
 using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -39,9 +41,7 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetUsersAll()
         {
-            IQueryable<User> Users = await _userRepository.GetAsync(x => true);
-
-            return Ok(Users);
+            return await _mediator.Send(new GetAllUsersQuery());
         }
 
         [HttpPost("[action]")]
