@@ -1,7 +1,6 @@
 ﻿using Application.DTOs.UserDTO;
 using Application.Extensions;
 using Application.Repositories;
-using Application.UseCases.Authors.Query;
 using Application.UseCases.Users.Command;
 using Application.UseCases.Users.Query;
 using Domain.Entities;
@@ -102,10 +101,11 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> ChangeUserPassword(UserChangePasswordDTO userChangePasswordDTO)
+        public async Task<IActionResult> ChangeUserPassword(ChangeUserPasswordCommand changePassword)
         {
 
-            var user = await _userRepository.GetByIdAsync(userChangePasswordDTO.UserId);
+            return await _mediator.Send(changePassword);
+          /*  var user = await _userRepository.GetByIdAsync(userChangePasswordDTO.UserId);
 
             if (user is not null)
             {
@@ -121,7 +121,7 @@ namespace BookCatalog.Core.Api.Controllers
                 else return BadRequest("Incorrect password❌");
             }
 
-            return BadRequest("User is not found");
+            return BadRequest("User is not found");*/
         }
 
     }
