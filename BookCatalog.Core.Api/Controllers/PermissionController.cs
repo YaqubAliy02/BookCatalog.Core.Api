@@ -9,11 +9,10 @@ namespace BookCatalog.Core.Api.Controllers
     [Route("api/[controller]")]
     public class PermissionController : ApiControllerBase
     {
-        private readonly IPermissionRepository _permissionRepository;
         private readonly IMediator _mediator;
-        public PermissionController(IPermissionRepository permissionRepository, IMediator mediator)
+        public PermissionController(
+            IMediator mediator)
         {
-            _permissionRepository = permissionRepository;
             _mediator = mediator;
         }
 

@@ -1,9 +1,5 @@
-﻿using Application.DTOs.UserDTO;
-using Application.Extensions;
-using Application.Repositories;
-using Application.UseCases.Users.Command;
+﻿using Application.UseCases.Users.Command;
 using Application.UseCases.Users.Query;
-using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,17 +10,11 @@ namespace BookCatalog.Core.Api.Controllers
 /*    [Authorize]*/
     public class UserController : ApiControllerBase
     {
-        private readonly IRoleRepository _roleRepository;
-        private readonly IUserRepository _userRepository;
         private readonly IMediator _mediator;
 
         public UserController(
-            IRoleRepository roleRepository,
-            IUserRepository userRepository,
             IMediator mediator)
         {
-            _roleRepository = roleRepository;
-            _userRepository = userRepository;
             _mediator = mediator;
         }
 

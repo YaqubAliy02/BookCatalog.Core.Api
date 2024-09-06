@@ -11,16 +11,11 @@ namespace BookCatalog.Core.Api.Controllers
     [Route("api/[controller]")]
     public class RoleController : ApiControllerBase
     {
-        private readonly IRoleRepository _roleRepository;
-        private readonly IPermissionRepository _permissionRepository;
         private IMediator _mediator;
 
-        public RoleController(IRoleRepository roleRepository,
-            IPermissionRepository permissionRepository,
+        public RoleController(
             IMediator mediator)
         {
-            _roleRepository = roleRepository;
-            _permissionRepository = permissionRepository;
             _mediator = mediator;
         }
 

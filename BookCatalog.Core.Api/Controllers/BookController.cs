@@ -16,27 +16,12 @@ namespace BookCatalog.Core.Api.Controllers
     [Route("api/[controller]")]
     public class BookController : ApiControllerBase
     {
-        private readonly IBookRepository _bookRepository;
-        private readonly IAuthorRepository _authorRepository;
-        private readonly IValidator<Book> _validator;
-        private readonly IAppCache _lazyCache;
-        private readonly IDistributedCache _distributedCache;
         private readonly IMediator _mediator;
 
-        private readonly string _Key = "MyLazyCache";
         public BookController(
-            IBookRepository bookRepository,
-            IValidator<Book> validator,
-            IAuthorRepository authorRepository,
-            IAppCache lazyCache,
-            IDistributedCache distributedCache,
-            IMediator mediator)
+            IMediator mediator
+        )
         {
-            _bookRepository = bookRepository;
-            _validator = validator;
-            _authorRepository = authorRepository;
-            _lazyCache = lazyCache;
-            _distributedCache = distributedCache;
             _mediator = mediator;
         }
 
