@@ -3,6 +3,7 @@ using Application.DTOs.BookDTO;
 using Application.DTOs.PermissionDTO;
 using Application.DTOs.RoleDTO;
 using Application.DTOs.UserDTO;
+using Application.Models;
 using Application.UseCases.Accounts.Command;
 using Application.UseCases.Authors.Command;
 using Application.UseCases.Books.Command;
@@ -23,6 +24,7 @@ namespace Application.Mappings
             UserMappingRules();
             PermissionMappingRules();
             RoleMappingRules();
+            TokenMappingRules();
         }
 
         private void RoleMappingRules()
@@ -188,6 +190,11 @@ namespace Application.Mappings
             CreateMap<UpdateAuthorCommand, Author>()
                 .ForMember(destination => destination.BirthDate, option =>
                 option.MapFrom(src => DateOnly.FromDateTime(src.BirthDate)));
+        }
+
+        public void TokenMappingRules()
+        {
+            CreateMap<Token, RefreshTokenCommandResult>();
         }
     }
 }

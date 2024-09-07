@@ -10,6 +10,7 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookCatalog.Core.Api.Controllers
 {
@@ -56,9 +57,12 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("Refresh")]
-        public async Task<IActionResult> Refresh([FromBody] Token token)
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand token)
         {
-            var principal = _tokenService.GetClaimsFromExpiredToken(token.AccessToken);
+            var result = await _mediator.Send(token);
+
+            return result.StatusCode == 200 ? Ok(result) : BadRequest(result);
+           /* var principal = _tokenService.GetClaimsFromExpiredToken(token.AccessToken);
             string email = principal.FindFirstValue(ClaimTypes.Email);
 
             if (email is null)
@@ -66,7 +70,7 @@ namespace BookCatalog.Core.Api.Controllers
                 return NotFound("Refresh token is not found");
             }
             RefreshToken savedRefreshToken = _tokenService.Get(x =>
-                x.Email == email && x.RefreshTokenValue == token.RefereshToken).FirstOrDefault();
+                x.Email == email && x.RefreshTokenValue == token.RefereshToken).AsNoTracking().FirstOrDefault();
 
             if (savedRefreshToken is null)
             {
@@ -80,7 +84,7 @@ namespace BookCatalog.Core.Api.Controllers
             Token newTokens = await _tokenService
                 .CreateTokenFromRefresh(principal, savedRefreshToken);
 
-            return Ok(newTokens);
+            return Ok(newTokens);*/
         }
 
         [HttpPost]
