@@ -4,7 +4,6 @@ using AutoMapper;
 using BookCatalog.Web.Core.Filters;
 using BookCatalog.Web.Core.Models;
 using Domain.Entities;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Web.Core.Controllers
@@ -32,9 +31,9 @@ namespace BookCatalog.Web.Core.Controllers
             return View();
         }
 
-       /* [HttpPost("[action]")]
-        public async Task<IActionResult> UpdateBook([FromForm] UpdateBookCommand)
-*/
+        /* [HttpPost("[action]")]
+         public async Task<IActionResult> UpdateBook([FromForm] UpdateBookCommand)
+ */
         [HttpGet("[action]")]
         public IActionResult SearchBook(string text)
         {

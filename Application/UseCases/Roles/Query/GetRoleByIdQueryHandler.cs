@@ -19,7 +19,7 @@ namespace Application.UseCases.Roles.Query
             _roleRepository = roleRepository;
         }
 
-        public async Task<IActionResult> Handle( GetRoleByIdQuery request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Handle(GetRoleByIdQuery request, CancellationToken cancellationToken)
         {
             Role role = await _roleRepository.GetByIdAsync(request.Id);
 

@@ -1,5 +1,4 @@
-﻿using Application.Repositories;
-using Application.UseCases.Permissions.Commands;
+﻿using Application.UseCases.Permissions.Commands;
 using Application.UseCases.Permissions.Query;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

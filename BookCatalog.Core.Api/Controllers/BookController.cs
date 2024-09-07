@@ -1,15 +1,7 @@
-﻿using System.Text.Json;
-using Application.DTOs.BookDTO;
-using Application.Repositories;
-using Application.UseCases.Books.Command;
+﻿using Application.UseCases.Books.Command;
 using Application.UseCases.Books.Query;
-using BookCatalog.Core.Api.Filters;
-using Domain.Entities;
-using FluentValidation;
-using LazyCache;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace BookCatalog.Core.Api.Controllers
 {

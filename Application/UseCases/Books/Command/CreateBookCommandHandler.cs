@@ -1,12 +1,10 @@
-﻿using Application.DTOs.BookDTO;
-using Application.Models;
+﻿using Application.Models;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Application.UseCases.Books.Command
 {
@@ -76,7 +74,7 @@ namespace Application.UseCases.Books.Command
 
                     return result;
                 }
-               authors.Add(author);
+                authors.Add(author);
             }
 
             book.Authors = authors;

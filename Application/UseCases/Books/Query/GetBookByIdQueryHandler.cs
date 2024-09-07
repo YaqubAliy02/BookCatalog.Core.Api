@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Application.UseCases.Books.Query
 {
-    public class GetBookByIdQuery: IRequest<IActionResult> 
+    public class GetBookByIdQuery : IRequest<IActionResult>
     {
         public Guid Id { get; set; }
     }
@@ -16,7 +16,7 @@ namespace Application.UseCases.Books.Query
         private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
 
-        public GetBookByIdQueryHandler(IBookRepository bookRepository, 
+        public GetBookByIdQueryHandler(IBookRepository bookRepository,
             IMapper mapper)
         {
             _bookRepository = bookRepository;

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using BookCatalog.Web.Core.Filters;
+﻿using BookCatalog.Web.Core.Filters;
 
 namespace BookCatalog.Web.Core.Models
 {

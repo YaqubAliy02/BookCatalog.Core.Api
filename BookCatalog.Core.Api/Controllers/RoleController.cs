@@ -1,8 +1,5 @@
-﻿using Application.DTOs.RoleDTO;
-using Application.Repositories;
-using Application.UseCases.Roles.Command;
+﻿using Application.UseCases.Roles.Command;
 using Application.UseCases.Roles.Query;
-using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,19 +23,19 @@ namespace BookCatalog.Core.Api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllRoles()
         {
-           return await _mediator.Send(new GetAllRolesQuery());
+            return await _mediator.Send(new GetAllRolesQuery());
         }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleCommand createRoleCommand)
         {
             var result = await _mediator.Send(createRoleCommand);
-           
+
             return result.StatusCode == 200 ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateRole([FromBody] UpdateRoleCommand updateRoleCommand )
+        public async Task<IActionResult> UpdateRole([FromBody] UpdateRoleCommand updateRoleCommand)
         {
             return await _mediator.Send(updateRoleCommand);
         }

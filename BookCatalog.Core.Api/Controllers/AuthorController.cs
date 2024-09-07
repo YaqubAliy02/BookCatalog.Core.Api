@@ -1,13 +1,7 @@
-﻿using Application.DTOs.AuthorDTO;
-using Application.Repositories;
-using Application.UseCases.Authors.Command;
+﻿using Application.UseCases.Authors.Command;
 using Application.UseCases.Authors.Query;
-using BookCatalog.Core.Api.Filters;
-using Domain.Entities;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace BookCatalog.Core.Api.Controllers
 {
@@ -28,20 +22,20 @@ namespace BookCatalog.Core.Api.Controllers
         public async Task<IActionResult> GetAuthorById([FromQuery] GetAuthorByIdQuery getAuthorByIdQuery)
         {
             return await _mediator.Send(getAuthorByIdQuery);
-           /* if (_memoryCache.TryGetValue(id.ToString(), out AuthorGetDTO cachedAuthor))
-            {
-                return Ok(cachedAuthor);
-            }
-            Author author = await _authorRepository.GetByIdAsync(id);
+            /* if (_memoryCache.TryGetValue(id.ToString(), out AuthorGetDTO cachedAuthor))
+             {
+                 return Ok(cachedAuthor);
+             }
+             Author author = await _authorRepository.GetByIdAsync(id);
 
-            if (author is null)
-            {
-                return NotFound($"Author Id: {id} is not found");
-            }
+             if (author is null)
+             {
+                 return NotFound($"Author Id: {id} is not found");
+             }
 
-            AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
+             AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
 
-            return Ok(authorGetDTO);*/
+             return Ok(authorGetDTO);*/
         }
 
         [HttpGet("[action]")]
@@ -50,8 +44,8 @@ namespace BookCatalog.Core.Api.Controllers
            //[EnableRateLimiting("FixedWindow")] // When we use Rate Limit for specific
            // action in our Project we should add attribute for action
            // which we want to use Rate Limiters*/
-     //   [CacheResourceFilter("GetAuthors")]
-       // [CustomAuthorizationFilter("GetAllAuthors")]
+        //   [CacheResourceFilter("GetAuthors")]
+        // [CustomAuthorizationFilter("GetAllAuthors")]
         public async Task<IActionResult> GetAllAuthors()
         {
             /*            bool cacheHit = _memoryCache.TryGetValue(_Cache_Key, out IEnumerable<AuthorGetDTO> cachedAuthor);
@@ -86,7 +80,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-    //    [CustomAuthorizationFilter("CreateAuthor")]
+        //    [CustomAuthorizationFilter("CreateAuthor")]
         public async Task<IActionResult> CreateAuthor([FromBody]
         CreateAuthorCommand createAuthorCommand)
         {
@@ -122,52 +116,52 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPut("[action]")]
-       // [CustomAuthorizationFilter("UpdateBook")]
+        // [CustomAuthorizationFilter("UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody]
         UpdateAuthorCommand updateAuthorCommand)
         {
             return await _mediator.Send(updateAuthorCommand);
-          /*  Author author = _mapper.Map<Author>(authorUpdateDO);
-            var validationRes = _validator.Validate(author);
+            /*  Author author = _mapper.Map<Author>(authorUpdateDO);
+              var validationRes = _validator.Validate(author);
 
-            if (validationRes.IsValid)
-            {
-                for (int i = 0; i < author.Books.Count; i++)
-                 {
-                     Book book = author.Books.ToArray()[i];
-                     author = await _authorRepository.GetByIdAsync(author.Id);
+              if (validationRes.IsValid)
+              {
+                  for (int i = 0; i < author.Books.Count; i++)
+                   {
+                       Book book = author.Books.ToArray()[i];
+                       author = await _authorRepository.GetByIdAsync(author.Id);
 
-                     if (author is null)
-                     {
-                         return NotFound("Author Id: " + author.Id + "Not found ");
-                     }
-                 }
+                       if (author is null)
+                       {
+                           return NotFound("Author Id: " + author.Id + "Not found ");
+                       }
+                   }
 
-                if (author is null) return NotFound();
+                  if (author is null) return NotFound();
 
-                author = await _authorRepository.UpdateAsync(author);
-                AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
-                _memoryCache.Remove(author.Id);
-                _memoryCache.Remove(_Cache_Key);
+                  author = await _authorRepository.UpdateAsync(author);
+                  AuthorGetDTO authorGetDTO = _mapper.Map<AuthorGetDTO>(author);
+                  _memoryCache.Remove(author.Id);
+                  _memoryCache.Remove(_Cache_Key);
 
-                return Ok(authorGetDTO);
-            }
-            return BadRequest(validationRes);*/
+                  return Ok(authorGetDTO);
+              }
+              return BadRequest(validationRes);*/
         }
 
         [HttpDelete("[action]")]
-       // [CustomAuthorizationFilter("DeleteAuthor")]
+        // [CustomAuthorizationFilter("DeleteAuthor")]
         public async Task<IActionResult> DeleteAuthor([FromQuery] DeleteAuthorCommand deleteAuthorCommand)
         {
             return await _mediator.Send(deleteAuthorCommand);
-           /* bool isDelete = await _authorRepository.DeleteAsync(id);
+            /* bool isDelete = await _authorRepository.DeleteAsync(id);
 
-            _memoryCache.Remove(id);
-            _memoryCache.Remove(_Cache_Key);
+             _memoryCache.Remove(id);
+             _memoryCache.Remove(_Cache_Key);
 
-            if (isDelete) return Ok("Author is deleted successfully");
+             if (isDelete) return Ok("Author is deleted successfully");
 
-            return BadRequest("Delete operation has been failed");*/
+             return BadRequest("Delete operation has been failed");*/
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Application.DTOs.BookDTO;
-using Application.DTOs.UserDTO;
+﻿using Application.DTOs.UserDTO;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
@@ -21,7 +20,7 @@ namespace Application.UseCases.Users.Query
 
         public async Task<IActionResult> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
-            Task<IQueryable<User>> Users =  _userRepository.GetAsync(x => true);
+            Task<IQueryable<User>> Users = _userRepository.GetAsync(x => true);
 
             IEnumerable<UserGetDTO> resultBooks = _mapper
                .Map<IEnumerable<UserGetDTO>>(Users.Result.AsEnumerable());

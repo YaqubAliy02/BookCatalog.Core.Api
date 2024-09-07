@@ -25,7 +25,7 @@ namespace Application.UseCases.Authors.Query
 
         public async Task<IActionResult> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
         {
-           
+
             Author author = await _authorRepository.GetByIdAsync(request.Id);
 
             if (author is null)

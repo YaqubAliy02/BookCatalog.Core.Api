@@ -1,13 +1,11 @@
-﻿using System.Text.RegularExpressions;
-using Domain.Entities;
+﻿using Domain.Entities;
 using FluentValidation;
-using StackExchange.Redis;
 
 namespace Application.Validation
 {
     public class UserValidation : AbstractValidator<User>
-    { 
-     
+    {
+
         public UserValidation()
         {
             RuleFor(user => user.FullName).NotEmpty().WithMessage("Role name is required.");

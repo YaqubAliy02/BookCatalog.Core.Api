@@ -6,7 +6,7 @@ namespace BookCatalog.Web.Core.Filters
     {
         private readonly string[] _allowedExtensions;
 
-        public AllowedExtensionsAttribute( params string[] allowedExtensions)
+        public AllowedExtensionsAttribute(params string[] allowedExtensions)
         {
             _allowedExtensions = allowedExtensions;
         }
@@ -14,7 +14,7 @@ namespace BookCatalog.Web.Core.Filters
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             IFormFile file = value as IFormFile;
-            if(file is not null)
+            if (file is not null)
             {
                 if (!_allowedExtensions.Contains(Path.GetExtension(file.FileName)))
                 {

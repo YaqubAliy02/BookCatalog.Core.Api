@@ -1,5 +1,5 @@
-using Infrastracture;
 using Application;
+using Infrastracture;
 namespace BookCatalog.Web.Core
 {
     public class Program

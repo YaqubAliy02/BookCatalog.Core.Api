@@ -2,11 +2,9 @@
 using System.Text.Json.Serialization;
 using Application.Abstraction;
 using Application.Models;
-using Application.UseCases.Authors.Command;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace Application.UseCases.Accounts.Command
 {
@@ -23,7 +21,7 @@ namespace Application.UseCases.Accounts.Command
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
         public RefreshTokenCommandHandler(
-            ITokenService tokenService, 
+            ITokenService tokenService,
             IMapper mapper)
         {
             _tokenService = tokenService;
@@ -41,7 +39,7 @@ namespace Application.UseCases.Accounts.Command
             {
                 result.ErrorMessage = new string[] { "Refresh token is not found" };
                 result.StatusCode = 404;
-                
+
                 return result;
             }
             RefreshToken savedRefreshToken = _tokenService.Get(x =>

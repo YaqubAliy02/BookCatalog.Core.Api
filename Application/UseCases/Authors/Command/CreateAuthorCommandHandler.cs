@@ -1,14 +1,10 @@
-﻿using Application.DTOs.AuthorDTO;
-using Application.Models;
+﻿using Application.Models;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Application.UseCases.Authors.Command
 {
@@ -60,7 +56,7 @@ namespace Application.UseCases.Authors.Command
                 return result;
             }
 
-            if(author.Books is not null)
+            if (author.Books is not null)
             {
                 List<Book> books = new();
                 for (int i = 0; i < author.Books.Count; i++)

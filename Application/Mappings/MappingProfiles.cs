@@ -33,7 +33,7 @@ namespace Application.Mappings
                 .ForMember(desination => desination.Permissions,
                     options => options.MapFrom(src => src.PermissionId
                         .Select(x => new Permission() { PermissionId = x })));
-            
+
             CreateMap<CreateRoleCommand, Role>()
                 .ForMember(desination => desination.Permissions,
                     options => options.MapFrom(src => src.PermissionId
@@ -53,13 +53,13 @@ namespace Application.Mappings
                 .ForMember(destination => destination.Permissions,
                     options => options.MapFrom(src => src.PermissionsId
                         .Select(x => new Permission() { PermissionId = x })));
-            
+
             CreateMap<UpdateRoleCommand, Role>()
                 .ForMember(destination => destination.Permissions,
                     options => options.MapFrom(src => src.PermissionsId
                         .Select(x => new Permission() { PermissionId = x })));
 
-            
+
         }
 
         private void PermissionMappingRules()
@@ -74,8 +74,8 @@ namespace Application.Mappings
             CreateMap<UserCreateDTO, User>()
                 .ForMember(destination => destination.Roles,
                     options => options.MapFrom(src => src.RolesId
-                        .Select(x => new Role() { RoleId = x }))); 
-            
+                        .Select(x => new Role() { RoleId = x })));
+
             CreateMap<CreateUserCommand, User>()
                 .ForMember(destination => destination.Roles,
                     options => options.MapFrom(src => src.RolesId
@@ -90,8 +90,8 @@ namespace Application.Mappings
             CreateMap<User, CreateUserCommandHandlerResult>()
                 .ForMember(destination => destination.RolesId,
                     options => options.MapFrom(src => src.Roles
-                        .Select(x => x.RoleId))); 
-            
+                        .Select(x => x.RoleId)));
+
             CreateMap<User, RegisterUserCommandResult>()
                 .ForMember(destination => destination.RolesId,
                     options => options.MapFrom(src => src.Roles
@@ -106,7 +106,7 @@ namespace Application.Mappings
                 .ForMember(destination => destination.Roles,
                     options => options.MapFrom(src => src.RolesId
                     .Select(x => new Role() { RoleId = x })));
-            
+
             CreateMap<UpdateUsersCommand, User>()
                 .ForMember(destination => destination.Roles,
                     options => options.MapFrom(src => src.RolesId
@@ -130,7 +130,7 @@ namespace Application.Mappings
             CreateMap<BookUpdateDTO, Book>()
              .ForMember(destination => destination.PublishedDate, option =>
              option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
-            
+
             CreateMap<UpdateBookCommand, Book>()
              .ForMember(destination => destination.PublishedDate, option =>
              option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
@@ -174,11 +174,11 @@ namespace Application.Mappings
             CreateMap<AuthorCreateDTO, Author>()
                 .ForMember(destination => destination.BirthDate, option =>
                 option.MapFrom(src => DateOnly.FromDateTime(src.BirthDate)));
-            
+
             CreateMap<CreateAuthorCommand, Author>()
                 .ForMember(destination => destination.BirthDate, option =>
                 option.MapFrom(src => DateOnly.FromDateTime(src.BirthDate)));
-            
+
             CreateMap<Author, CreateAuthorCommandHandlerResult>()
                 .ForMember(destination => destination.BirthDate, option =>
                 option.MapFrom(src => src.BirthDate.ToDateTime(TimeOnly.MinValue)));
@@ -186,7 +186,7 @@ namespace Application.Mappings
             CreateMap<AuthorUpdateDTO, Author>()
                 .ForMember(destination => destination.BirthDate, option =>
                 option.MapFrom(src => DateOnly.FromDateTime(src.BirthDate)));
-            
+
             CreateMap<UpdateAuthorCommand, Author>()
                 .ForMember(destination => destination.BirthDate, option =>
                 option.MapFrom(src => DateOnly.FromDateTime(src.BirthDate)));

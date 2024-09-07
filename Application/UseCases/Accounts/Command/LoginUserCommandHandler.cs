@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Application.Abstraction;
+using Application.DTOs.UserDTO;
+using Application.Extensions;
+using Application.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Application.DTOs.UserDTO;
-using Application.Repositories;
-using Application.Abstraction;
-using Application.Extensions;
 
 namespace Application.UseCases.Accounts.Command
 {
@@ -23,7 +23,7 @@ namespace Application.UseCases.Accounts.Command
         private readonly ITokenService _tokenService;
 
         public LoginUserCommandHandler(
-            IUserRepository userRepository, 
+            IUserRepository userRepository,
             ITokenService tokenService)
         {
             _userRepository = userRepository;

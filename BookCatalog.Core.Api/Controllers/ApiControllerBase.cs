@@ -6,7 +6,7 @@ namespace BookCatalog.Core.Api.Controllers
 {
     [ApiController]
     [ValidationActionFilter]
-   /* [CustomExceptionFilter]*/
+    /* [CustomExceptionFilter]*/
     public class ApiControllerBase : ControllerBase
     {
         private readonly IMapper mapper;

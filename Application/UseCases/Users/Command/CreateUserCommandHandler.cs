@@ -1,14 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Application.DTOs.UserDTO;
-using Application.Repositories;
-using Domain.Entities;
-using AutoMapper;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using Application.Models;
+using Application.Repositories;
+using AutoMapper;
+using Domain.Entities;
 using FluentValidation;
-using Application.UseCases.Authors.Command;
+using MediatR;
 
 namespace Application.UseCases.Users.Command
 {

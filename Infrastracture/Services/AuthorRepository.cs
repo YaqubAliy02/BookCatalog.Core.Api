@@ -52,7 +52,7 @@ namespace Infrastracture.Services
 
         public async Task<IQueryable<Author>> GetAsync(Expression<Func<Author, bool>> expression)
         {
-            return  _bookCatalogDbContext.Authors.Where(expression).Include(author => author.Books);
+            return _bookCatalogDbContext.Authors.Where(expression).Include(author => author.Books);
         }
 
         public async Task<Author> GetByIdAsync(Guid id)

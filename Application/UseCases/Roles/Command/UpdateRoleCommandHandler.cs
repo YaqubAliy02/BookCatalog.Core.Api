@@ -35,7 +35,7 @@ namespace Application.UseCases.Roles.Command
 
             RoleGetDTO roleGetDTO = _mapper.Map<RoleGetDTO>(role);
 
-            return new  OkObjectResult(roleGetDTO);
+            return new OkObjectResult(roleGetDTO);
         }
     }
 }

@@ -1,12 +1,9 @@
-﻿
-using Application.DTOs.RoleDTO;
-using Application.Models;
+﻿using Application.Models;
 using Application.Repositories;
 using AutoMapper;
 using Domain.Entities;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Application.UseCases.Roles.Command
 {
@@ -77,10 +74,10 @@ namespace Application.UseCases.Roles.Command
             result.StatusCode = 200;
 
             return result;
-           
+
         }
     }
-    
+
     public class CreateRoleCommandResult
     {
         public string RoleName { get; set; }

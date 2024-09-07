@@ -19,13 +19,13 @@ namespace Application.UseCases.Books.Command
         public Guid[] AuthorsId { get; set; }
         public BookCategories Categories { get; set; }
     }
-    public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand, IActionResult> 
+    public class UpdateBookCommandHandler : IRequestHandler<UpdateBookCommand, IActionResult>
     {
         private readonly IMapper _mapper;
         private readonly IBookRepository _bookRepository;
         private readonly IValidator<Book> _validator;
 
-        public UpdateBookCommandHandler(IMapper mapper, 
+        public UpdateBookCommandHandler(IMapper mapper,
             IBookRepository bookRepository,
             IValidator<Book> bookValidator)
         {

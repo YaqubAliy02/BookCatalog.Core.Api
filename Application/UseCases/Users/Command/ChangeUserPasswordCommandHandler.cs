@@ -1,5 +1,4 @@
-﻿using Application.DTOs.UserDTO;
-using Application.Extensions;
+﻿using Application.Extensions;
 using Application.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

@@ -21,7 +21,7 @@ namespace Infrastracture.Services
             user.Password = user.Password.GetHash();
             _bookCatalogDbContext.Users.Add(user);
 
-             int result = await _bookCatalogDbContext.SaveChangesAsync();
+            int result = await _bookCatalogDbContext.SaveChangesAsync();
 
             if (result > 0) return user;
 

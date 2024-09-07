@@ -12,10 +12,10 @@ namespace BookCatalog.Web.Core.Filters
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            IFormFile file  = value as IFormFile;
-            if(file is not null)
+            IFormFile file = value as IFormFile;
+            if (file is not null)
             {
-                if(file.Length > _maxFileSize)
+                if (file.Length > _maxFileSize)
                 {
                     return new ValidationResult("File size must be lower than " + _maxFileSize + "kb");
                 }
