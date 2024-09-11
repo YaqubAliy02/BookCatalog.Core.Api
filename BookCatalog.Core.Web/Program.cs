@@ -14,7 +14,7 @@ namespace BookCatalog.Core.Web
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7282")});
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7282") });
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 

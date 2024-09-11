@@ -61,7 +61,7 @@ namespace Infrastracture.Services
 
         public async Task<Role> GetRoleByNameAsync(string roleName)
         {
-            return await _bookCatalogDbContext.Roles.FirstOrDefaultAsync(r =>  r.RoleName == roleName);
+            return await _bookCatalogDbContext.Roles.FirstOrDefaultAsync(r => r.RoleName == roleName);
         }
 
         public async Task<Role> UpdateAsync(Role updatedRole)

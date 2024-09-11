@@ -1,6 +1,4 @@
-﻿using Domain.Entities;
-
-namespace Application.Repositories
+﻿namespace Application.Repositories
 {
     public interface IBookPhotoRepository
     {

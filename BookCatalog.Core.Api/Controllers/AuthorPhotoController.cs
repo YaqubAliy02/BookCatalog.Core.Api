@@ -1,6 +1,5 @@
 ﻿using Application.Repositories;
 using Domain.Entities;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Core.Api.Controllers

@@ -20,7 +20,7 @@ namespace Application.UseCases.Accounts.Command
 
         [PasswordPropertyText]
         public string Password { get; set; }
-        public Guid[] RolesId { get; set; } 
+        public Guid[] RolesId { get; set; }
     }
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ResponseCore<RegisterUserCommandResult>>
     {

@@ -25,7 +25,7 @@ namespace Infrastracture
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<IBlobStorage,BlobStorage>();
+            services.AddScoped<IBlobStorage, BlobStorage>();
             services.AddScoped<IAuthorPhotoRepository, AuthorPhotoRepository>();
             services.AddScoped<IBookPhotoRepository, BookPhotoRepository>();
             services.AddScoped<IEBookRepository, EBookRepository>();

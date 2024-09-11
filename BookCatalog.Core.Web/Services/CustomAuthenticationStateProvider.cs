@@ -1,5 +1,5 @@
-﻿using Blazored.LocalStorage;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BookCatalog.Core.Web.Services
