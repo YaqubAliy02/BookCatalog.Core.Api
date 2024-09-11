@@ -1,0 +1,11 @@
+﻿@page "/"
+@using Application.UseCases.Accounts.Command
+
+<PageTitle>Home</PageTitle>
+
+@{
+    LoginUserCommand loginUserCommand = new LoginUserCommand();
+}
+
+<h1>You are authenticated</h1>
+<p>@loginUserCommand.Email</p>

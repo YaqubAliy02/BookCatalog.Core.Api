@@ -43,6 +43,9 @@ namespace Infrastracture.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AuthorPhoto")
+                        .HasColumnType("text");
+
                     b.Property<DateOnly>("BirthDate")
                         .HasColumnType("date");
 
@@ -63,6 +66,9 @@ namespace Infrastracture.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("BlobPath")
+                        .HasColumnType("text");
+
                     b.Property<byte>("Categories")
                         .HasColumnType("smallint");
 
@@ -78,6 +84,9 @@ namespace Infrastracture.Migrations
                     b.Property<DateOnly>("PublishedDate")
                         .HasColumnType("date");
 
+                    b.Property<string>("Thubnail")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("Books");
@@ -91,6 +100,7 @@ namespace Infrastracture.Migrations
                         .HasColumnName("permission_id");
 
                     b.Property<string>("PermissionName")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("permission_name")
                         .HasAnnotation("Relational:JsonPropertyName", "permission_name");

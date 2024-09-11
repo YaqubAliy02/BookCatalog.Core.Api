@@ -1,5 +1,6 @@
 ﻿using Application.UseCases.Books.Command;
 using Application.UseCases.Books.Query;
+using BookCatalog.Core.Api.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        /*        [CustomAuthorizationFilter("GetAllBooks")]*/
+        [CustomAuthorizationFilter("GetAllBooks")]
         public async Task<IActionResult> GetAllBooks()
         {
             return await _mediator.Send(new GetAllBookQuery());
@@ -76,7 +77,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        /*      [CustomAuthorizationFilter("GetBookById")]*/
+        [CustomAuthorizationFilter("GetBookById")]
         public async Task<IActionResult> GetBookByIdAsync(Guid id)
         {
             var getBookByIdQuery = new GetBookByIdQuery { Id = id };
@@ -84,7 +85,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        /*     [CustomAuthorizationFilter("CreateBook")]*/
+        [CustomAuthorizationFilter("CreateBook")]
         public async Task<IActionResult> CreateBookAsync([FromBody] CreateBookCommand bookCreate)
         {
             var result = await _mediator.Send(bookCreate);
@@ -122,14 +123,14 @@ namespace BookCatalog.Core.Api.Controllers
         #endregion
 
         [HttpPut("[action]")]
-        //[CustomAuthorizationFilter("UpdateBook")]
+        [CustomAuthorizationFilter("UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody] UpdateBookCommand updateBookCommand)
         {
             return await _mediator.Send(updateBookCommand);
         }
 
         [HttpDelete("[action]")]
-        //[CustomAuthorizationFilter("DeleteBook")]
+        [CustomAuthorizationFilter("DeleteBook")]
         public async Task<IActionResult> DeleteBook([FromQuery] DeleteBookCommand deleteBookCommand)
         {
             return await _mediator.Send(deleteBookCommand);

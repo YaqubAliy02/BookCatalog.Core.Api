@@ -8,6 +8,7 @@ namespace Domain.Entities
         public string FullName { get; set; }
         public DateOnly BirthDate { get; set; }
         public Gender Gender { get; set; } = Gender.Male;
+        public string AuthorPhoto { get; set; }
         public ICollection<Book> Books { get; set; }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using Application.UseCases.Roles.Command;
 using Application.UseCases.Roles.Query;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class RoleController : ApiControllerBase
     {
         private IMediator _mediator;

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Application.Abstraction;
 using Application.Repositories;
+using Infrastracture.External;
 using Infrastracture.Persistence;
 using Infrastracture.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,6 +25,10 @@ namespace Infrastracture
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IBlobStorage,BlobStorage>();
+            services.AddScoped<IAuthorPhotoRepository, AuthorPhotoRepository>();
+            services.AddScoped<IBookPhotoRepository, BookPhotoRepository>();
+            services.AddScoped<IEBookRepository, EBookRepository>();
 
             //*************** This is for checking user's token that is it valid and invalid and reading it.
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -82,9 +82,9 @@ namespace Application.Mappings
                         .Select(x => new Role() { RoleId = x })));
 
             CreateMap<RegisterUserCommand, User>()
-                .ForMember(destination => destination.Roles,
-                    options => options.MapFrom(src => src.RolesId
-                        .Select(x => new Role() { RoleId = x })));
+                   .ForMember(destination => destination.Roles,
+                       options => options.MapFrom(src => src.RolesId
+                           .Select(x => new Role() { RoleId = x })));
 
 
             CreateMap<User, CreateUserCommandHandlerResult>()
@@ -93,9 +93,9 @@ namespace Application.Mappings
                         .Select(x => x.RoleId)));
 
             CreateMap<User, RegisterUserCommandResult>()
-                .ForMember(destination => destination.RolesId,
-                    options => options.MapFrom(src => src.Roles
-                        .Select(x => x.RoleId)));
+              .ForMember(destination => destination.RolesId,
+                  options => options.MapFrom(src => src.Roles
+                      .Select(x => x.RoleId)));
 
             CreateMap<User, UserGetDTO>()
             .ForMember(destination => destination.RolesId,

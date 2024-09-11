@@ -1,9 +1,11 @@
 ﻿using Application.DTOs.BookDTO;
 using Application.Repositories;
+using Application.UseCases.Books.Command;
 using AutoMapper;
 using BookCatalog.Web.Core.Filters;
 using BookCatalog.Web.Core.Models;
 using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Web.Core.Controllers
@@ -14,13 +16,19 @@ namespace BookCatalog.Web.Core.Controllers
         private readonly IBookRepository _bookRepository;
         private IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly IMediator _mediator;
         public BookController(IBookRepository bookRepository,
             IMapper mapper,
-            IWebHostEnvironment webHostEnvironment)
+            IWebHostEnvironment webHostEnvironment,
+            IAuthorRepository authorRepository,
+            IMediator mediator)
         {
             _bookRepository = bookRepository;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
+            _authorRepository = authorRepository;
+            _mediator = mediator;
         }
 
         public async Task<IActionResult> Index()
@@ -34,6 +42,21 @@ namespace BookCatalog.Web.Core.Controllers
         /* [HttpPost("[action]")]
          public async Task<IActionResult> UpdateBook([FromForm] UpdateBookCommand)
  */
+        [HttpGet("[action]")]
+        public IActionResult CreateBook()
+        {
+            ViewBag.Authors = _authorRepository.GetAsync(x => true);
+
+            return View();
+        }
+
+      /*  public  IActionResult DeleteBook([FromForm] Guid bookId)
+        {
+            var res = _mediator.Send(new DeleteBookCommand() { Id = bookId }).Result;
+
+            var model = new IndexStartViewModel();
+            if(res.)
+        }*/
         [HttpGet("[action]")]
         public IActionResult SearchBook(string text)
         {

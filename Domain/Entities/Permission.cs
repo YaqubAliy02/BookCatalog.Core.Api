@@ -8,13 +8,11 @@ namespace Domain.Entities
     {
         [Column("permission_id")]
         public Guid PermissionId { get; set; }
-
         [Required]
         [Column("permission_name")]
         [JsonPropertyName("permission_name")]
         public string PermissionName { get; set; }
         [JsonIgnore]
         public virtual ICollection<Role> Roles { get; set; }
-
     }
 }

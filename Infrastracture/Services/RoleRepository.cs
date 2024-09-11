@@ -59,6 +59,11 @@ namespace Infrastracture.Services
             return _bookCatalogDbContext.Roles.Where(x => x.RoleId == id).Include(x => x.Permissions).SingleOrDefault();
         }
 
+        public async Task<Role> GetRoleByNameAsync(string roleName)
+        {
+            return await _bookCatalogDbContext.Roles.FirstOrDefaultAsync(r =>  r.RoleName == roleName);
+        }
+
         public async Task<Role> UpdateAsync(Role updatedRole)
         {
             var existingRole = await GetByIdAsync(updatedRole.RoleId);

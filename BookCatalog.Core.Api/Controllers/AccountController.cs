@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class AccountController : ApiControllerBase
     {
         private readonly ITokenService _tokenService;
@@ -27,7 +28,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Login([FromForm] LoginUserCommand loginUserCommand)
+        public async Task<IActionResult> Login([FromBody] LoginUserCommand loginUserCommand)
         {
             return await _mediator.Send(loginUserCommand);
             /* var user = (await _userRepository.GetAsync(x =>

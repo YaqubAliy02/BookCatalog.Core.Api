@@ -1,0 +1,65 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+@using Application.Models
+@using Application.UseCases.Accounts.Command
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager Navigation
+
+<h3>Login</h3>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<EditForm Model="loginUserCommand" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Email</label>
+        <InputText @bind-Value="loginUserCommand.Email" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Password</label>
+        <InputText @bind-Value="loginUserCommand.Password" type="password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@code {
+    private LoginUserCommand loginUserCommand = new LoginUserCommand();
+    private string errorMessage;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("https://localhost:7282/api/Account/Login", loginUserCommand);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<LoginResult>();
+                await localStorage.SetItemAsync("authToken", result.Token);
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Invalid login attempt!";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+
+    public class LoginResult
+    {
+        public Token Token { get; set; }
+        public DateTime Expiration { get; set; }
+    }
+}

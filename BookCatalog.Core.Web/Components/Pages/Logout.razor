@@ -1,0 +1,32 @@
+﻿@page "/logout"
+@using BookCatalog.Core.Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+<button @onclick="LogoutUser">Logout</button>
+
+@code {
+    private string errorMessage;
+
+    private async Task LogoutUser()
+    {
+        if (AuthenticationStateProvider is CustomAuthenticationStateProvider customAuthProvider)
+        {
+            await customAuthProvider.LogoutAsync();
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+        else
+        {
+            errorMessage = "The AuthenticationStateProvider is not of type CustomAuthenticationStateProvider.";
+
+            throw new InvalidOperationException("The AuthenticationStateProvider is not of type CustomAuthenticationStateProvider.");
+        }
+    }
+}
+

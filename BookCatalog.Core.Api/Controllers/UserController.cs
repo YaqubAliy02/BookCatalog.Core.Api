@@ -1,12 +1,13 @@
 ﻿using Application.UseCases.Users.Command;
 using Application.UseCases.Users.Query;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
-    /*    [Authorize]*/
+    [Authorize]
     public class UserController : ApiControllerBase
     {
         private readonly IMediator _mediator;

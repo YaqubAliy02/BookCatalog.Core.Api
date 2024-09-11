@@ -1,5 +1,6 @@
 ﻿using Application.UseCases.Authors.Command;
 using Application.UseCases.Authors.Query;
+using BookCatalog.Core.Api.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,7 +46,7 @@ namespace BookCatalog.Core.Api.Controllers
            // action in our Project we should add attribute for action
            // which we want to use Rate Limiters*/
         //   [CacheResourceFilter("GetAuthors")]
-        // [CustomAuthorizationFilter("GetAllAuthors")]
+        [CustomAuthorizationFilter("GetAllAuthors")]
         public async Task<IActionResult> GetAllAuthors()
         {
             /*            bool cacheHit = _memoryCache.TryGetValue(_Cache_Key, out IEnumerable<AuthorGetDTO> cachedAuthor);
@@ -80,7 +81,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        //    [CustomAuthorizationFilter("CreateAuthor")]
+        [CustomAuthorizationFilter("CreateAuthor")]
         public async Task<IActionResult> CreateAuthor([FromBody]
         CreateAuthorCommand createAuthorCommand)
         {
@@ -116,7 +117,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPut("[action]")]
-        // [CustomAuthorizationFilter("UpdateBook")]
+        [CustomAuthorizationFilter("UpdateBook")]
         public async Task<IActionResult> UpdateBookAsync([FromBody]
         UpdateAuthorCommand updateAuthorCommand)
         {
@@ -150,7 +151,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpDelete("[action]")]
-        // [CustomAuthorizationFilter("DeleteAuthor")]
+        [CustomAuthorizationFilter("DeleteAuthor")]
         public async Task<IActionResult> DeleteAuthor([FromQuery] DeleteAuthorCommand deleteAuthorCommand)
         {
             return await _mediator.Send(deleteAuthorCommand);

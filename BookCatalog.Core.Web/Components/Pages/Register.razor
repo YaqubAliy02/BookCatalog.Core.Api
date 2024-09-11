@@ -1,0 +1,65 @@
+﻿@page "/register"
+@using System.Net.Http.Json
+@using Application.Models
+@using Application.UseCases.Accounts.Command
+@inject HttpClient Http
+@inject NavigationManager Navigation
+<PageTitle>Register</PageTitle>
+
+<h3>Register</h3>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+<EditForm Model="@registerUserCommand" OnValidSubmit="@HandleRegister">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Full Name:</label>
+        <InputText @bind-Value="registerUserCommand.FullName" />
+    </div>
+
+    <div>
+        <label>Email:</label>
+        <InputText @bind-Value="registerUserCommand.Email" />
+    </div>
+
+    <div>
+        <label>Password:</label>
+        <InputText @bind-Value="registerUserCommand.Password" type="password" />
+    </div>
+
+    <button type="submit">Register</button>
+</EditForm>
+
+@code {
+    private RegisterUserCommand registerUserCommand = new RegisterUserCommand();
+    private string errorMessage;
+    private async Task HandleRegister()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/Account/Register", registerUserCommand);
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo("/login");
+            }
+
+            else
+            {
+                errorMessage = "Invalid register attempt!";
+            }
+        } catch(Exception exception)
+        {
+           errorMessage = $"An error occurred: {exception.Message}";
+        }
+    }
+    public class RegisterResult
+    {
+        public Token Token { get; set; }
+        public DateTime Expiration { get; set; }
+    }
+}
+

@@ -1,4 +1,7 @@
-﻿@* 
+﻿@using Application.UseCases.Books.Command;
+@using Domain.Entities;
+@using Domain.Enums;
+@model CreateBookCommand;
 
 <form asp-controller="Book" asp-action="CreateBook" method="post">
     <div class="model-header">
@@ -6,19 +9,19 @@
     </div>
     <div class="form-group col-md-6">
         <label asp-for="Name">Name</label>
-        <input type="text" asp-for="Name" class="form-control"/>
+        <input type="text" asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="form-group col-md-6">
         <label asp-for="ISBN">ISBN</label>
-        <input type="text" asp-for="ISBN" class="form-control"/>
+        <input type="text" asp-for="ISBN" class="form-control" />
         <span asp-validation-for="ISBN" class="text-danger"></span>
     </div>
     <div class="form-group col-md-6">
-        <label asp-for="Category">Category</label>
-        <input type="text" asp-for="Category" class="form-control" asp-items="Html.GetEnumSelectList" />
-        <span asp-validation-for="Category" class="text-danger"></span>
-    </div> 
+        <label asp-for="Categories">Category</label>
+        <input type="text" asp-for="Categories" class="form-control" asp-items="Html.GetEnumSelectList" />
+        <span asp-validation-for="Categories" class="text-danger"></span>
+    </div>
     <div class="form-group col-md-6">
         <label>PublishedDate</label>
         <input type="text" asp-for="PublishedDate" class="form-control" />
@@ -26,10 +29,20 @@
     </div>
     <div class="form-group">
         <label>Select Authors</label>
-         
-        @foreach(Author item in ViewBag.Authors as IEnumerable<Author)
+
+        @foreach (Author item in ViewBag.Authors as IEnumerable<Author>)
         {
-            
+            <div class="form-check form-check-inline">
+                <input type="checkbox" id="inlineCheckbox1" name="AuthorsId" value="@item.Id">
+                <label for="inlineCheckbox1">@item.FullName</label>
+            </div>
         }
+
     </div>
-</form> *@
+      <div class="form-group">
+          <label class="form-label" for="textAreaExample">Description</label>
+          <textarea class="form-control" asp-for="Description" id="textAreaExmple" rows="4"></textarea>
+          <span asp-validation-for="Description" class="text-danger"></span>
+      </div>
+      <button type="submit" class="btn btn-primary">Add</button>
+</form>

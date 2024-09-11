@@ -1,11 +1,13 @@
 ﻿using Application.UseCases.Permissions.Commands;
 using Application.UseCases.Permissions.Query;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class PermissionController : ApiControllerBase
     {
         private readonly IMediator _mediator;

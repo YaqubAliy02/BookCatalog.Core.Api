@@ -20,7 +20,7 @@ namespace Application.UseCases.Accounts.Command
 
         [PasswordPropertyText]
         public string Password { get; set; }
-        public Guid[] RolesId { get; set; }
+        public Guid[] RolesId { get; set; } 
     }
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ResponseCore<RegisterUserCommandResult>>
     {
@@ -47,6 +47,9 @@ namespace Application.UseCases.Accounts.Command
         public async Task<ResponseCore<RegisterUserCommandResult>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var result = new ResponseCore<RegisterUserCommandResult>();
+
+            var defaultRole = await _roleRepository.GetRoleByNameAsync("User");
+            request.RolesId = new Guid[] { defaultRole.RoleId };
             User user = _mapper.Map<User>(request);
             var validationResult = _validator.Validate(user);
 
