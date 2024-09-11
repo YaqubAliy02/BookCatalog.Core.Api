@@ -2,6 +2,5 @@
 {
     public partial interface IBlobStorage
     {
-        public partial interface IBlobBroker { }
     }
 }
