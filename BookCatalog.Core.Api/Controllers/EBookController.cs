@@ -37,6 +37,40 @@ namespace BookCatalog.Core.Api.Controllers
             return Ok(authorPhoto);
         }
 
+        [HttpGet("download/{fileName}")]
+        public async Task<IActionResult> DownloadEbook(string fileName)
+        {
+            try
+            {
+                var ebookStream = await _bookRepository.DownloadEbookAsync(fileName);
+
+                if (ebookStream == null)
+                {
+                    return NotFound();
+                }
+
+                // Define the content type based on file extension
+                var extension = Path.GetExtension(fileName).ToLower();
+                string contentType = extension switch
+                {
+                    ".pdf" => "application/pdf",
+                    ".epub" => "application/epub+zip",
+                    ".mobi" => "application/x-mobipocket-ebook",
+                    _ => "application/octet-stream"
+                };
+
+                return File(ebookStream, contentType, fileName);
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         private bool ValidateEBook(IFormFile file)
         {
             var allowedExtensions = new[] { ".pdf", ".epub", ".mobi" };

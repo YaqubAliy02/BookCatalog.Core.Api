@@ -14,5 +14,8 @@ namespace Infrastracture.Services
 
         public async Task<string> AddEBookPhotoAsync(Stream fileStream, string fileName, string contentType) =>
               await _blobStorage.UploadEBookAsync(fileStream, fileName, contentType);
+
+        public async Task<Stream> DownloadEbookAsync(string fileName) =>
+            await _blobStorage.DownloadEbookAsync(fileName);
     }
 }
