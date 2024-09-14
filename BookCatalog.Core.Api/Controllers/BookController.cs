@@ -1,7 +1,9 @@
 ﻿using Application.UseCases.Books.Command;
 using Application.UseCases.Books.Query;
 using BookCatalog.Core.Api.Filters;
+using Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookCatalog.Core.Api.Controllers
@@ -17,7 +19,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        [CustomAuthorizationFilter("GetAllBooks")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllBooks()
         {
             return await _mediator.Send(new GetAllBookQuery());
@@ -77,7 +79,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]/{id}")]
-        [CustomAuthorizationFilter("GetBookById")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetBookByIdAsync(Guid id)
         {
             var getBookByIdQuery = new GetBookByIdQuery { Id = id };
@@ -85,7 +87,8 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        [CustomAuthorizationFilter("CreateBook")]
+        /* [CustomAuthorizationFilter("CreateBook")]*/
+        [AllowAnonymous]
         public async Task<IActionResult> CreateBookAsync([FromBody] CreateBookCommand bookCreate)
         {
             var result = await _mediator.Send(bookCreate);
@@ -140,6 +143,16 @@ namespace BookCatalog.Core.Api.Controllers
         public async Task<IActionResult> SearchBook([FromQuery] SearchBookCommand searchBookCommand)
         {
             return await _mediator.Send(searchBookCommand);
+        }
+        [HttpGet("[action]")]
+        public IActionResult GetBookCategories()
+        {
+            var categories = Enum.GetValues(typeof(BookCategories))
+                                 .Cast<BookCategories>()
+                                 .Select(c => new { Id = (byte)c, Name = c.ToString() })
+                                 .ToList();
+
+            return Ok(categories);
         }
     }
 }

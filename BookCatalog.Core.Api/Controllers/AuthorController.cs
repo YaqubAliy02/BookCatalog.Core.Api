@@ -19,7 +19,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
-        //[CustomAuthorizationFilter("GetAuthorById")]
+        [CustomAuthorizationFilter("GetAuthorById")]
         public async Task<IActionResult> GetAuthorById([FromQuery] GetAuthorByIdQuery getAuthorByIdQuery)
         {
             return await _mediator.Send(getAuthorByIdQuery);
@@ -46,7 +46,7 @@ namespace BookCatalog.Core.Api.Controllers
            // action in our Project we should add attribute for action
            // which we want to use Rate Limiters*/
         //   [CacheResourceFilter("GetAuthors")]
-        [CustomAuthorizationFilter("GetAllAuthors")]
+       /* [CustomAuthorizationFilter("GetAllAuthors")]*/
         public async Task<IActionResult> GetAllAuthors()
         {
             /*            bool cacheHit = _memoryCache.TryGetValue(_Cache_Key, out IEnumerable<AuthorGetDTO> cachedAuthor);

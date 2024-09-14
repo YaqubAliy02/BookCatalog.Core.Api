@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure.Core;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -47,11 +48,11 @@ namespace Infrastracture.External
             var extension = Path.GetExtension(fileName).ToLower();
             string containerName;
 
-            if (supportedPhotoExtensions.Contains(extension) && supportedPhotoContentTypes.Contains(contentType))
+            if (supportedPhotoExtensions.Contains(extension) || supportedPhotoContentTypes.Contains(contentType))
             {
                 containerName = photoContainerName;
             }
-            else if (supportedEbookExtensions.Contains(extension) && supportedEbookContentTypes.Contains(contentType))
+            else if (supportedEbookExtensions.Contains(extension) || supportedEbookContentTypes.Contains(contentType))
             {
                 containerName = ebookContainerName;
             }
@@ -63,7 +64,7 @@ namespace Infrastracture.External
             var blobServiceClient = new BlobServiceClient(blobConnectionString);
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
             var blobClient = blobContainerClient.GetBlobClient(fileName);
-
+            
             await blobClient.UploadAsync(fileStream, new BlobHttpHeaders { ContentType = contentType });
 
             return blobClient.Uri.ToString();

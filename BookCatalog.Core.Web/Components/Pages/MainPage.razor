@@ -1,5 +1,52 @@
-﻿<h3>MainPage</h3>
+﻿@* @page "/mainpage"
+@using BookCatalog.Core.Web.Models
+@using Domain.Enums
+@inject HttpClient HttpClient
+
 
 @code {
-
+    public Book books = new Book();
+    protected override async Task OnInitializedAsync()
+    {
+        books = await HttpClient.GetFromJsonAsync<Book>("https://localhost/api/Book");
+    }
 }
+<div class="main-container">
+    <div class="navbar">
+        <div class="logo">
+            <img src="images/logo.png" alt="E-Book Store" />
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search..." />
+            <button >Search</button>
+        </div>
+        <div class="auth-links">
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </div>
+    </div>
+
+    <div class="books-list">
+        @if (books != null && books.Any())
+        {
+            @foreach(var book in books)
+            {
+                <div class="book-item">
+                    <img src="@book.Thubnail" alt="@book.Name" class="book-thumbnail" />
+                    <div class="book-details">
+                        <p><strong>Name:</strong> @book.Name</p>
+                        <p><strong>Author:</strong> @string.Join(", ", book.Authors.Select(a => a.FullName))</p>
+                        <p><strong>Published Date:</strong> @book.PublishedDate.ToShortDateString()</p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No books found</p>
+        }
+    </div>
+</div>
+
+
+ *@

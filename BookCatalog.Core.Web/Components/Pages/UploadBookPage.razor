@@ -1,0 +1,212 @@
+﻿@page "/upload"
+@using BookCatalog.Core.Web.Models
+@using Domain.Enums
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+
+@code {
+    private Book books = new Book();
+    public CreateBookDto newBook = new CreateBookDto();
+    public bool IsUploading { get; set; } = false;
+    private List<Author> authors = new List<Author>();
+    private string selectedAuthorId;
+    private List<BookCategory> categories = new List<BookCategory>();
+    private byte selectedCategory;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categories = await Http.GetFromJsonAsync<List<BookCategory>>("https://localhost:7282/api/Book/GetBookCategories");
+            authors = await Http.GetFromJsonAsync<List<Author>>("https://localhost:7282/api/Author/GetAllAuthors");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching: {ex.Message}");
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        books.PublishedDate = DateOnly.FromDateTime(DateTime.Today);
+    }
+
+    private async Task UploadFiles()
+    {
+        if (books.BlobPath is null || books.Thubnail is null)
+        {
+            throw new ArgumentNullException("Data cannot be null!!!");
+        }
+
+        IsUploading = true;
+
+        try
+        {
+            var EbookUrl = await UploadFile(books.BlobPath, "https://localhost:7282/api/EBook/UploadEBook");
+            var ThumbnailUrl = await UploadFile(books.Thubnail, "https://localhost:7282/api/BookPhoto/UploadPhoto");
+
+            newBook.BlobPath = EbookUrl;
+            newBook.Thubnail = ThumbnailUrl;
+
+            var bookDetails = new CreateBookDto
+            {
+                Id = Guid.NewGuid(),
+                Name = books.Name,
+                Description = books.Description,
+                ISBN = books.ISBN,
+                BlobPath = newBook.BlobPath,
+                Thubnail = newBook.Thubnail,
+                PublishedDate = books.PublishedDate,
+                Authors = new List<Author> { authors.FirstOrDefault(a => a.Id == Guid.Parse(selectedAuthorId)) },
+                Categories = selectedCategory
+            };
+
+            await UploadBook(bookDetails);
+
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"Error uploading files: {exception.Message} 75");
+        }
+        finally
+        {
+            IsUploading = false;
+        }
+    }
+
+    private async Task<string> UploadFile(IBrowserFile file, string apiUrl)
+    {
+        var content = new MultipartFormDataContent();
+        var fileStream = file.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024);
+        content.Add(new StreamContent(fileStream), "file", file.Name);
+
+        var response = await Http.PostAsync(apiUrl, content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("File upload failed");
+        }
+
+        var result = await response.Content.ReadFromJsonAsync<FileUploadResult>();
+        return result?.BlobUri ?? throw new Exception("Upload returned invalid result");
+    }
+
+    private async Task UploadBook(CreateBookDto newBook)
+    {
+        var response = await Http.PostAsJsonAsync("https://localhost:7282/api/Book/CreateBook", newBook);
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorMessage = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Book upload failed: {errorMessage}");
+        }
+    }
+
+    private void CancelUpload()
+    {
+        books.Name = string.Empty;
+        books.Description = string.Empty;
+        books.ISBN = string.Empty;
+        books.BlobPath = null;
+        books.Thubnail = null;
+        books.PublishedDate = default;
+        books.Authors = null;
+        books.Categories = default;
+    }
+}
+
+@code {
+    private void ReturnToMain()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">Upload Book</h1>
+                    <EditForm Model="books" OnValidSubmit="UploadFiles">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <InputText class="form-control" id="title" @bind-Value="books.Name" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <InputTextArea class="form-control" id="description" @bind-Value="books.Description" rows="3" required />
+                        </div>
+                        <div class="form-group">
+                            <label>ISBN</label>
+                            <InputText class="form-control" id="isbn" @bind-Value="books.ISBN" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="ebook">Ebook File</label>
+                            <InputFile OnChange="@((e) => books.BlobPath = e.File)" accept="Ebook" />
+                        </div>
+                        <div class="form-group">
+                            <label for="thumbnail">Thumbnail Image</label>
+                            <InputFile OnChange="@((e) => books.Thubnail = e.File)" accept="image/*" />
+                        </div>
+                        <div class="form-group">
+                            <label for="publishedDate">Published Date</label>
+                            <InputDate class="form-control" id="books.PublishedDate" @bind-Value="books.PublishedDate" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Authors">Authors</label>
+                            <InputSelect id="Authors" class="form-control" @bind-Value="selectedAuthorId">
+                                @if (authors is not null && authors.Any())
+                                {
+                                    @foreach (Author author in authors)
+                                    {
+                                        <option value="@author.Id">@author.FullName</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Select Categories</label>
+                            <InputSelect @bind-Value="selectedCategory">
+                                @if (categories is not null && categories.Any())
+                                {
+                                    @foreach (var category in categories)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary mr-2" disabled="@IsUploading">Upload</button>
+                            <button type="button" class="btn btn-secondary mr-2" @onclick="CancelUpload">Cancel</button>
+                            <button class="btn btn-primary" @onclick="ReturnToMain">Return to Main Page</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-group label {
+        font-weight: bold;
+    }
+
+    .custom-file-label::after {
+        content: 'Browse';
+    }
+</style>
+
+@code {
+    public class FileUploadResult
+    {
+        public string BlobUri { get; set; }
+    }
+}
+
+

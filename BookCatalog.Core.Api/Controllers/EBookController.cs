@@ -15,7 +15,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> UploadPhoto(IFormFile file)
+        public async Task<IActionResult> UploadEBook(IFormFile file)
         {
             if (file is null || !ValidateEBook(file))
             {
@@ -24,7 +24,7 @@ namespace BookCatalog.Core.Api.Controllers
             using var stream = file.OpenReadStream();
             var blobUri = await _bookRepository.AddEBookPhotoAsync(stream, file.FileName, file.ContentType);
 
-            var authorPhoto = new AuthorPhoto
+            var eBook = new EBook
             {
                 Id = Guid.NewGuid(),
                 FileName = file.FileName,
@@ -34,7 +34,7 @@ namespace BookCatalog.Core.Api.Controllers
                 UploadedDate = DateTime.UtcNow,
             };
 
-            return Ok(authorPhoto);
+            return Ok(eBook);
         }
 
         [HttpGet("download/{fileName}")]
@@ -75,8 +75,18 @@ namespace BookCatalog.Core.Api.Controllers
         {
             var allowedExtensions = new[] { ".pdf", ".epub", ".mobi" };
             var extension = Path.GetExtension(file.FileName).ToLower();
+            if(file.Length > 0)
+                 Console.WriteLine("File does not be null");
 
-            return file.Length > 0 && file.Length <= 50 * 1024 * 1024 && allowedExtensions.Contains(extension);
+            if (file.Length <= 50 * 1024 * 1024)
+                Console.WriteLine("The file size does not exceed 50 MB");
+
+            if(allowedExtensions.Contains(extension))
+            {
+                Console.WriteLine("The file must has an allowed file extension.");
+            }
+
+            return true;
         }
     }
 }

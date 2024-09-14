@@ -17,6 +17,18 @@ namespace BookCatalog.Core.Web
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7282") });
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            builder.Services.AddServerSideBlazor()
+                .AddHubOptions(options =>
+                {
+                    options.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
+                    options.KeepAliveInterval = TimeSpan.FromMinutes(5);
+                });
+
+           builder.Services.AddSignalR(hubOptions =>
+            {
+                hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
+                hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+            });
 
             /*builder.Services.AddHttpClient("AuthorizedClient", client =>
             {

@@ -2,6 +2,7 @@
 using Application.Repositories;
 using Application.UseCases.Accounts.Command;
 using Application.UseCases.Accounts.Query;
+using BookCatalog.Core.Api.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookCatalog.Core.Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+
     public class AccountController : ApiControllerBase
     {
         private readonly ITokenService _tokenService;
@@ -28,6 +29,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand loginUserCommand)
         {
             return await _mediator.Send(loginUserCommand);
@@ -83,6 +85,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("Register")]
         public async Task<IActionResult> Create([FromBody] RegisterUserCommand newUser)
         {
@@ -126,6 +129,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpGet("[action]")]
+        [CustomAuthorizationFilter("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
             return await _mediator.Send(new GetAllUserQuery());
@@ -135,6 +139,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPut("[action]")]
+        [CustomAuthorizationFilter("UpdateUser")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUsersCommand updateUserCommand)
         {
             return await _mediator.Send(updateUserCommand);
