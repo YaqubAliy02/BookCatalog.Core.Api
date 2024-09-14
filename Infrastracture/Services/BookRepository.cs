@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Linq;
+using System.Linq.Expressions;
 using Application.Abstraction;
 using Application.Repositories;
 using Domain.Entities;
@@ -64,7 +65,7 @@ namespace Infrastracture.Services
 
         public async Task<IQueryable<Book>> GetAsync(Expression<Func<Book, bool>> expression)
         {
-            return await Task.FromResult(_bookCatalogDbContext.Books.Where(expression));
+            return _bookCatalogDbContext.Books.Where(expression).Include(x => x.Authors);
         }
 
         public async Task<Book> GetByIdAsync(Guid id)
