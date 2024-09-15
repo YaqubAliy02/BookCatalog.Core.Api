@@ -10,6 +10,12 @@ namespace BookCatalog.Core.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddControllers()
+          .AddJsonOptions(options =>
+          {
+              options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+          });
+
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.AddApplicationServices();
 

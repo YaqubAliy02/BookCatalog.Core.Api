@@ -63,6 +63,13 @@ namespace Infrastracture.Services
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
+        public async Task<List<Author>> GetAllByIdsAsync(IEnumerable<Guid> authorIds)
+        {
+            return await _bookCatalogDbContext.Authors
+                .Where(a => authorIds.Contains(a.Id))
+                .ToListAsync();
+        }
+
         public async Task<Author> UpdateAsync(Author author)
         {
             _bookCatalogDbContext.Authors.Update(author);

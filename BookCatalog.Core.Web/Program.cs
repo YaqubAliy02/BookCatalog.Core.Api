@@ -30,6 +30,7 @@ namespace BookCatalog.Core.Web
                 hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
             });
 
+
             /*builder.Services.AddHttpClient("AuthorizedClient", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:7282");

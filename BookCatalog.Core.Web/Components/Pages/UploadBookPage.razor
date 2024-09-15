@@ -1,5 +1,6 @@
 ﻿@page "/upload"
 @using BookCatalog.Core.Web.Models
+@using BookCatalog.Core.Web.Models.DTOs
 @using Domain.Enums
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
@@ -28,7 +29,7 @@
 
     protected override void OnInitialized()
     {
-        books.PublishedDate = DateOnly.FromDateTime(DateTime.Today);
+        books.PublishedDate = DateTime.Today;
     }
 
     private async Task UploadFiles()
@@ -50,14 +51,13 @@
 
             var bookDetails = new CreateBookDto
             {
-                Id = Guid.NewGuid(),
                 Name = books.Name,
                 Description = books.Description,
                 ISBN = books.ISBN,
                 BlobPath = newBook.BlobPath,
                 Thubnail = newBook.Thubnail,
                 PublishedDate = books.PublishedDate,
-                Authors = new List<Author> { authors.FirstOrDefault(a => a.Id == Guid.Parse(selectedAuthorId)) },
+                AuthorsId = new Guid[] { Guid.Parse(selectedAuthorId) },
                 Categories = selectedCategory
             };
 

@@ -1,16 +1,26 @@
-﻿@* @page "/mainpage"
+﻿@page "/mainpage"
 @using BookCatalog.Core.Web.Models
+@using BookCatalog.Core.Web.Models.DTOs.Book
 @using Domain.Enums
 @inject HttpClient HttpClient
 
-
 @code {
-    public Book books = new Book();
+    public List<GetAllBooksDTO> books = new List<GetAllBooksDTO>();
+    private List<Author> authors = new List<Author>();
     protected override async Task OnInitializedAsync()
     {
-        books = await HttpClient.GetFromJsonAsync<Book>("https://localhost/api/Book");
+        try
+        {
+            books = await HttpClient.GetFromJsonAsync<List<GetAllBooksDTO>>("https://localhost:7282/api/Book/GetAllBooks");
+            authors = await HttpClient.GetFromJsonAsync<List<Author>>("https://localhost:7282/api/Author/GetAllAuthors");
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception.Message);
+        }
     }
 }
+
 <div class="main-container">
     <div class="navbar">
         <div class="logo">
@@ -18,7 +28,7 @@
         </div>
         <div class="search-bar">
             <input type="text" placeholder="Search..." />
-            <button >Search</button>
+            <button>Search</button>
         </div>
         <div class="auth-links">
             <a href="/login">Login</a>
@@ -26,20 +36,30 @@
         </div>
     </div>
 
-    <div class="books-list">
+    <div class="books-list" style="margin-top: 7rem;">
         @if (books != null && books.Any())
         {
-            @foreach(var book in books)
+            <div class="d-flex flex-wrap justify-content-start">
+            @foreach (var book in books)
             {
-                <div class="book-item">
-                    <img src="@book.Thubnail" alt="@book.Name" class="book-thumbnail" />
-                    <div class="book-details">
-                        <p><strong>Name:</strong> @book.Name</p>
-                        <p><strong>Author:</strong> @string.Join(", ", book.Authors.Select(a => a.FullName))</p>
-                        <p><strong>Published Date:</strong> @book.PublishedDate.ToShortDateString()</p>
+                    <div class="card" style="width: 13rem; height:24rem; margin: 8px;">
+                    <div class="card-body">
+                        <img style="width:170px; height:200px" src="@book.Thubnail" alt="@book.Thubnail" class="book-thubnail" />
+                            <p class="card-title" style="font-size: 14px"><strong>Name:</strong> @book.Name</p>
+                            <p style="font-size: 14px">
+                            <strong>Author:</strong>
+                                @if (book.Authors is not null && book.Authors.Any())
+                                {
+                                    @string.Join(", ", book.Authors.Select(a => a.FullName))
+                                }
+                            </p>
+
+                            <p style="font-size: 14px"><strong>Category:</strong> @book.Categories</p>
+                            <p style="font-size: 14px"><strong>Publish:</strong> @book.PublishedDate.ToString("yyyy-MM-dd")</p>
                     </div>
                 </div>
             }
+            </div>
         }
         else
         {
@@ -47,6 +67,3 @@
         }
     </div>
 </div>
-
-
- *@
