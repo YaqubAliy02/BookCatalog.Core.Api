@@ -136,8 +136,8 @@ namespace Application.Mappings
              option.MapFrom(src => DateOnly.FromDateTime(src.PublishedDate)));
 
             CreateMap<Book, BookGetDto>()
-                .ForMember(destination => destination.AuthorsId, option =>
-                    option.MapFrom(src => src.Authors.Select(x => x.Id)))
+             /*   .ForMember(destination => destination.AuthorsId, option =>
+                    option.MapFrom(src => src.Authors.Select(x => x.Id)))*/
 
                 .ForMember(destination => destination.PublishedDate, option =>
                     option.MapFrom(src => src.PublishedDate.ToDateTime(TimeOnly.MinValue)));

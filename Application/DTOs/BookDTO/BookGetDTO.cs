@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using Application.DTOs.AuthorDTO;
+using Domain.Enums;
 
 namespace Application.DTOs.BookDTO
 {
@@ -11,7 +12,8 @@ namespace Application.DTOs.BookDTO
         public string Thubnail { get; set; }
         public string BlobPath { get; set; }
         public DateTime PublishedDate { get; set; }
-        public Guid[] AuthorsId { get; set; }
+        public ICollection<AuthorGetDTO> Authors { get; set; }
         public BookCategories Categories { get; set; }
     }
 }
+
