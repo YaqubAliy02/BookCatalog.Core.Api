@@ -2,16 +2,30 @@
 @using BookCatalog.Core.Web.Models
 @using BookCatalog.Core.Web.Models.DTOs.Book
 @inject HttpClient HttpClient
-
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 <h3>Book Detail</h3>
 
 @if (book is not null)
 {
-    <p><strong>Title:</strong> @book.Name</p>
-    <p><strong>ISBN:</strong> @book.ISBN</p>
-    <p><strong>Description:</strong> @book.Description</p>
-    <p><strong>Published Date:</strong> @book.PublishedDate.ToString("yyyy-MM-dd")</p>
-    <!-- You can add more fields as necessary -->
+    <div class="row">
+        <!-- Book Image -->
+        <div class="col-md-4">
+            <img class="img-fluid" src="@book.Thubnail" alt="@book.Name" style="width: 100%; height: 600px;" />
+        </div>
+
+        <div class="col-md-8">
+            <h2><strong>Name:</strong> @book.Name</h2>
+            <a href="@($"/mainpage{book.Authors}")"></a>
+            <p><strong>Author:</strong> @string.Join(", ", book.Authors.Select(a => a.FullName))</p>
+            <p><strong>Description:</strong> @book.Description</p>
+            <p style="color:green;"><strong>FREE</strong></p>
+            <p><strong>Review</strong></p>
+
+            <a href="/mainpage" class="btn btn-primary">Back</a>
+            <button @onclick="() => DownloadEbook(book.Name)" class="btn btn-primary">Download</button>
+        </div>
+    </div>
 }
 else
 {
@@ -20,20 +34,26 @@ else
 
 @code {
     [Parameter]
-    public string Id { get; set; }  // Changed from string to int
+    public string Id { get; set; } 
 
-    private GetAllBooksDTO book;  // Changed from List<Book> to Book
+    private GetAllBooksDTO book; 
 
     protected override async Task OnParametersSetAsync()
     {
         try
         {
-            // Fetching a single book instead of a list
             book = await HttpClient.GetFromJsonAsync<GetAllBooksDTO>($"https://localhost:7282/api/Book/GetBookById/{this.Id}");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching book details: {ex.Message}");
         }
+    }
+    private async Task DownloadEbook(string fileName)
+    {
+        var blobPath = book.BlobPath;
+        var getFileName = Path.GetFileName(blobPath);
+        var url = $"https://localhost:7282/api/EBook/download/{getFileName}";
+        NavigationManager.NavigateTo(url, forceLoad: true);
     }
 }
