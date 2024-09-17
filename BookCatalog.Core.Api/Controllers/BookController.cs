@@ -133,7 +133,7 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpDelete("[action]")]
-       /* [CustomAuthorizationFilter("DeleteBook")]*/
+        /* [CustomAuthorizationFilter("DeleteBook")]*/
         public async Task<IActionResult> DeleteBook([FromQuery] DeleteBookCommand deleteBookCommand)
         {
             return await _mediator.Send(deleteBookCommand);

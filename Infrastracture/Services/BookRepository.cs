@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Application.Abstraction;
 using Application.Repositories;
 using Domain.Entities;
@@ -82,7 +81,7 @@ namespace Infrastracture.Services
                        x.Name.Contains(text) ||
                        x.PublishedDate.ToString("MM.DD.YYYY").Contains(text) ||
                        x.Categories.ToString().Contains(text));
-                
+
         }
 
         public async Task<Book> UpdateAsync(Book book)

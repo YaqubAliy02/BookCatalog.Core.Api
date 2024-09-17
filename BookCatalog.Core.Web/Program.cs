@@ -24,11 +24,11 @@ namespace BookCatalog.Core.Web
                     options.KeepAliveInterval = TimeSpan.FromMinutes(5);
                 });
 
-           builder.Services.AddSignalR(hubOptions =>
-            {
-                hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
-                hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
-            });
+            builder.Services.AddSignalR(hubOptions =>
+             {
+                 hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
+                 hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+             });
 
 
             /*builder.Services.AddHttpClient("AuthorizedClient", client =>

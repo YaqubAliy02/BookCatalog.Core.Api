@@ -1,5 +1,4 @@
 ﻿using Application.Repositories;
-using Azure.Storage.Blobs;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 

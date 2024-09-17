@@ -2,7 +2,6 @@ using Application;
 using BookCatalog.Core.Api.CustomMiddleWares;
 using Infrastracture;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 namespace BookCatalog.Core.Api
 {

@@ -18,7 +18,7 @@ namespace Infrastracture.Services
         public async Task<Stream> DownloadEBookAsync(string fileName) =>
             await _blobStorage.DownloadEbookAsync(fileName);
 
-/*        public async Task<Stream> StreamEBookAsync(string fileName) =>
-            await _blobStorage.StreamEBookAsync(fileName);*/
+        /*        public async Task<Stream> StreamEBookAsync(string fileName) =>
+                    await _blobStorage.StreamEBookAsync(fileName);*/
     }
 }
