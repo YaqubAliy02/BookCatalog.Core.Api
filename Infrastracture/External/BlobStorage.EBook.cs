@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Infrastracture.External
 {
@@ -57,6 +58,25 @@ namespace Infrastracture.External
             BlobDownloadInfo download = await blobClient.DownloadAsync();
             return download.Content;
         }
+
+/*        public async Task<Stream> StreamEBookAsync(string fileName)
+        {
+            var blobServiceClient = new BlobServiceClient(blobConnectionString);
+            var blobContainerClient = blobServiceClient.GetBlobContainerClient(ebookContainerName);
+            var blobClient = blobContainerClient.GetBlobClient(fileName);
+
+            var exists = await blobClient.ExistsAsync();
+
+            if (!exists)
+            {
+                throw new FileNotFoundException($"E-book with filename '{fileName}' does not exist.");
+            }
+            var stream = new MemoryStream();
+            await blobClient.DownloadToAsync(stream);
+            stream.Position = 0;
+            
+            return stream;
+        }*/
 
     }
 }

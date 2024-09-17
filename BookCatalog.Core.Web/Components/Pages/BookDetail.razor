@@ -2,7 +2,6 @@
 @using BookCatalog.Core.Web.Models
 @using BookCatalog.Core.Web.Models.DTOs.Book
 @inject HttpClient HttpClient
-@inject IJSRuntime JS
 @inject NavigationManager NavigationManager
 <h3>Book Detail</h3>
 
@@ -20,10 +19,10 @@
             <p><strong>Author:</strong> @string.Join(", ", book.Authors.Select(a => a.FullName))</p>
             <p><strong>Description:</strong> @book.Description</p>
             <p style="color:green;"><strong>FREE</strong></p>
-            <p><strong>Review</strong></p>
-
+            <a href="@(book.BlobPath)" target="_blank" style="display: block; margin-bottom:20px; text-decoration: none;">Review</a>
+            
             <a href="/mainpage" class="btn btn-primary">Back</a>
-            <button @onclick="() => DownloadEbook(book.Name)" class="btn btn-primary">Download</button>
+            <button class="btn btn-primary" @onclick="() => DownloadEbook()">Download</button>
         </div>
     </div>
 }
@@ -37,7 +36,7 @@ else
     public string Id { get; set; } 
 
     private GetAllBooksDTO book; 
-
+ 
     protected override async Task OnParametersSetAsync()
     {
         try
@@ -49,7 +48,7 @@ else
             Console.WriteLine($"Error fetching book details: {ex.Message}");
         }
     }
-    private async Task DownloadEbook(string fileName)
+    private async Task DownloadEbook()
     {
         var blobPath = book.BlobPath;
         var getFileName = Path.GetFileName(blobPath);

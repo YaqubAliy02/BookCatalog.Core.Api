@@ -48,6 +48,7 @@ namespace Infrastracture.External
             var extension = Path.GetExtension(fileName).ToLower();
             string containerName;
 
+            // Determine the appropriate container based on the file extension and content type
             if (supportedPhotoExtensions.Contains(extension) || supportedPhotoContentTypes.Contains(contentType))
             {
                 containerName = photoContainerName;
@@ -61,13 +62,22 @@ namespace Infrastracture.External
                 throw new InvalidOperationException("Unsupported file extension or content type.");
             }
 
+            // Set contentType to "application/pdf" if the file is a PDF
+            if (extension == ".pdf")
+            {
+                contentType = "application/pdf";  // Force contentType to be PDF
+            }
+
             var blobServiceClient = new BlobServiceClient(blobConnectionString);
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
             var blobClient = blobContainerClient.GetBlobClient(fileName);
-            
+
+            // Upload the file with the correct ContentType
             await blobClient.UploadAsync(fileStream, new BlobHttpHeaders { ContentType = contentType });
 
+            // Return the Blob URL
             return blobClient.Uri.ToString();
         }
+
     }
 }

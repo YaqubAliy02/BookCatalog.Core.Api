@@ -82,6 +82,7 @@ namespace Infrastracture.Services
                        x.Name.Contains(text) ||
                        x.PublishedDate.ToString("MM.DD.YYYY").Contains(text) ||
                        x.Categories.ToString().Contains(text));
+                
         }
 
         public async Task<Book> UpdateAsync(Book book)

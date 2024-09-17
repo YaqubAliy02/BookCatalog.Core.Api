@@ -1,4 +1,5 @@
 ﻿using Application.Repositories;
+using Azure.Storage.Blobs;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,12 +38,55 @@ namespace BookCatalog.Core.Api.Controllers
             return Ok(eBook);
         }
 
+        [HttpGet("stream/{fileName}")]
+        public async Task<IActionResult> StreamEbook(string fileName)
+        {
+            try
+            {
+                // Download the e-book file from Blob Storage using the file name
+                var ebookStream = await _bookRepository.DownloadEBookAsync(fileName);
+
+                if (ebookStream == null)
+                {
+                    return NotFound("E-book file not found.");
+                }
+
+                // Define the content type based on the file extension
+                var extension = Path.GetExtension(fileName).ToLower();
+                string contentType = extension switch
+                {
+                    ".pdf" => "application/pdf",
+                    ".epub" => "application/epub+zip",
+                    ".mobi" => "application/x-mobipocket-ebook",
+                    _ => "application/octet-stream"
+                };
+
+                // Set Content-Disposition header to "inline" to open in browser
+                Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
+
+                // Return the e-book file as a FileStreamResult for streaming
+                return new FileStreamResult(ebookStream, contentType)
+                {
+                    FileDownloadName = fileName
+                };
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
         [HttpGet("download/{fileName}")]
         public async Task<IActionResult> DownloadEbook(string fileName)
         {
             try
             {
-                var ebookStream = await _bookRepository.DownloadEbookAsync(fileName);
+                var ebookStream = await _bookRepository.DownloadEBookAsync(fileName);
 
                 if (ebookStream == null)
                 {
@@ -74,19 +118,28 @@ namespace BookCatalog.Core.Api.Controllers
         private bool ValidateEBook(IFormFile file)
         {
             var allowedExtensions = new[] { ".pdf", ".epub", ".mobi" };
-            var extension = Path.GetExtension(file.FileName).ToLower();
-            if(file.Length > 0)
-                 Console.WriteLine("File does not be null");
 
-            if (file.Length <= 50 * 1024 * 1024)
-                Console.WriteLine("The file size does not exceed 50 MB");
+            var extension = Path.GetExtension(file.FileName)?.ToLower();
 
-            if(allowedExtensions.Contains(extension))
+            if (file is null || file.Length is 0)
             {
-                Console.WriteLine("The file must has an allowed file extension.");
+                Console.WriteLine("File cannot be null or empty.");
+                return false;
+            }
+            if (file.Length > 50 * 1024 * 1024) // 50 MB in bytes
+            {
+                Console.WriteLine("The file size exceeds the 50 MB limit.");
+                return false;
+            }
+            if (!allowedExtensions.Contains(extension))
+            {
+                Console.WriteLine($"The file must have one of the allowed extensions: {string.Join(", ", allowedExtensions)}.");
+                return false;
             }
 
+            Console.WriteLine("File is valid.");
             return true;
         }
+
     }
 }

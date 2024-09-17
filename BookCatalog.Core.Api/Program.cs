@@ -1,6 +1,8 @@
 using Application;
 using BookCatalog.Core.Api.CustomMiddleWares;
 using Infrastracture;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 namespace BookCatalog.Core.Api
 {
@@ -22,6 +24,16 @@ namespace BookCatalog.Core.Api
             builder.Services.AddResponseCaching(); //using Response cache service
             builder.Services.AddOutputCache();// using output cache service
             builder.Services.AddMemoryCache(); // using In-Memory cache
+
+            builder.Services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 104857600;
+            });
+            builder.WebHost.ConfigureKestrel(serverOptions =>
+            {
+                serverOptions.Limits.MaxRequestBodySize = 524288000; // 500 MB in bytes
+                serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(10); // 10-minute header timeout
+            });
 
             // This configuration for checking token with Auhtorized or don't in Swagger we did that in Postman in last commit
             builder.Services.AddSwaggerGen(options =>
@@ -130,7 +142,11 @@ namespace BookCatalog.Core.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.Use(async (context, next) =>
+            {
+                context.Request.EnableBuffering(); // This allows large files to be buffered in memory/disk
+                await next();
+            });
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
