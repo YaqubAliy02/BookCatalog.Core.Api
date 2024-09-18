@@ -11,7 +11,7 @@
     private List<BookCategory> categories = new List<BookCategory>();
     private byte selectedCategory;
     public string BookFilter
-    { 
+    {
         get => _bookFilter;
         set
         {
@@ -44,7 +44,7 @@
         {
             books = await HttpClient.GetFromJsonAsync<List<GetAllBooksDTO>>("/api/Book/GetAllBooks");
             authors = await HttpClient.GetFromJsonAsync<List<Author>>("/api/Author/GetAllAuthors");
-            categories = await HttpClient.GetFromJsonAsync<List<BookCategory>>("https://localhost:7282/api/Book/GetBookCategories");
+            categories = await HttpClient.GetFromJsonAsync<List<BookCategory>>("/api/Book/GetBookCategories");
         }
         catch (Exception exception)
         {
@@ -63,25 +63,33 @@
             Console.WriteLine(exception.Message);
         }
     }
+
+    private async Task ApplyFilters()
+    {
+        var query = $"api/Book/FilterBooks?authorId={selectedAuthorId}&category={selectedCategory}";
+        books = await HttpClient.GetFromJsonAsync<List<GetAllBooksDTO>>(query);
+    }
 }
 
 <div class="main-container">
     <div class="navbar">
         <div class="logo">
             <a href="/mainpage">
-                <img style="width:150px; height:110px" 
-                src="https://logopond.com/logos/c7bc3e93ee2ebd6f37f0a01c746e1d65.png"
-                alt="E-Book Store" />
+                <img style="width:150px; height:110px"
+                     src="https://logopond.com/logos/c7bc3e93ee2ebd6f37f0a01c746e1d65.png"
+                     alt="E-Book Store" />
             </a>
         </div>
         <div class="search-bar">
-            <input type="text" placeholder="Search Books..." 
-            style="width: 400px; height:40px; border-radius:10px;"
-            @bind-value="BookFilter" @bind-value:event="oninput"/>
-            <button class="btn btn-primary" @onclick="BookSearch" 
-            style="padding-top:5px;
+            <input type="text" placeholder="Search Books..."
+                   style="width: 400px; height:40px; border-radius:10px;"
+                   @bind-value="BookFilter" @bind-value:event="oninput" />
+            <button class="btn btn-primary" @onclick="BookSearch"
+                    style="padding-top:5px;
             padding-bottom:5px;
-            width:90px;">Search</button>
+            width:90px;">
+                Search
+            </button>
         </div>
         <div class="auth-links">
             <a href="/login">Login</a>
@@ -93,29 +101,32 @@
         <a href="/upload" class="btn btn-primary">Upload Book</a>
     </div>
 
-    <div class="form-group">
-        <label>Filter By Categories</label>
-        <InputSelect @bind-Value="selectedCategory">
-            @if (categories is not null && categories.Any())
-            {
-                @foreach (var category in categories)
-                {
-                    <option value="@category.Id">@category.Name</option>
-                }
-            }
-        </InputSelect>
-
+    <div class="filter-section" style="margin-bottom: 2rem;">
         <div class="form-group">
-            <label for="Authors">Filter By Author</label>
-            <InputSelect id="Authors" @bind-Value="selectedAuthorId">
-                @if (authors is not null && authors.Any())
+            <label>Filter By Categories</label>
+            <InputSelect @bind-Value="selectedCategory">
+                @if (categories is not null && categories.Any())
                 {
-                    @foreach (Author author in authors)
+                    @foreach (var category in categories)
                     {
-                        <option value="@author.Id">@author.FullName</option>
+                        <option value="@category.Id">@category.Name</option>
                     }
                 }
             </InputSelect>
+
+            <div class="form-group">
+                <label for="Authors">Filter By Author</label>
+                <InputSelect id="Authors" @bind-Value="selectedAuthorId">
+                    @if (authors is not null && authors.Any())
+                    {
+                        @foreach (Author author in authors)
+                        {
+                            <option value="@author.Id">@author.FullName</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
+            <button type="button" class="btn btn-primary" @onclick="ApplyFilters">Apply Filters</button>
         </div>
     </div>
 
