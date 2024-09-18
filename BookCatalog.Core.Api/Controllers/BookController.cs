@@ -1,6 +1,9 @@
-﻿using Application.UseCases.Books.Command;
+﻿using Application.DTOs.BookDTO;
+using Application.Repositories;
+using Application.UseCases.Books.Command;
 using Application.UseCases.Books.Query;
 using BookCatalog.Core.Api.Filters;
+using Domain.Entities;
 using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -12,10 +15,11 @@ namespace BookCatalog.Core.Api.Controllers
     public class BookController : ApiControllerBase
     {
         private readonly IMediator _mediator;
-
-        public BookController(IMediator mediator)
+        private readonly IBookRepository _bookRepository;
+        public BookController(IMediator mediator, IBookRepository bookRepository)
         {
             _mediator = mediator;
+            _bookRepository = bookRepository;
         }
 
         [HttpGet("[action]")]
@@ -144,6 +148,7 @@ namespace BookCatalog.Core.Api.Controllers
         {
             return await _mediator.Send(searchBookCommand);
         }
+
         [HttpGet("[action]")]
         public IActionResult GetBookCategories()
         {
@@ -154,5 +159,36 @@ namespace BookCatalog.Core.Api.Controllers
 
             return Ok(categories);
         }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> FilterBooks([FromQuery] Guid? authorId = null, [FromQuery] BookCategories? category = null)
+        {
+            try
+            {
+                IQueryable<Book> booksQuery = await _bookRepository.GetAsync(x => true);
+
+                if (category.HasValue)
+                {
+                    booksQuery = booksQuery.Where(b => b.Categories == category.Value);
+                }
+
+                if (authorId.HasValue)
+                {
+                    booksQuery = booksQuery.Where(b => b.Authors.Any(a => a.Id == authorId.Value));
+                }
+
+                var books = booksQuery.ToList();
+
+                IEnumerable<BookGetDto> resultBooks = _mapper.Map<IEnumerable<BookGetDto>>(books);
+
+                return Ok(resultBooks);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+        }
+
     }
 }
