@@ -9,7 +9,7 @@
     private List<Author> authors = new List<Author>();
     private string selectedAuthorId;
     private List<BookCategory> categories = new List<BookCategory>();
-    private byte selectedCategory;
+    private byte? selectedCategory;
     private string _bookFilter = "";
     public string BookFilter
     {
@@ -35,7 +35,7 @@
         }
         catch (Exception exception)
         {
-            Console.WriteLine(exception.Message);
+            Console.WriteLine(exception.Message + "search error!!!");
         }
     }
     protected override async Task OnInitializedAsync()
@@ -66,7 +66,8 @@
 
     private async Task ApplyFilters()
     {
-        var query = $"api/Book/FilterBooks?authorId={selectedAuthorId}&category={selectedCategory}";
+        var categoryFilter = selectedCategory.HasValue ? selectedCategory.ToString() : string.Empty;
+        var query = $"api/Book/FilterBooks?authorId={selectedAuthorId}&category={categoryFilter}";
         books = await HttpClient.GetFromJsonAsync<List<GetAllBooksDTO>>(query);
     }
 }
