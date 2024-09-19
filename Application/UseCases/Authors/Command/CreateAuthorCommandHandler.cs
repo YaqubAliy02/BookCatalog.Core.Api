@@ -12,7 +12,9 @@ namespace Application.UseCases.Authors.Command
     {
         public string FullName { get; set; }
         public DateTime BirthDate { get; set; }
+        public string AuthorPhoto { get; set; }
         public Gender Gender { get; set; } = Gender.Male;
+        public string AboutAuthor { get; set; }
     }
 
     public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, ResponseCore<CreateAuthorCommandHandlerResult>>
@@ -95,6 +97,8 @@ namespace Application.UseCases.Authors.Command
     {
         public string FullName { get; set; }
         public DateTime BirthDate { get; set; }
+        public string AuthorPhoto { get; set; }
         public Gender Gender { get; set; } = Gender.Male;
+        public string AboutAuthor { get; set; }
     }
 }

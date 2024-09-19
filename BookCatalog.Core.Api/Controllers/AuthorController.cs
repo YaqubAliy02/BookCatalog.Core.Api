@@ -1,6 +1,7 @@
 ﻿using Application.UseCases.Authors.Command;
 using Application.UseCases.Authors.Query;
 using BookCatalog.Core.Api.Filters;
+using Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -81,9 +82,8 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        [CustomAuthorizationFilter("CreateAuthor")]
-        public async Task<IActionResult> CreateAuthor([FromBody]
-        CreateAuthorCommand createAuthorCommand)
+      /*  [CustomAuthorizationFilter("CreateAuthor")]*/
+        public async Task<IActionResult> CreateAuthor([FromBody]CreateAuthorCommand createAuthorCommand)
         {
             var result = await _mediator.Send(createAuthorCommand);
 
@@ -118,7 +118,7 @@ namespace BookCatalog.Core.Api.Controllers
 
         [HttpPut("[action]")]
         [CustomAuthorizationFilter("UpdateBook")]
-        public async Task<IActionResult> UpdateBookAsync([FromBody]
+        public async Task<IActionResult> UpdateAuthorAsync([FromBody]
         UpdateAuthorCommand updateAuthorCommand)
         {
             return await _mediator.Send(updateAuthorCommand);
@@ -163,6 +163,17 @@ namespace BookCatalog.Core.Api.Controllers
              if (isDelete) return Ok("Author is deleted successfully");
 
              return BadRequest("Delete operation has been failed");*/
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult GetAuthorGender()
+        {
+            var categories = Enum.GetValues(typeof(Gender))
+                                 .Cast<Gender>()
+                                 .Select(c => new { Id = (byte)c, Name = c.ToString() })
+                                 .ToList();
+
+            return Ok(categories);
         }
     }
 }

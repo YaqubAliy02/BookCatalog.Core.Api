@@ -1,0 +1,129 @@
+﻿ @page "/uploadAuthor"
+
+@using BookCatalog.Core.Web.Models
+@using BookCatalog.Core.Web.Models.DTOs.Authors
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+<h3>Add Author</h3>
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">Add Author</h1>
+                    <EditForm Model="authors" OnValidSubmit="UploadFiles">
+                        <div class="form-group">
+                            <label>FullName</label>
+                            <InputText class="form-control" id="title" @bind-Value="authors.FullName" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="ebook">Author Photo</label>
+                            <InputFile OnChange="@((e) => authors.AuthorPhoto = e.File)" accept="AuthorPhoto" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="publishedDate"> Birth Date</label>
+                            <InputDate class="form-control" id="books.PublishedDate" @bind-Value="authors.BirthDate" required />
+                        </div>
+                        
+
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <InputTextArea class="form-control" id="description" @bind-Value="authors.AboutAuthor" rows="3" required />
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary mr-2" disabled="@isUploading">Upload</button>
+                            <button type="button" class="btn btn-secondary mr-2">Cancel</button>
+                            <button class="btn btn-primary" @onclick="ReturnToMain">Return to Main Page</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Author authors = new Author();
+    public CreateAuthorDTO newAuthor = new CreateAuthorDTO();
+    public bool isUploading { get; set; } = false;
+    public byte selectedGender;
+    protected override void OnInitialized()
+    {
+        authors.BirthDate = DateTime.Today;
+    }
+
+    private async Task UploadFiles()
+    {
+        if (authors.AuthorPhoto is null)
+        {
+            throw new ArgumentNullException("Author's field cannot be null!!!");
+        }
+        isUploading = true;
+
+        try
+        {
+            var AuthorPhotoUrl = await UploadFile(authors.AuthorPhoto, "api/AuthorPhoto/UploadPhoto");
+            newAuthor.AuthorPhoto = AuthorPhotoUrl;
+
+            var authorDetails = new CreateAuthorDTO
+                {
+                    FullName = authors.FullName,
+                    AuthorPhoto = newAuthor.AuthorPhoto,
+                    BirthDate = authors.BirthDate,
+                    Gender = selectedGender,
+                    AboutAuthor = authors.AboutAuthor
+                };
+
+            await UploadAuthor(authorDetails);
+            NavigationManager.NavigateTo("/mainpage");
+
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine($"Error uploading files {exception.Message} 28");
+        }
+        finally
+        {
+            isUploading = false;
+        }
+    }
+
+    private async Task<string> UploadFile(IBrowserFile file, string apiUrl)
+    {
+        var content = new MultipartFormDataContent();
+        var fileStream = file.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024);
+        content.Add(new StreamContent(fileStream), "file", file.Name);
+
+        var response = await Http.PostAsync(apiUrl, content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("File upload failed");
+        }
+        var result = await response.Content.ReadFromJsonAsync<FileUploadResult>();
+
+        return result?.BlobUri ?? throw new Exception("Upload returned invalid result");
+    }
+
+    private async Task UploadAuthor(CreateAuthorDTO newAuthor)
+    {
+        var response = await Http.PostAsJsonAsync("api/Author/CreateAuthor", newAuthor);
+
+        if(!response.IsSuccessStatusCode)
+        {
+            var errorMessage = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Author create failed: {errorMessage}");
+        }
+    }
+    public class FileUploadResult
+    {
+        public string BlobUri { get; set; }
+    }
+
+    private void ReturnToMain()
+    {
+        NavigationManager.NavigateTo("/mainpage");
+    }
+}
