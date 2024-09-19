@@ -1,9 +1,10 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs.BookDTO;
+using Domain.Entities;
 
 namespace Application.Repositories
 {
     public interface IBookRepository : IRepository<Book>
     {
-        IEnumerable<Book> SearchBook(string text);
+        IEnumerable<BookGetDto> SearchBook(string text);
     }
 }

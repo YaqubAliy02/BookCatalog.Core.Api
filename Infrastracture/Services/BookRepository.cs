@@ -1,18 +1,24 @@
 ﻿using System.Linq.Expressions;
 using Application.Abstraction;
+using Application.DTOs.BookDTO;
 using Application.Repositories;
+using AutoMapper;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Infrastracture.Services
 {
     public class BookRepository : IBookRepository
     {
         private readonly IBookCatalogDbContext _bookCatalogDbContext;
+        private readonly IMapper _mapper;
 
-        public BookRepository(IBookCatalogDbContext bookCatalogDbContext)
+        public BookRepository(IBookCatalogDbContext bookCatalogDbContext,
+            IMapper mapper)
         {
             _bookCatalogDbContext = bookCatalogDbContext;
+            _mapper = mapper;
         }
 
         public async Task<Book> AddAsync(Book book)
@@ -74,14 +80,22 @@ namespace Infrastracture.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public IEnumerable<Book> SearchBook(string text)
+        public IEnumerable<BookGetDto> SearchBook(string text)
         {
-            return _bookCatalogDbContext.Books.ToList()
-                .Where(x => x.ISBN.Contains(text) ||
-                       x.Name.Contains(text) ||
-                       x.PublishedDate.ToString("MM.DD.YYYY").Contains(text) ||
-                       x.Categories.ToString().Contains(text));
+            var books = _bookCatalogDbContext.Books.ToList();
 
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return _mapper.Map<IEnumerable<BookGetDto>>(books);
+            }
+            else
+            {
+                var result = books.Where(x => x.Name.Contains(text, StringComparison.OrdinalIgnoreCase) ||
+                                         x.ISBN.Contains(text, StringComparison.OrdinalIgnoreCase) ||
+                                         x.Description.Contains(text, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                return _mapper.Map<IEnumerable<BookGetDto>>(result);
+            }
         }
 
         public async Task<Book> UpdateAsync(Book book)

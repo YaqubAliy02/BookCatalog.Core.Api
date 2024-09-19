@@ -10,6 +10,7 @@
     private string selectedAuthorId;
     private List<BookCategory> categories = new List<BookCategory>();
     private byte selectedCategory;
+    private string _bookFilter = "";
     public string BookFilter
     {
         get => _bookFilter;
@@ -30,14 +31,13 @@
     {
         try
         {
-            books = await HttpClient.GetFromJsonAsync<List<GetAllBooksDTO>>($"/api/Book/SearchBook?SearchText={_bookFilter}");
+            books = await HttpClient.GetFromJsonAsync<List<GetAllBooksDTO>>($"/api/Book/SearchBook?SearchText={BookFilter}");
         }
         catch (Exception exception)
         {
             Console.WriteLine(exception.Message);
         }
     }
-    private string _bookFilter = "";
     protected override async Task OnInitializedAsync()
     {
         try
@@ -105,6 +105,7 @@
         <div class="form-group">
             <label>Filter By Categories</label>
             <InputSelect @bind-Value="selectedCategory">
+                <option value="">All Categories</option>
                 @if (categories is not null && categories.Any())
                 {
                     @foreach (var category in categories)
@@ -113,21 +114,23 @@
                     }
                 }
             </InputSelect>
-
-            <div class="form-group">
-                <label for="Authors">Filter By Author</label>
-                <InputSelect id="Authors" @bind-Value="selectedAuthorId">
-                    @if (authors is not null && authors.Any())
-                    {
-                        @foreach (Author author in authors)
-                        {
-                            <option value="@author.Id">@author.FullName</option>
-                        }
-                    }
-                </InputSelect>
-            </div>
-            <button type="button" class="btn btn-primary" @onclick="ApplyFilters">Apply Filters</button>
         </div>
+
+        <div class="form-group">
+            <label for="Authors">Filter By Author</label>
+            <InputSelect id="Authors" @bind-Value="selectedAuthorId">
+                <option value="">All Authors</option>
+                @if (authors is not null && authors.Any())
+                {
+                    @foreach (var author in authors)
+                    {
+                        <option value="@author.Id">@author.FullName</option>
+                    }
+                }
+            </InputSelect>
+        </div>
+
+        <button type="button" class="btn btn-primary" @onclick="ApplyFilters">Apply Filters</button>
     </div>
 
     <div class="books-list" style="margin-top: 7rem;">
@@ -137,9 +140,9 @@
                 @foreach (var book in books)
                 {
                     <a href="@($"/mainpage/{book.Id}")" style="text-decoration:none; color:inherit;">
-                        <div class="card" style="width: 13rem; height:24rem; margin: 8px;">
+                        <div class="card" style="width: 12rem; height:24rem; margin: 8px;">
                             <div class="card-body">
-                                <img style="width:170px; height:200px" src="@book.Thubnail" alt="@book.Thubnail" class="book-thubnail" />
+                                <img style="width:160px; height:200px" src="@book.Thubnail" alt="@book.Thubnail" class="book-thubnail" />
                                 <p class="card-title" style="font-size: 14px"><strong>Name:</strong> @book.Name</p>
                                 <p style="font-size: 14px">
                                     <strong>Author:</strong>
