@@ -72,6 +72,7 @@
     }
 }
 
+
 <div class="main-container">
     <div class="navbar">
         <div class="logo">
@@ -81,60 +82,73 @@
                      alt="E-Book Store" />
             </a>
         </div>
-        <div class="search-bar">
+
+
+        <div class="col-md-5 mb-2 mb-md-0">
             <input type="text" placeholder="Search Books..."
-                   style="width: 400px; height:40px; border-radius:10px;"
-                   @bind-value="BookFilter" @bind-value:event="oninput" />
+                   @bind-value="BookFilter" @bind-value:event="oninput" class="form-control" style="height:45px; margin-left: 100px;" />
+        </div>
+        <div class="col-md-3 mb-2 mb-md-0">
             <button class="btn btn-primary" @onclick="BookSearch"
-                    style="padding-top:5px;
-            padding-bottom:5px;
+                    style="padding-top:5px; height:45px;
             width:90px;">
                 Search
             </button>
         </div>
-        <div class="auth-links">
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
+
+        <div class="col-md-1 mb-2 mb-md-0">
+            <a style="text-decoration:none;" href="/login">Login</a>
+        </div>
+        <div class="col-md-1 mb-2 mb-md-0">
+            <a style="text-decoration:none;" href="/register">Register</a>
         </div>
     </div>
 
-    <div class="upload">
+    <!-- List Directory -->
+    <div id="openRolesSection" class="container content-space-1">
+        <form>
+            <div class="row gx-2 gx-md-3 mb-7">
+                <div class="col-sm-6 col-md-4 mb-2 mb-sm-0">
+                    <label class="form-label visually-hidden" for="locationsJobCareers">Filter By Category</label>
+                    <InputSelect @bind-Value="selectedCategory" class="form-select form-select-lg" id="locationsJobCareers" aria-label="Filter By Category">
+                        <option value="">All Categories</option>
+                        @if (categories is not null && categories.Any())
+                        {
+                            @foreach (var category in categories)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+                <!-- End Col -->
+
+                <div class="col-sm-6 col-md-4">
+                    <label class="form-label visually-hidden" for="departmentsJobCareers">Filter by Author</label>
+
+                    <!-- Select -->
+                    <InputSelect @bind-Value="selectedAuthorId" class="form-select form-select-lg" id="departmentsJobCareers" aria-label="Filter by Author">
+                        <option value="">All Authors</option>
+                        @if (authors is not null && authors.Any())
+                        {
+                            @foreach (var author in authors)
+                            {
+                                <option value="@author.Id">@author.FullName</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-sm-6 col-md-4">
+                    <button type="button" class="btn btn-primary" style="height:45px; width:190px" @onclick="ApplyFilters">Apply Filters</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div style="margin-top:50px; text-align: right;">
         <a href="/upload" class="btn btn-primary">Upload Book</a>
     </div>
 
-    <div class="filter-section" style="margin-bottom: 2rem;">
-        <div class="form-group">
-            <label>Filter By Categories</label>
-            <InputSelect @bind-Value="selectedCategory">
-                <option value="">All Categories</option>
-                @if (categories is not null && categories.Any())
-                {
-                    @foreach (var category in categories)
-                    {
-                        <option value="@category.Id">@category.Name</option>
-                    }
-                }
-            </InputSelect>
-        </div>
-
-        <div class="form-group">
-            <label for="Authors">Filter By Author</label>
-            <InputSelect id="Authors" @bind-Value="selectedAuthorId">
-                <option value="">All Authors</option>
-                @if (authors is not null && authors.Any())
-                {
-                    @foreach (var author in authors)
-                    {
-                        <option value="@author.Id">@author.FullName</option>
-                    }
-                }
-            </InputSelect>
-        </div>
-
-        <button type="button" class="btn btn-primary" @onclick="ApplyFilters">Apply Filters</button>
-    </div>
-
-    <div class="books-list" style="margin-top: 7rem;">
+    <div class="books-list" style="margin-top: 1rem;">
         @if (books != null && books.Any())
         {
             <div class="d-flex flex-wrap justify-content-start">
