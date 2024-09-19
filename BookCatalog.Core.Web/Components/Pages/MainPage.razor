@@ -72,7 +72,6 @@
     }
 }
 
-
 <div class="main-container">
     <div class="navbar">
         <div class="logo">
@@ -83,11 +82,11 @@
             </a>
         </div>
 
-
         <div class="col-md-5 mb-2 mb-md-0">
             <input type="text" placeholder="Search Books..."
                    @bind-value="BookFilter" @bind-value:event="oninput" class="form-control" style="height:45px; margin-left: 100px;" />
         </div>
+
         <div class="col-md-3 mb-2 mb-md-0">
             <button class="btn btn-primary" @onclick="BookSearch"
                     style="padding-top:5px; height:45px;
@@ -104,7 +103,6 @@
         </div>
     </div>
 
-    <!-- List Directory -->
     <div id="openRolesSection" class="container content-space-1">
         <form>
             <div class="row gx-2 gx-md-3 mb-7">
@@ -121,12 +119,10 @@
                         }
                     </InputSelect>
                 </div>
-                <!-- End Col -->
-
+ 
                 <div class="col-sm-6 col-md-4">
                     <label class="form-label visually-hidden" for="departmentsJobCareers">Filter by Author</label>
 
-                    <!-- Select -->
                     <InputSelect @bind-Value="selectedAuthorId" class="form-select form-select-lg" id="departmentsJobCareers" aria-label="Filter by Author">
                         <option value="">All Authors</option>
                         @if (authors is not null && authors.Any())
@@ -144,8 +140,10 @@
             </div>
         </form>
     </div>
+
     <div style="margin-top:50px; text-align: right;">
-        <a href="/upload" class="btn btn-primary">Upload Book</a>
+        <a href="/upload" class="btn btn-success">Add Author</a>
+        <a href="/upload" class="btn btn-success">Upload Book</a>
     </div>
 
     <div class="books-list" style="margin-top: 1rem;">

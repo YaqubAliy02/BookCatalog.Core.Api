@@ -63,7 +63,7 @@
 
             await UploadBook(bookDetails);
 
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/mainpage");
         }
         catch (Exception exception)
         {
@@ -87,8 +87,8 @@
         {
             throw new Exception("File upload failed");
         }
-
         var result = await response.Content.ReadFromJsonAsync<FileUploadResult>();
+
         return result?.BlobUri ?? throw new Exception("Upload returned invalid result");
     }
 
@@ -129,26 +129,32 @@
                 <div class="card-body">
                     <h1 class="text-center mb-4">Upload Book</h1>
                     <EditForm Model="books" OnValidSubmit="UploadFiles">
+
                         <div class="form-group">
                             <label>Name</label>
                             <InputText class="form-control" id="title" @bind-Value="books.Name" required />
                         </div>
+
                         <div class="form-group">
                             <label for="description">Description</label>
                             <InputTextArea class="form-control" id="description" @bind-Value="books.Description" rows="3" required />
                         </div>
+
                         <div class="form-group">
                             <label>ISBN</label>
                             <InputText class="form-control" id="isbn" @bind-Value="books.ISBN" required />
                         </div>
+
                         <div class="form-group">
                             <label for="ebook">Ebook File</label>
                             <InputFile OnChange="@((e) => books.BlobPath = e.File)" accept="Ebook" />
                         </div>
+
                         <div class="form-group">
                             <label for="thumbnail">Thumbnail Image</label>
                             <InputFile OnChange="@((e) => books.Thubnail = e.File)" accept="image/*" />
                         </div>
+
                         <div class="form-group">
                             <label for="publishedDate">Published Date</label>
                             <InputDate class="form-control" id="books.PublishedDate" @bind-Value="books.PublishedDate" required />

@@ -46,14 +46,14 @@
             {
                 Navigation.NavigateTo("/login");
             }
-
             else
             {
                 errorMessage = "Invalid register attempt!";
             }
-        } catch(Exception exception)
+        }
+        catch (Exception exception)
         {
-           errorMessage = $"An error occurred: {exception.Message}";
+            errorMessage = $"An error occurred: {exception.Message}";
         }
     }
     public class RegisterResult

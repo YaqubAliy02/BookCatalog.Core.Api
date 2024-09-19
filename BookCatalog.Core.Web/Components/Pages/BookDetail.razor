@@ -8,11 +8,9 @@
 @if (book is not null)
 {
     <div class="row">
-        <!-- Book Image -->
         <div class="col-md-4">
             <img class="img-fluid" src="@book.Thubnail" alt="@book.Name" style="width: 100%; height: 600px;" />
         </div>
-
         <div class="col-md-8">
             <h2><strong>Name:</strong> @book.Name</h2>
             <a href="@($"/mainpage{book.Authors}")"></a>
@@ -20,11 +18,14 @@
             <p><strong>Description:</strong> @book.Description</p>
             <p style="color:green;"><strong>FREE</strong></p>
             <a href="@(book.BlobPath)" target="_blank" style="display: block; margin-bottom:20px; text-decoration: none;">Review</a>
-            
+
             <a href="/mainpage" class="btn btn-primary">Back</a>
             <button class="btn btn-primary" @onclick="() => DownloadEbook()">Download</button>
+            <button class="btn" style="background-color:orange">Update</button>
+            <button class="btn btn-danger" @onclick="DeleteBook">Delete</button>
         </div>
     </div>
+    <Confirm ConfirmationChanged="ConfirmDelete" @ref="DeleteConfirmation"></Confirm>
 }
 else
 {
@@ -33,10 +34,16 @@ else
 
 @code {
     [Parameter]
-    public string Id { get; set; } 
+    public string Id { get; set; }
+    private GetAllBooksDTO book;
+    public List<GetAllBooksDTO> books = new List<GetAllBooksDTO>();
+    protected Confirm DeleteConfirmation { get; set; }
 
-    private GetAllBooksDTO book; 
- 
+    protected override async Task OnInitializedAsync()
+    {
+        books = await HttpClient.GetFromJsonAsync<List<GetAllBooksDTO>>("/api/Book/GetAllBooks");
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         try
@@ -48,11 +55,39 @@ else
             Console.WriteLine($"Error fetching book details: {ex.Message}");
         }
     }
+
     private async Task DownloadEbook()
     {
         var blobPath = book.BlobPath;
         var getFileName = Path.GetFileName(blobPath);
         var url = $"https://localhost:7282/api/EBook/download/{getFileName}";
         NavigationManager.NavigateTo(url, forceLoad: true);
+    }
+
+    private void DeleteBook()
+    {
+        DeleteConfirmation.Show();
+    }
+
+    protected async Task ConfirmDelete(bool deleteConfirmed)
+    {
+        if(deleteConfirmed)
+        {
+            try
+            {
+                var response = await HttpClient.DeleteAsync($"api/Book/DeleteBook?Id={book.Id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    books = await HttpClient.GetFromJsonAsync<List<GetAllBooksDTO>>("/api/Book/GetAllBooks");
+                    NavigationManager.NavigateTo("/mainpage");
+                    // StateHasChanged();
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Error deleting the book: {exception.Message}");
+            }
+        }
     }
 }
