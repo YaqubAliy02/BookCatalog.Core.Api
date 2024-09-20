@@ -1,6 +1,7 @@
 ﻿@page "/mainpage/{id}"
 @using BookCatalog.Core.Web.Models
-@using BookCatalog.Core.Web.Models.DTOs.Book
+@using BookCatalog.Core.Web.Models.DTOs
+@using BookCatalog.Core.Web.Models.DTOs.Books
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 <h3>Book Detail</h3>
@@ -26,6 +27,26 @@
         </div>
     </div>
     <Confirm ConfirmationChanged="ConfirmDelete" @ref="DeleteConfirmation"></Confirm>
+
+    @foreach(var author in book.Authors)
+    {
+        <div class="card mt-3 bg-light">
+            <div class="card-body">
+                <h2 class="card-title text-dark"><strong>@author.FullName</strong></h2>
+                <img src="@author.AuthorPhoto" style="width:160px; height:200px; display:inline-block;" alt="Alternate Text" />
+                <p class="card-text text-dark">
+                    @author.AboutAuthor
+                </p>
+                <p class="card-text text-dark">
+                    <strong>@author.BirthDate</strong>
+                </p>  
+                <p class="card-text text-dark">
+                    <strong>@author.Gender</strong>
+                </p>
+            </div>
+        </div>
+    }
+    
 }
 else
 {

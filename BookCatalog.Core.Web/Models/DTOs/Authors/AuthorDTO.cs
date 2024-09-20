@@ -1,15 +1,16 @@
 ﻿using Domain.Enums;
-using BookCatalog.Core.Web.Models;
+using Microsoft.AspNetCore.Components.Forms;
+
 namespace BookCatalog.Core.Web.Models.DTOs.Authors
 {
-    public class GetAuthorDTO
+    public class AuthorDTO
     {
         public Guid Id { get; set; }
         public string FullName { get; set; }
         public DateTime BirthDate { get; set; }
         public string AboutAuthor { get; set; }
-        public Gender Gender { get; set; }
-        public string AuthorPhoto { get; set; }
+        public Gender Gender { get; set; } = Gender.Male;
+        public IBrowserFile AuthorPhoto { get; set; }
         public ICollection<Book> Books { get; set; }
     }
 }

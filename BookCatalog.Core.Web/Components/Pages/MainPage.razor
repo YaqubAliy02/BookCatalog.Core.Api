@@ -1,6 +1,7 @@
 ﻿@page "/mainpage"
 @using BookCatalog.Core.Web.Models
-@using BookCatalog.Core.Web.Models.DTOs.Book
+@using BookCatalog.Core.Web.Models.DTOs.Books
+@using BookCatalog.Core.Web.Models.Enums
 @using Domain.Enums
 @inject HttpClient HttpClient
 
@@ -147,15 +148,16 @@
     </div>
 
     <div class="books-list" style="margin-top: 1rem;">
+
         @if (books != null && books.Any())
         {
             <div class="d-flex flex-wrap justify-content-start">
                 @foreach (var book in books)
                 {
                     <a href="@($"/mainpage/{book.Id}")" style="text-decoration:none; color:inherit;">
-                        <div class="card" style="width: 12rem; height:24rem; margin: 8px;">
+                        <div class="card" style="width: 14rem; height:24rem; margin: 8px;">
                             <div class="card-body">
-                                <img style="width:160px; height:200px" src="@book.Thubnail" alt="@book.Thubnail" class="book-thubnail" />
+                                <img style="width:180px; height:220px; margin-left:5px" src="@book.Thubnail" alt="@book.Thubnail" class="book-thubnail" />
                                 <p class="card-title" style="font-size: 14px"><strong>Name:</strong> @book.Name</p>
                                 <p style="font-size: 14px">
                                     <strong>Author:</strong>
@@ -175,7 +177,7 @@
         }
         else
         {
-            <p>No books found</p>
+            <div class="spinner"></div>
         }
     </div>
 </div>

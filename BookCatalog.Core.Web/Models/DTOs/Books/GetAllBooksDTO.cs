@@ -1,7 +1,7 @@
 ﻿using BookCatalog.Core.Web.Models.DTOs.Authors;
 using Domain.Enums;
 
-namespace BookCatalog.Core.Web.Models.DTOs.Book
+namespace BookCatalog.Core.Web.Models.DTOs.Books
 {
     public class GetAllBooksDTO
     {

@@ -1,6 +1,6 @@
-﻿namespace BookCatalog.Core.Web.Models
+﻿namespace BookCatalog.Core.Web.Models.Enums
 {
-    public class BookCategory
+    public class AuthorGender
     {
         public int Id { get; set; }
         public string Name { get; set; }

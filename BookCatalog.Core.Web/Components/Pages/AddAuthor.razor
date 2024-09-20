@@ -2,10 +2,10 @@
 
 @using BookCatalog.Core.Web.Models
 @using BookCatalog.Core.Web.Models.DTOs.Authors
+@using BookCatalog.Core.Web.Models.Enums
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 <h3>Add Author</h3>
-
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -18,15 +18,27 @@
                             <label>FullName</label>
                             <InputText class="form-control" id="title" @bind-Value="authors.FullName" required />
                         </div>
-                        <div class="form-group">
-                            <label for="ebook">Author Photo</label>
-                            <InputFile OnChange="@((e) => authors.AuthorPhoto = e.File)" accept="AuthorPhoto" required/>
-                        </div>
+                         <div class="form-group">
+                             <label for="ebook">Author Photo</label>
+                             <InputFile OnChange="@((e) => authors.AuthorPhoto = e.File)" accept="AuthorPhoto" required/>
+                         </div>
                         <div class="form-group">
                             <label for="publishedDate"> Birth Date</label>
                             <InputDate class="form-control" id="books.PublishedDate" @bind-Value="authors.BirthDate" required />
                         </div>
                         
+                        <div class="form-group">
+                            <label>Select Categories</label>
+                            <InputSelect @bind-Value="selectedGender">
+                                @if (genders is not null && genders.Any())
+                                {
+                                    @foreach (var category in genders)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                }
+                            </InputSelect>
+                        </div>
 
                         <div class="form-group">
                             <label for="description">Description</label>
@@ -45,10 +57,22 @@
 </div>
 
 @code {
-    private Author authors = new Author();
+    private AuthorDTO authors = new AuthorDTO();
     public CreateAuthorDTO newAuthor = new CreateAuthorDTO();
     public bool isUploading { get; set; } = false;
+    private List<AuthorGender> genders = new List<AuthorGender>();
     public byte selectedGender;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            genders = await Http.GetFromJsonAsync<List<AuthorGender>>("api/Author/GetAuthorGender");
+        }catch(Exception exception)
+        {
+            Console.WriteLine($"Error fetching: {exception.Message}");
+        }
+    }
     protected override void OnInitialized()
     {
         authors.BirthDate = DateTime.Today;
@@ -65,6 +89,7 @@
         try
         {
             var AuthorPhotoUrl = await UploadFile(authors.AuthorPhoto, "api/AuthorPhoto/UploadPhoto");
+
             newAuthor.AuthorPhoto = AuthorPhotoUrl;
 
             var authorDetails = new CreateAuthorDTO
