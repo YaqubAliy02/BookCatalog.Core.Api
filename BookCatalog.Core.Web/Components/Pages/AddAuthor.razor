@@ -7,58 +7,62 @@
 @inject HttpClient Http
 <h3>Add Author</h3>
 
-<div class="container mt-5">
-    @if (isUploading)
-    {
-        <LoadingPage/>
-    }
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h1 class="text-center mb-4">Add Author</h1>
-                    <EditForm Model="authors" OnValidSubmit="UploadFiles">
-                        <div class="form-group">
-                            <label>FullName</label>
-                            <InputText class="form-control" id="title" @bind-Value="authors.FullName" required />
-                        </div>
-                         <div class="form-group">
-                             <label for="ebook">Author Photo</label>
-                             <InputFile OnChange="@((e) => authors.AuthorPhoto = e.File)" accept="AuthorPhoto" required/>
-                         </div>
-                        <div class="form-group">
-                            <label for="publishedDate"> Birth Date</label>
-                            <InputDate class="form-control" id="books.PublishedDate" @bind-Value="authors.BirthDate" required />
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Select Categories</label>
-                            <InputSelect @bind-Value="selectedGender">
-                                @if (genders is not null && genders.Any())
-                                {
-                                    @foreach (var category in genders)
-                                    {
-                                        <option value="@category.Id">@category.Name</option>
-                                    }
-                                }
-                            </InputSelect>
-                        </div>
+@if (isUploading)
+{
+    <LoadingPage />
+}
+else
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h1 class="text-center mb-4">Add Author</h1>
+                        <EditForm Model="authors" OnValidSubmit="UploadFiles">
+                            <div class="form-group">
+                                <label>FullName</label>
+                                <InputText class="form-control" id="title" @bind-Value="authors.FullName" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="ebook">Author Photo</label>
+                                <InputFile OnChange="@((e) => authors.AuthorPhoto = e.File)" accept="AuthorPhoto" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="publishedDate"> Birth Date</label>
+                                <InputDate class="form-control" id="books.PublishedDate" @bind-Value="authors.BirthDate" required />
+                            </div>
 
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <InputTextArea class="form-control" id="description" @bind-Value="authors.AboutAuthor" rows="3" required />
-                        </div>
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary mr-2" disabled="@isUploading">Upload</button>
-                            <button type="button" class="btn btn-secondary mr-2">Cancel</button>
-                            <button class="btn btn-primary" @onclick="ReturnToMain">Return to Main Page</button>
-                        </div>
-                    </EditForm>
+                            <div class="form-group">
+                                <label>Select Categories</label>
+                                <InputSelect @bind-Value="selectedGender">
+                                    @if (genders is not null && genders.Any())
+                                    {
+                                        @foreach (var category in genders)
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <InputTextArea class="form-control" id="description" @bind-Value="authors.AboutAuthor" rows="3" required />
+                            </div>
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-primary mr-2" disabled="@isUploading">Upload</button>
+                                <button type="button" class="btn btn-secondary mr-2">Cancel</button>
+                                <button class="btn btn-primary" @onclick="ReturnToMain">Return to Main Page</button>
+                            </div>
+                        </EditForm>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+}
+
 
 @code {
     private AuthorDTO authors = new AuthorDTO();
@@ -66,13 +70,17 @@
     public bool isUploading { get; set; } = false;
     private List<AuthorGender> genders = new List<AuthorGender>();
     public byte selectedGender;
-
+    bool isLoading = true;
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
+        await Task.Delay(1000);
+        isLoading = false;
         try
         {
             genders = await Http.GetFromJsonAsync<List<AuthorGender>>("api/Author/GetAuthorGender");
-        }catch(Exception exception)
+        }
+        catch (Exception exception)
         {
             Console.WriteLine($"Error fetching: {exception.Message}");
         }
@@ -140,7 +148,7 @@
     {
         var response = await Http.PostAsJsonAsync("api/Author/CreateAuthor", newAuthor);
 
-        if(!response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
             var errorMessage = await response.Content.ReadAsStringAsync();
             throw new Exception($"Author create failed: {errorMessage}");
