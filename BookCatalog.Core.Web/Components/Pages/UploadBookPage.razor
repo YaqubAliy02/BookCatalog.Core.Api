@@ -6,6 +6,108 @@
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
 
+@if (isLoading)
+{
+    if (IsUploading)
+    {
+    <LoadingPage />
+    }
+}
+else
+{
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h1 class="text-center mb-4">Upload Book</h1>
+                        <EditForm Model="books" OnValidSubmit="UploadFiles">
+
+                            <div class="form-group">
+                                <label>Name</label>
+                                <InputText class="form-control" id="title" @bind-Value="books.Name" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <InputTextArea class="form-control" id="description" @bind-Value="books.Description" rows="3" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label>ISBN</label>
+                                <InputText class="form-control" id="isbn" @bind-Value="books.ISBN" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ebook">Ebook File</label>
+                                <InputFile OnChange="@((e) => books.BlobPath = e.File)" accept="Ebook" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="thumbnail">Thumbnail Image</label>
+                                <InputFile OnChange="@((e) => books.Thubnail = e.File)" accept="image/*" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="publishedDate">Published Date</label>
+                                <InputDate class="form-control" id="books.PublishedDate" @bind-Value="books.PublishedDate" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Authors">Authors</label>
+                                <InputSelect id="Authors" class="form-control" @bind-Value="selectedAuthorId">
+                                    @if (authors is not null && authors.Any())
+                                    {
+                                        @foreach (Author author in authors)
+                                        {
+                                            <option value="@author.Id">@author.FullName</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Select Categories</label>
+                                <InputSelect @bind-Value="selectedCategory">
+                                    @if (categories is not null && categories.Any())
+                                    {
+                                        @foreach (var category in categories)
+                                        {
+                                            <option value="@category.Id">@category.Name</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            </div>
+
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-primary mr-2" disabled="@IsUploading">Upload</button>
+                                <button type="button" class="btn btn-secondary mr-2" @onclick="CancelUpload">Cancel</button>
+                                <button class="btn btn-primary" @onclick="ReturnToMain">Return to Main Page</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<style>
+    .form-group label {
+        font-weight: bold;
+    }
+
+    .custom-file-label::after {
+        content: 'Browse';
+    }
+</style>
+
+@code {
+
+}
+
+
 @code {
     private Book books = new Book();
     public CreateBookDto newBook = new CreateBookDto();
@@ -14,9 +116,13 @@
     private string selectedAuthorId;
     private List<BookCategory> categories = new List<BookCategory>();
     private byte selectedCategory;
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
+        await Task.Delay(1000);
+        isLoading = false;
         try
         {
             categories = await Http.GetFromJsonAsync<List<BookCategory>>("https://localhost:7282/api/Book/GetBookCategories");
@@ -51,16 +157,16 @@
             newBook.Thubnail = ThumbnailUrl;
 
             var bookDetails = new CreateBookDto
-            {
-                Name = books.Name,
-                Description = books.Description,
-                ISBN = books.ISBN,
-                BlobPath = newBook.BlobPath,
-                Thubnail = newBook.Thubnail,
-                PublishedDate = books.PublishedDate,
-                AuthorsId = new Guid[] { Guid.Parse(selectedAuthorId) },
-                Categories = selectedCategory
-            };
+                {
+                    Name = books.Name,
+                    Description = books.Description,
+                    ISBN = books.ISBN,
+                    BlobPath = newBook.BlobPath,
+                    Thubnail = newBook.Thubnail,
+                    PublishedDate = books.PublishedDate,
+                    AuthorsId = new Guid[] { Guid.Parse(selectedAuthorId) },
+                    Categories = selectedCategory
+                };
 
             await UploadBook(bookDetails);
 
@@ -114,106 +220,14 @@
         books.Authors = null;
         books.Categories = default;
     }
-}
 
-@code {
     private void ReturnToMain()
     {
         NavigationManager.NavigateTo("/mainpage");
     }
-}
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h1 class="text-center mb-4">Upload Book</h1>
-                    <EditForm Model="books" OnValidSubmit="UploadFiles">
-
-                        <div class="form-group">
-                            <label>Name</label>
-                            <InputText class="form-control" id="title" @bind-Value="books.Name" required />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <InputTextArea class="form-control" id="description" @bind-Value="books.Description" rows="3" required />
-                        </div>
-
-                        <div class="form-group">
-                            <label>ISBN</label>
-                            <InputText class="form-control" id="isbn" @bind-Value="books.ISBN" required />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ebook">Ebook File</label>
-                            <InputFile OnChange="@((e) => books.BlobPath = e.File)" accept="Ebook" />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="thumbnail">Thumbnail Image</label>
-                            <InputFile OnChange="@((e) => books.Thubnail = e.File)" accept="image/*" />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="publishedDate">Published Date</label>
-                            <InputDate class="form-control" id="books.PublishedDate" @bind-Value="books.PublishedDate" required />
-                        </div>
-
-                        <div class="form-group">
-                            <label for="Authors">Authors</label>
-                            <InputSelect id="Authors" class="form-control" @bind-Value="selectedAuthorId">
-                                @if (authors is not null && authors.Any())
-                                {
-                                    @foreach (Author author in authors)
-                                    {
-                                        <option value="@author.Id">@author.FullName</option>
-                                    }
-                                }
-                            </InputSelect>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Select Categories</label>
-                            <InputSelect @bind-Value="selectedCategory">
-                                @if (categories is not null && categories.Any())
-                                {
-                                    @foreach (var category in categories)
-                                    {
-                                        <option value="@category.Id">@category.Name</option>
-                                    }
-                                }
-                            </InputSelect>
-                        </div>
-
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary mr-2" disabled="@IsUploading">Upload</button>
-                            <button type="button" class="btn btn-secondary mr-2" @onclick="CancelUpload">Cancel</button>
-                            <button class="btn btn-primary" @onclick="ReturnToMain">Return to Main Page</button>
-                        </div>
-                    </EditForm>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-    .form-group label {
-        font-weight: bold;
-    }
-
-    .custom-file-label::after {
-        content: 'Browse';
-    }
-</style>
-
-@code {
     public class FileUploadResult
     {
         public string BlobUri { get; set; }
     }
 }
-
-
