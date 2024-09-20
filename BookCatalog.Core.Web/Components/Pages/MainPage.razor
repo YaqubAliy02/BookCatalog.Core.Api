@@ -28,6 +28,7 @@
             }
         }
     }
+    bool isLoading = true;
     private async Task FilterBooksAsync()
     {
         try
@@ -41,6 +42,10 @@
     }
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
+        await Task.Delay(1000);
+        isLoading = false;
+
         try
         {
             books = await HttpClient.GetFromJsonAsync<List<GetAllBooksDTO>>("/api/Book/GetAllBooks");
@@ -177,7 +182,10 @@
         }
         else
         {
-            <div class="spinner"></div>
+            @if(isLoading)
+            {
+            <LoadingPage/>
+            }
         }
     </div>
 </div>
