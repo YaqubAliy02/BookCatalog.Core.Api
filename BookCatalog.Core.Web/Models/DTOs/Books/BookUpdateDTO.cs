@@ -1,6 +1,4 @@
-﻿using Domain.Enums;
-
-namespace BookCatalog.Core.Web.Models.DTOs.Books
+﻿namespace BookCatalog.Core.Web.Models.DTOs.Books
 {
     public class BookUpdateDTO
     {

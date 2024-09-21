@@ -1,6 +1,4 @@
-﻿using Domain.Enums;
-
-namespace BookCatalog.Core.Web.Models.DTOs.Authors
+﻿namespace BookCatalog.Core.Web.Models.DTOs.Authors
 {
     public class CreateAuthorDTO
     {

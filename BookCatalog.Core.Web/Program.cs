@@ -32,15 +32,15 @@ namespace BookCatalog.Core.Web
 
             HttpClient httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromMinutes(5) 
+                Timeout = TimeSpan.FromMinutes(5)
             };
             builder.Services.AddServerSideBlazor()
              .AddHubOptions(options =>
                 {
-                options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
-                options.HandshakeTimeout = TimeSpan.FromSeconds(30);
-                options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-              });
+                    options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+                    options.HandshakeTimeout = TimeSpan.FromSeconds(30);
+                    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+                });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

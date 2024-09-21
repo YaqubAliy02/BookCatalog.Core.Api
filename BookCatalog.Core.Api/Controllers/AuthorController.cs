@@ -82,8 +82,8 @@ namespace BookCatalog.Core.Api.Controllers
         }
 
         [HttpPost("[action]")]
-      /*  [CustomAuthorizationFilter("CreateAuthor")]*/
-        public async Task<IActionResult> CreateAuthor([FromBody]CreateAuthorCommand createAuthorCommand)
+        /*  [CustomAuthorizationFilter("CreateAuthor")]*/
+        public async Task<IActionResult> CreateAuthor([FromBody] CreateAuthorCommand createAuthorCommand)
         {
             var result = await _mediator.Send(createAuthorCommand);
 

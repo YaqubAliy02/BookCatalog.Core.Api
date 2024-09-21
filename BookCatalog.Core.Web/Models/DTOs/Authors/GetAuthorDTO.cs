@@ -1,5 +1,4 @@
 ﻿using Domain.Enums;
-using BookCatalog.Core.Web.Models;
 namespace BookCatalog.Core.Web.Models.DTOs.Authors
 {
     public class GetAuthorDTO
