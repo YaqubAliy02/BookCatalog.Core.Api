@@ -44,7 +44,7 @@
             {
                 var result = await response.Content.ReadFromJsonAsync<LoginResult>();
                 await localStorage.SetItemAsync("authToken", result.Token);
-                Navigation.NavigateTo("/");
+                Navigation.NavigateTo("/mainpage");
             }
             else
             {

@@ -19,7 +19,7 @@
         if (AuthenticationStateProvider is CustomAuthenticationStateProvider customAuthProvider)
         {
             await customAuthProvider.LogoutAsync();
-            Navigation.NavigateTo("/mainpage", forceLoad: true);
+            Navigation.NavigateTo("/", forceLoad: true);
         }
         else
         {

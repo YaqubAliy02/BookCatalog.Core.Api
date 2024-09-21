@@ -32,26 +32,21 @@ namespace BookCatalog.Core.Web
 
             HttpClient httpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromMinutes(5) // Set the timeout to 5 minutes
+                Timeout = TimeSpan.FromMinutes(5) 
             };
             builder.Services.AddServerSideBlazor()
              .AddHubOptions(options =>
                 {
-                options.ClientTimeoutInterval = TimeSpan.FromSeconds(60); // Increase timeout as needed
-                options.HandshakeTimeout = TimeSpan.FromSeconds(30); // Increase handshake timeout
-                options.KeepAliveInterval = TimeSpan.FromSeconds(15); // SignalR keep-alive interval
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+                options.HandshakeTimeout = TimeSpan.FromSeconds(30);
+                options.KeepAliveInterval = TimeSpan.FromSeconds(15);
               });
-            /*builder.Services.AddHttpClient("AuthorizedClient", client =>
-            {
-                client.BaseAddress = new Uri("https://localhost:7282");
-            }).AddHttpMessageHandler<AuthorizationMessageHandler>();*/
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

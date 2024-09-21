@@ -3,6 +3,8 @@
 @using BookCatalog.Core.Web.Models.DTOs.Books
 @using BookCatalog.Core.Web.Models.Enums
 @using Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @inject HttpClient HttpClient
 
 @code {
