@@ -1,0 +1,106 @@
+﻿@page "/mainpage/updatebook/{id}"
+@using BookCatalog.Core.Web.Models
+@using BookCatalog.Core.Web.Models.DTOs.Books
+@using BookCatalog.Core.Web.Models.Enums
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<h3>Update Book</h3>
+
+@if (book != null)
+{
+    <EditForm Model="@book" OnValidSubmit="@UpdateBookAsync">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <InputText id="name" class="form-control" @bind-Value="book.Name" />
+        </div>
+
+        <div class="form-group">
+            <label for="isbn">ISBN</label>
+            <InputText id="isbn" class="form-control" @bind-Value="book.ISBN" />
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <InputTextArea id="description" class="form-control" @bind-Value="book.Description" />
+        </div>
+
+        <div class="form-group">
+            <label for="publishedDate">Published Date</label>
+            <InputDate id="publishedDate" class="form-control" @bind-Value="book.PublishedDate" />
+        </div>
+
+        <div class="form-group">
+            <label for="authors">Authors</label>
+            <InputSelect id="authors" class="form-control" @bind-Value="selectedAuthorId">
+                <option value="">Select an Author</option>
+                @foreach (var author in authors)
+                {
+                    <option value="@author.Id">@author.FullName</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group">
+            <label for="categories">Categories</label>
+            <InputSelect id="categories" class="form-control" @bind-Value="selectedCategoryId">
+                <option value="">Select a Category</option>
+                @foreach (var category in categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </InputSelect>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a href="/mainpage" class="btn btn-secondary">Cancel</a>
+    </EditForm>
+}
+else
+{
+    <p>Loading book details...</p>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private BookUpdateDTO book = new BookUpdateDTO();
+    private List<Author> authors = new List<Author>();
+    private List<BookCategory> categories = new List<BookCategory>();
+    private Guid[] selectedAuthorId;
+    private byte selectedCategoryId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        book = await HttpClient.GetFromJsonAsync<BookUpdateDTO>($"api/Book/GetBookById/{Id}");
+
+        authors = await HttpClient.GetFromJsonAsync<List<Author>>("/api/Author/GetAllAuthors");
+
+        categories = await HttpClient.GetFromJsonAsync<List<BookCategory>>("api/Book/GetBookCategories");
+    }
+
+    private async Task UpdateBookAsync()
+    {
+        try
+        {
+            book.AuthorsId = selectedAuthorId;
+            book.Categories = selectedCategoryId;
+
+            var response = await HttpClient.PutAsJsonAsync($"https://localhost:7282/api/Book/UpdateBook/{Id}", book);
+
+            if (response.IsSuccessStatusCode)
+            {
+                NavigationManager.NavigateTo("/mainpage");
+            }
+            else
+            {
+                Console.WriteLine("Error: Could not update the book");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+}
