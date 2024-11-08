@@ -50,7 +50,9 @@ namespace Infrastracture.Services
 
         public async Task<IQueryable<User>> GetAsync(Expression<Func<User, bool>> expression)
         {
-            return _bookCatalogDbContext.Users.Where(expression).Include(x => x.Roles).ThenInclude(role => role.Permissions);
+            return _bookCatalogDbContext.Users.Where(expression)
+                .Include(x => x.Roles)
+                .ThenInclude(role => role.Permissions);
         }
 
         public Task<User> GetByIdAsync(Guid id)
@@ -62,7 +64,7 @@ namespace Infrastracture.Services
                 .SingleOrDefault());
         }
 
-        public async Task<User> UpdateAsync(User user)
+        public async Task<User> UpdateAsync(User     user)
         {
             var exisingUser = await GetByIdAsync(user.Id);
 
@@ -88,6 +90,17 @@ namespace Infrastracture.Services
             }
 
             return null;
+        }
+
+        public async Task UpdatePasswordAsync(User user)
+        {
+           var existingUser = await GetByIdAsync(user.Id);
+
+            if(existingUser is not null)
+            {
+                existingUser.Password = user.Password;
+                await _bookCatalogDbContext.SaveChangesAsync();
+            }
         }
     }
 }

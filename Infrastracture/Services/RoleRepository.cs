@@ -86,9 +86,7 @@ namespace Infrastracture.Services
 
                 int result = await _bookCatalogDbContext.SaveChangesAsync();
                 if (result > 0) return updatedRole;
-
             }
-
             return null;
         }
 

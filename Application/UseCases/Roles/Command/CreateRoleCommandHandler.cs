@@ -48,7 +48,7 @@ namespace Application.UseCases.Roles.Command
             if (role is null)
             {
                 result.ErrorMessage = new string[] { "Role is not found" };
-                result.StatusCode = 400;
+                result.StatusCode = 40;
 
                 return result;
             }

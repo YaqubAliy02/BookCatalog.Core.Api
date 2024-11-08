@@ -15,7 +15,7 @@ using Domain.Entities;
 
 namespace Application.Mappings
 {
-    public class MappingProfiles : Profile
+    public class    MappingProfiles : Profile
     {
         public MappingProfiles()
         {

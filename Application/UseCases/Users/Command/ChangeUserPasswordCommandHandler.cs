@@ -25,21 +25,18 @@ namespace Application.UseCases.Users.Command
         {
             var user = await _userRepository.GetByIdAsync(request.UserId);
 
-            if (user is not null)
-            {
-                string newPassword = request.CurrentPassword.GetHash();
-                if (newPassword == user.Password
-                    && request.NewPassword == request.ConfirmNewPassword)
-                {
-                    user.Password = request.NewPassword.GetHash();
-                    await _userRepository.UpdateAsync(user);
+            if (user is null)
+                return new NotFoundObjectResult("User not found");
 
-                    return new OkObjectResult("Password is changed successfully✅");
-                }
-                else return new BadRequestObjectResult("Incorrect password❌");
-            }
+            if (user.Password != request.CurrentPassword.GetHash())
+                return new BadRequestObjectResult("Current password is incorrect");
 
-            return new BadRequestObjectResult("User is not found");
+            if (request.NewPassword != request.ConfirmNewPassword)
+                return new BadRequestObjectResult("New password and confirmation do not match");
+
+            user.Password = request.NewPassword.GetHash();
+            await _userRepository.UpdatePasswordAsync(user);
+            return new OkObjectResult("Password changed successfully ✅");
         }
     }
 }

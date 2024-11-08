@@ -19,7 +19,7 @@ namespace Application.UseCases.Users.Command
         [PasswordPropertyText]
         public string Password { get; set; }
         public Guid[] RolesId { get; set; }
-    }
+    }   
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ResponseCore<CreateUserCommandHandlerResult>>
     {
         private readonly IMapper _mapper;

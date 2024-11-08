@@ -150,7 +150,7 @@ else
 
         try
         {
-            var EbookUrl = await UploadFile(books.BlobPath, "https://localhost:7282/api/EBook/UploadEBook");
+            var EbookUrl = await UploadFile(books.BlobPath, "/api/EBook/UploadEBook");
             var ThumbnailUrl = await UploadFile(books.Thubnail, "https://localhost:7282/api/BookPhoto/UploadPhoto");
 
             newBook.BlobPath = EbookUrl;
@@ -201,7 +201,7 @@ else
 
     private async Task UploadBook(CreateBookDto newBook)
     {
-        var response = await Http.PostAsJsonAsync("https://localhost:7282/api/Book/CreateBook", newBook);
+        var response = await Http.PostAsJsonAsync("/api/Book/CreateBook", newBook);
         if (!response.IsSuccessStatusCode)
         {
             var errorMessage = await response.Content.ReadAsStringAsync();
